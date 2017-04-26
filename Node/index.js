@@ -8,10 +8,10 @@ const formatter = d3.format('.2f');
 
 var path1 = "C:\\Users\\Daniele\\Desktop\\Tesi Magistrale\\Dati\\Matrice152Eu_ch000.txt"
 var path2 = "C:\\Users\\Daniele\\Desktop\\Tesi Magistrale\\Dati\\Matrice152Eu_ch001.txt"
+var executablePath = "DataCruncher/DataCruncher.exe"
 const nCanali = 1000;
 
 // logica di primo caricamento
-let executablePath = "DataCruncher/DataCruncher.exe"
 let params = [];
 child(executablePath, params, function (err, data) {
   dataFile = fs.readFileSync("result.txt", 'ascii');
@@ -39,14 +39,25 @@ var min = metaData[1] * 1;
 var xData = dataLines.map(x => x.split(" ")[0] * 1);
 var yData = dataLines.map(x => x.split(" ")[1] * 1);
 var zData = dataLines.map(x => x.split(" ")[2] * 1);
+
+
 var data = [{
   x: xData,
   y: yData,
   z: zData,
-  type: 'heatmap'
+  
+  type: 'histogram2dcontour',
+  line: {
+  	width: 0
+  },
+  /*contours: {
+  	coloring: 'heatmap'
+  },*/
+  //type: 'heatmap',
+  colorscale: [[0, 'rgb(200,200,255)'], [0.75, 'rgb(0, 255, 0)'], [0.99, 'rgb(255,0,0)'], [1, 'rgb(255,0,0)']]
 }];
 var xAxisTemplate = {
-  range: [0,nCanali],
+  range: [0, nCanali],
   showgrid: true,
   zeroline: true,
   linecolor: 'black',
@@ -76,7 +87,6 @@ dataVis.on('plotly_selected', (eventData) => {
   let xRange = eventData.range.x.map(x => toChannel(x, interval, min));
   let yRange = eventData.range.y.map(x => toChannel(x, interval, min));
   console.log(xRange, yRange);
-  let executablePath = "DataCruncher/DataCruncher.exe"
   let parameters = [path1, path2, xRange[0], xRange[1], yRange[0], yRange[1], nCanali, false];
   child(executablePath, parameters, function (err, data) {
     dataFile = fs.readFileSync("result.txt", 'ascii');
