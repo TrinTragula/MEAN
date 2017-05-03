@@ -5,24 +5,40 @@
   <meta charset="UTF-8">
   <title>Matrix</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="row" style="width: 99%">
-    <div class="col-sm-4">
-      Cose
+    <div class="col-sm-5">
+      <fieldset class="input-group-vertical">
+        <div class="input-group tomakesmaller" style="width: 50%">
+          <input class="form-control" id="nCanali" type="number" value="1000">
+          <span class="input-group-btn">
+          	<button id="updateChannels" class="btn btn-default btn-sm" type="button">Canali</button>
+          </span>
+        </div>
+        <div style="width: 50%">
+          <input id="file1" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
+          <input id="file2" type="file" class="filestyle" data-buttonText="&nbsp;File 2" data-size="sm">
+          <!--<input id="file3" type="file" class="filestyle" data-buttonText="&nbsp;Data&nbsp;" data-size="sm">-->
+        </div>
+      </fieldset>
+      <div id="drawButton" type="button" class="btn btn-default">Crea</div>
     </div>
-    <div class="col-sm-8">
+    <div class="col-sm-7">
       <div id="dataVis" style="width: 99%"></div>
     </div>
   </div>
   <script>
     window.jQuery = window.$ = require('jquery');
   </script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script type="text/javascript" src="src/bootstrap-filestyle.min.js">
+  </script>
   <script>
-    require('./index.js')
+    require('./index.js');
   </script>
 </body>
 
