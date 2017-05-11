@@ -11,6 +11,12 @@ body {
     border-radius: 0;
 }
 
+.newDataDiv {
+    border: solid black 1px;
+    padding: 10px;
+    width: 50%;
+}
+
 .form-group {
     margin-bottom: 0;
 }
