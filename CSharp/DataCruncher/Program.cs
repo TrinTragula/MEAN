@@ -19,8 +19,8 @@ namespace DataCruncher
             Thread.CurrentThread.CurrentUICulture = ci;
             // Argomenti di input
             var nCanali = args.Length < 1 ? 1000 : Int32.Parse(args[0]);
-            var file1 = args.Length < 2 ? "C:\\Users\\Daniele\\Desktop\\Tesi Magistrale\\Dati\\Matrice152Eu_ch000.txt" : args[1];
-            var file2 = args.Length < 3 ? "C:\\Users\\Daniele\\Desktop\\Tesi Magistrale\\Dati\\Matrice152Eu_ch001.txt" : args[2];
+            var file1 = args.Length < 2 ? null : args[1];
+            var file2 = args.Length < 3 ? null : args[2];
             var xMin = args.Length < 4 ? 0 : Int32.Parse(args[3]);
             var xMax = args.Length < 5 ? int.MaxValue : Int32.Parse(args[4]);
             var yMin = args.Length < 6 ? 0 : Int32.Parse(args[5]);
@@ -31,7 +31,7 @@ namespace DataCruncher
             Database db = new Database("coincidenze_vere", overwrite);
 
             //Esporto i file se necessario
-            if (overwrite) db.InsertIntoDB(file1, file2);
+            if (overwrite && !String.IsNullOrEmpty(file1) && !String.IsNullOrEmpty(file2)) db.InsertIntoDB(file1, file2);
 
             //Salvo il risultato
             db.binCount(nCanali, xMin, xMax, yMin, yMax);

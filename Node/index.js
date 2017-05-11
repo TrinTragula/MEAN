@@ -8,6 +8,8 @@ const formatter = d3.format('.2f');
 
 //let path1 = "C:\\Users\\Daniele\\Desktop\\Tesi Magistrale\\Dati\\Matrice152Eu_ch000.txt"
 //let path2 = "C:\\Users\\Daniele\\Desktop\\Tesi Magistrale\\Dati\\Matrice152Eu_ch001.txt"
+let path1;
+let path2;
 let nCanali = $("#nCanali").val() || 1000;
 
 const executablePath = "DataCruncher/DataCruncher.exe"
@@ -15,11 +17,112 @@ const dataVis = document.getElementById('dataVis');
 let firstTime = true;
 let x1, x2, y1, y2, interval, min;
 
+$("#newDataButton").on("click", function (e) {
+  if ($("#newData").hasClass("hidden")) {
+    $("#newData").removeClass("hidden");
+    $("#newDataButton").html("Chiudi")
+  } else {
+    $("#newData").addClass("hidden");
+    $("#newDataButton").html("Crea nuovo database")
+  }
+});
+
+$("#createDataButton").on("click", function (e) {
+  // frist load and reset logic
+  nCanali = $("#nCanali").val() || 1000;
+  if (document.getElementById("file1").files && document.getElementById("file2").files) {
+    path1 = document.getElementById("file1").files[0] ? document.getElementById("file1").files[0].path : null;
+    path2 = document.getElementById("file2").files[0] ? document.getElementById("file2").files[0].path : null;
+    console.log(path1, path2);
+    let params = [nCanali * 1, path1, path2, 0, 999999999, 0, 999999999, true];;
+    child(executablePath, params, function (err, fileData) {
+      dataFile = fs.readFileSync("result.txt", 'ascii');
+      if (err) console.log("ERRORE: " + err)
+      console.log("Loaded");
+      dataLines = dataFile.split("\n");
+      metaData = dataLines.shift().split(" ");
+      interval = metaData[0];
+      min = metaData[1];
+      xData = dataLines.map(x => x.split(" ")[0] * 1);
+      yData = dataLines.map(x => x.split(" ")[1] * 1);
+      zData = dataLines.map(x => x.split(" ")[2] * 1);
+      // I'll draw the matrix
+      let data = [{
+        x: xData,
+        y: yData,
+        z: zData,
+
+        /*type: 'histogram2dcontour',
+        line: {
+        	width: 0
+        },
+        contours: {
+        	coloring: 'heatmap'
+        },*/
+        type: 'heatmap',
+        colorscale: [
+          [0, 'rgb(200,200,255)'],
+          [0.01, 'rgb(0, 0, 255)'],
+          [0.25, 'rgb(0, 255, 0)'],
+          [0.5, 'rgb(200,55,0)'],
+          [1, 'rgb(255,0,0)']
+        ]
+      }];
+
+      let xAxisTemplate = {
+        range: [0, nCanali],
+        showgrid: true,
+        zeroline: true,
+        linecolor: 'black',
+        showticklabels: true,
+        ticks: ''
+      };
+      let yAxisTemplate = {
+        showgrid: true,
+        zeroline: true,
+        linecolor: 'black',
+        showticklabels: true,
+        ticks: ''
+      };
+      let layout = {
+        xaxis: xAxisTemplate,
+        yaxis: yAxisTemplate,
+        dragmode: 'select'
+      };
+      Plotly.newPlot(dataVis, data, layout, {
+        displayModeBar: false
+      });
+      // Logica di selezione
+      dataVis.on('plotly_selected', (eventData) => {
+        nCanali = $("#nCanali").val() || 1000;
+        path1 = $("#path1").val() || path1;
+        path2 = $("#path2").val() || path2;
+        let xRange = eventData.range.x.map(x => toChannel(x, interval, min));
+        let yRange = eventData.range.y.map(x => toChannel(x, interval, min));
+        x1 = xRange[0];
+        x2 = xRange[1];
+        y1 = yRange[0];
+        y2 = yRange[1];
+        console.log(xRange, yRange);
+        updateMatrix(x1, x2, y1, y2, nCanali, path1, path2);
+        $(".zoomlayer").addClass("hidden");
+      });
+      $("#drawButton").html("Reset")
+      //Refresh the target selection frame
+      dataVis.on('plotly_click', function (e) {
+        $(".zoomlayer").removeClass("hidden");
+      });
+    });
+  }
+})
+
 $("#drawButton").on("click", function (e) {
   // frist load and reset logic
   nCanali = $("#nCanali").val() || 1000;
-  path1 = document.getElementById("file1").files[0].path;
-  path2 = document.getElementById("file2").files[0].path;
+  if (document.getElementById("file1").files && document.getElementById("file2").files) {
+    path1 = document.getElementById("file1").files[0] ? document.getElementById("file1").files[0].path : null;
+    path2 = document.getElementById("file2").files[0] ? document.getElementById("file2").files[0].path : null;
+  }
   console.log(path1, path2);
   let params = [nCanali];
   child(executablePath, params, function (err, fileData) {
@@ -92,8 +195,13 @@ $("#drawButton").on("click", function (e) {
       y2 = yRange[1];
       console.log(xRange, yRange);
       updateMatrix(x1, x2, y1, y2, nCanali, path1, path2);
+      $(".zoomlayer").addClass("hidden");
     });
     $("#drawButton").html("Reset")
+    //Refresh the target selection frame
+    dataVis.on('plotly_click', function (e) {
+      $(".zoomlayer").removeClass("hidden");
+    });
   });
 })
 
@@ -106,11 +214,38 @@ $("#updateChannels").on("click", function (e) {
     updateMatrix(x1, x2, y1, y2, nCanali, path1, path2, false);
 });
 
+// Invert colors
+let inverted = false;
+$("#invertColor").on("click", function (e) {
+  if (inverted) {
+    $(".nsewdrag").css('fill', 'transparent');
+    dataVis.data[0].colorscale = [
+      [0, 'rgb(200,200,255)'],
+      [0.01, 'rgb(0, 0, 255)'],
+      [0.25, 'rgb(0, 255, 0)'],
+      [0.5, 'rgb(200,55,0)'],
+      [1, 'rgb(255,0,0)']
+    ]
+    Plotly.redraw(dataVis);
+  } else {
+    $(".nsewdrag").css('fill', 'darkblue');
+    dataVis.data[0].colorscale = [
+      [0, 'rgb(255,0,0)']
+      [0.01, 'rgb(200,55,0)'],
+      [0.25, 'rgb(0, 255, 0)'],
+      [0.5, 'rgb(0, 0, 255)'],
+      [1, 'rgb(200,200,255)']
+    ]
+    Plotly.redraw(dataVis);
+  }
+  inverted = !inverted;
+});
+
 // Update the matrix plot
-function updateMatrix(x1, x2, y1, y2, numeroCanali, primoPath, secondoPath, useParameters = true) {
+function updateMatrix(x1, x2, y1, y2, numeroCanali, primoPath, secondoPath, useParameters = true, overwrite = false) {
   let parameters;
   if (useParameters)
-    parameters = [numeroCanali, primoPath, secondoPath, x1, x2, y1, y2, false];
+    parameters = [numeroCanali, primoPath, secondoPath, x1, x2, y1, y2, overwrite];
   else
     parameters = [numeroCanali];
   child(executablePath, parameters, function (err, data) {

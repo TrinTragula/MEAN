@@ -18,13 +18,19 @@
           	<button id="updateChannels" class="btn btn-default btn-sm" type="button">Canali</button>
           </span>
         </div>
-        <div style="width: 50%">
-          <input id="file1" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
-          <input id="file2" type="file" class="filestyle" data-buttonText="&nbsp;File 2" data-size="sm">
-          <!--<input id="file3" type="file" class="filestyle" data-buttonText="&nbsp;Data&nbsp;" data-size="sm">-->
-        </div>
       </fieldset>
       <div id="drawButton" type="button" class="btn btn-default">Crea</div>
+      <br>
+      <br>
+      <div id="invertColor" type="button" class="btn btn-default">Inverti colori</div>
+      <div id="newDataButton" type="button" class="btn btn-default">Importa nuovi dati..</div>
+      <div id="newData" class="hidden newDataDiv">
+        <span id="newDataText">Crea nuovo database</span>
+        <input id="file1" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
+        <input id="file2" type="file" class="filestyle" data-buttonText="&nbsp;File 2" data-size="sm">
+        <div id="createDataButton" type="button" class="btn btn-default">Importa</div>
+        <!--<input id="file3" type="file" class="filestyle" data-buttonText="&nbsp;Data&nbsp;" data-size="sm">-->
+      </div>
     </div>
     <div class="col-sm-7">
       <div id="dataVis" style="width: 99%"></div>
@@ -35,7 +41,7 @@
   </script>
   <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script type="text/javascript" src="src/bootstrap-filestyle.min.js">
+  <script type="text/javascript" src="src/bootstrap-filestyle.min.js"></script>
   </script>
   <script>
     require('./index.js');
