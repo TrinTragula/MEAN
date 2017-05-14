@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="DataCruncher.exe" size="12768">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="DataCruncher.exe" size="12256">
       <assemblyIdentity name="DataCruncher" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>D8te1QkCxJmpJLesoi9AjD+sRExEAxrTieLDJpq9mbA=</dsig:DigestValue>
+        <dsig:DigestValue>K3VE3rcUQBXzKWGVtc3Gep3BTKw3xWMZpqdBxGNbJx8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -11,30 +11,65 @@ const formatter = d3.format('.2f');
 let path1;
 let path2;
 let nCanali = $("#nCanali").val() || 1000;
-
 const executablePath = "DataCruncher/DataCruncher.exe"
+
+const myColorScale = [
+  [0, 'rgb(200,200,255)'],
+  [0.01, 'rgb(0, 0, 255)'],
+  [0.25, 'rgb(0, 255, 0)'],
+  [0.5, 'rgb(200,55,0)'],
+  [1, 'rgb(255,0,0)']
+];
+
+const myInvertedColorScale = [
+  [0, 'rgb(255,0,0)']
+  [0.01, 'rgb(200,55,0)'],
+  [0.25, 'rgb(0, 255, 0)'],
+  [0.5, 'rgb(0, 0, 255)'],
+  [1, 'rgb(200,200,255)']
+];
+
 const dataVis = document.getElementById('dataVis');
+const plotVis = document.getElementById('plotVis');
 let firstTime = true;
 let x1, x2, y1, y2, interval, min;
 
-$("#newDataButton").on("click", function (e) {
-  if ($("#newData").hasClass("hidden")) {
-    $("#newData").removeClass("hidden");
-    $("#newDataButton").html("Chiudi")
-  } else {
-    $("#newData").addClass("hidden");
-    $("#newDataButton").html("Crea nuovo database")
+// Importa vecchio db
+$("#importDbButton").on("click", function (e) {
+  let dbPath;
+  if (document.getElementById("dbFile"))
+    dbPath = document.getElementById("dbFile").files[0] ? document.getElementById("dbFile").files[0].path : null;
+  if (dbPath) {
+    let contents = fs.readFileSync(dbPath);
+    console.log(contents);
+    fs.writeFileSync("coincidenze_vere.sqlite", contents);
+    alert("Done!");
   }
 });
 
+// Salva db attuale
+$("#saveDb").on("click", function (e) {
+  let content = fs.readFileSync("coincidenze_vere.sqlite");
+  main.saveFile(content);
+});
+
+
+// Create data button importing from files
 $("#createDataButton").on("click", function (e) {
   // frist load and reset logic
   nCanali = $("#nCanali").val() || 1000;
   if (document.getElementById("file1").files && document.getElementById("file2").files) {
     path1 = document.getElementById("file1").files[0] ? document.getElementById("file1").files[0].path : null;
     path2 = document.getElementById("file2").files[0] ? document.getElementById("file2").files[0].path : null;
+    if (!path1 || !path2) return;
     console.log(path1, path2);
-    let params = [nCanali * 1, path1, path2, 0, 999999999, 0, 999999999, true];;
+    let params = [nCanali * 1, path1, path2, 0, 999999999, 0, 999999999, true];
+    // Loading bar
+    $("#loadingBar").removeClass("hidden");
+    $(".progress-bar").animate({
+      width: "100%",
+    }, 120000);
+    // Lancio il programma
     child(executablePath, params, function (err, fileData) {
       dataFile = fs.readFileSync("result.txt", 'ascii');
       if (err) console.log("ERRORE: " + err)
@@ -60,13 +95,7 @@ $("#createDataButton").on("click", function (e) {
         	coloring: 'heatmap'
         },*/
         type: 'heatmap',
-        colorscale: [
-          [0, 'rgb(200,200,255)'],
-          [0.01, 'rgb(0, 0, 255)'],
-          [0.25, 'rgb(0, 255, 0)'],
-          [0.5, 'rgb(200,55,0)'],
-          [1, 'rgb(255,0,0)']
-        ]
+        colorscale: myColorScale
       }];
 
       let xAxisTemplate = {
@@ -90,8 +119,14 @@ $("#createDataButton").on("click", function (e) {
         dragmode: 'select'
       };
       Plotly.newPlot(dataVis, data, layout, {
-        displayModeBar: false
+        displayModeBar: true
       });
+      $(".modebar").addClass("hidden");
+      // Loading bar
+      $("#loadingBar").addClass("hidden");
+      $(".progress-bar").animate({
+        width: "0%",
+      }, 1);
       // Logica di selezione
       dataVis.on('plotly_selected', (eventData) => {
         nCanali = $("#nCanali").val() || 1000;
@@ -107,11 +142,11 @@ $("#createDataButton").on("click", function (e) {
         updateMatrix(x1, x2, y1, y2, nCanali, path1, path2);
         $(".zoomlayer").addClass("hidden");
       });
-      $("#drawButton").html("Reset")
-      //Refresh the target selection frame
-      dataVis.on('plotly_click', function (e) {
+      dataVis.on('plotly_selecting', (eventData) => {
         $(".zoomlayer").removeClass("hidden");
       });
+      $("#drawButton").html("Reset");
+      alert("Done!");
     });
   }
 })
@@ -136,6 +171,26 @@ $("#drawButton").on("click", function (e) {
     xData = dataLines.map(x => x.split(" ")[0] * 1);
     yData = dataLines.map(x => x.split(" ")[1] * 1);
     zData = dataLines.map(x => x.split(" ")[2] * 1);
+    let xFitData = {};
+    let yFitData = {};
+    for (let i = 0; i < dataLines.length; i++) {
+      let xValue = dataLines[i].split(" ")[0] * 1;
+      let yValue = dataLines[i].split(" ")[1] * 1;
+      let zValue = dataLines[i].split(" ")[2] * 1;
+      if (!xFitData.hasOwnProperty(xValue)) {
+        xFitData[xValue] = 0;
+      }
+      if (!yFitData.hasOwnProperty(yValue)) {
+        yFitData[yValue] = 0;
+      }
+      if (!isNaN(zValue)) {
+        xFitData[xValue] += zValue;
+        yFitData[yValue] += zValue;
+      }
+    }
+    // Draw the fit for x data
+    drawFitGraph(xFitData, "x");
+    drawFitGraph(yFitData, "y");
     // I'll draw the matrix
     let data = [{
       x: xData,
@@ -150,13 +205,7 @@ $("#drawButton").on("click", function (e) {
       	coloring: 'heatmap'
       },*/
       type: 'heatmap',
-      colorscale: [
-        [0, 'rgb(200,200,255)'],
-        [0.01, 'rgb(0, 0, 255)'],
-        [0.25, 'rgb(0, 255, 0)'],
-        [0.5, 'rgb(200,55,0)'],
-        [1, 'rgb(255,0,0)']
-      ]
+      colorscale: myColorScale
     }];
 
     let xAxisTemplate = {
@@ -180,8 +229,9 @@ $("#drawButton").on("click", function (e) {
       dragmode: 'select'
     };
     Plotly.newPlot(dataVis, data, layout, {
-      displayModeBar: false
+      displayModeBar: true
     });
+    $(".modebar").addClass("hidden");
     // Logica di selezione
     dataVis.on('plotly_selected', (eventData) => {
       nCanali = $("#nCanali").val() || 1000;
@@ -197,11 +247,10 @@ $("#drawButton").on("click", function (e) {
       updateMatrix(x1, x2, y1, y2, nCanali, path1, path2);
       $(".zoomlayer").addClass("hidden");
     });
-    $("#drawButton").html("Reset")
-    //Refresh the target selection frame
-    dataVis.on('plotly_click', function (e) {
+    dataVis.on('plotly_selecting', (eventData) => {
       $(".zoomlayer").removeClass("hidden");
     });
+    $("#drawButton").html("Reset")
   });
 })
 
@@ -216,29 +265,49 @@ $("#updateChannels").on("click", function (e) {
 
 // Invert colors
 let inverted = false;
-$("#invertColor").on("click", function (e) {
+$("#invertColor").change(function (e) {
   if (inverted) {
     $(".nsewdrag").css('fill', 'transparent');
-    dataVis.data[0].colorscale = [
-      [0, 'rgb(200,200,255)'],
-      [0.01, 'rgb(0, 0, 255)'],
-      [0.25, 'rgb(0, 255, 0)'],
-      [0.5, 'rgb(200,55,0)'],
-      [1, 'rgb(255,0,0)']
-    ]
+    dataVis.data[0].colorscale = myColorScale;
     Plotly.redraw(dataVis);
+    $(".modebar").addClass("hidden");
   } else {
     $(".nsewdrag").css('fill', 'darkblue');
-    dataVis.data[0].colorscale = [
-      [0, 'rgb(255,0,0)']
-      [0.01, 'rgb(200,55,0)'],
-      [0.25, 'rgb(0, 255, 0)'],
-      [0.5, 'rgb(0, 0, 255)'],
-      [1, 'rgb(200,200,255)']
-    ]
+    dataVis.data[0].colorscale = myInvertedColorScale;
     Plotly.redraw(dataVis);
+    $(".modebar").addClass("hidden");
   }
   inverted = !inverted;
+});
+
+// Invert axis
+$("#invertAxes").change(function (e) {
+  let numeroCanali = $("#nCanali").val() || 1000;
+  let xAxisTemplate = {
+    range: [0, numeroCanali],
+    showgrid: true,
+    zeroline: true,
+    linecolor: 'black',
+    showticklabels: true,
+    ticks: ''
+  };
+  let yAxisTemplate = {
+    showgrid: true,
+    zeroline: true,
+    linecolor: 'black',
+    showticklabels: true,
+    ticks: ''
+  };
+  let placeholder = dataVis.data[0].x;
+  dataVis.data[0].x = dataVis.data[0].y;
+  dataVis.data[0].y = placeholder;
+  dataVis.layout = {
+    xaxis: yAxisTemplate,
+    yaxis: xAxisTemplate,
+    dragmode: 'select'
+  };
+  Plotly.redraw(dataVis);
+  $(".modebar").addClass("hidden");
 });
 
 // Update the matrix plot
@@ -254,6 +323,10 @@ function updateMatrix(x1, x2, y1, y2, numeroCanali, primoPath, secondoPath, useP
     console.log("Loaded");
     dataLines = dataFile.split("\n");
     metaData = dataLines.shift().split(" ");
+    let graphX1 = fromChannel(x1, interval, min);
+    let graphX2 = fromChannel(x2, interval, min);
+    let graphY1 = fromChannel(y1, interval, min);
+    let graphY2 = fromChannel(y2, interval, min);
     interval = metaData[0] * 1;
     min = metaData[1] * 1;
     xData = dataLines.map(x => x.split(" ")[0] * 1);
@@ -283,10 +356,47 @@ function updateMatrix(x1, x2, y1, y2, numeroCanali, primoPath, secondoPath, useP
       dragmode: 'select'
     };
     Plotly.redraw(dataVis);
+    $(".modebar").addClass("hidden");
   });
+}
+
+$("#saveMatrix").on("click", function(e){
+    $("[data-title='Download plot as a png']")[0].click();
+});
+$("#saveX").on("click", function(e){
+    $("[data-title='Download plot as a png']")[1].click();
+});
+$("#saveY").on("click", function(e){
+    $("[data-title='Download plot as a png']")[2].click();
+});
+
+function drawFitGraph(fitData, id) {
+  fitData = Object.keys(fitData).map(key => fitData[key])
+  let trace = {
+    x: [...Array(fitData.length).keys()],
+    y: fitData,
+    type: 'scatter'
+  };
+  let layout = {};
+  let data = [trace];
+  if (id == "x"){
+    Plotly.newPlot('xPlotVis', data, layout, {
+      displayModeBar: true
+    });
+    $(".modebar").addClass("hidden");
+  }
+  else if (id == "y")
+    Plotly.newPlot('yPlotVis', data, layout, {
+      displayModeBar: true
+    });
+    $(".modebar").addClass("hidden");
 }
 
 // reutrn the real channel
 function toChannel(x, interval, min) {
   return Math.floor(x * interval + min);
+}
+// return the graph channel
+function fromChannel(x, interval, min) {
+  return Math.floor((x - min) / interval);
 }

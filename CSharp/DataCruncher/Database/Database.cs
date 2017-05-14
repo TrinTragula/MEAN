@@ -132,7 +132,7 @@ namespace DataCruncher.Cruncher
                 {
                     for (var k = 0; k < result.GetLength(1); k++)
                     {
-                        if (result[j, k] != 0)
+                        if (result[j, k] != 0 && k != 0)
                         {
                             writetext.WriteLine("{0} {1} {2}", j, k, result[j, k]);
                             commandCreate.Parameters.AddWithValue("@P0", j);

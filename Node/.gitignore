@@ -243,3 +243,9 @@ ModelManifest.xml
 
 # node
 node-modules
+
+# electron published stuff
+tesi-win*
+
+# sqlite
+*.sqlite

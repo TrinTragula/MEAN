@@ -17,6 +17,11 @@ body {
     width: 50%;
 }
 
+.progress.active .progress-bar {
+    -webkit-transition: none !important;
+    transition: none !important;
+}
+
 .form-group {
     margin-bottom: 0;
 }
