@@ -9,8 +9,19 @@
 </head>
 
 <body>
-  <div class="row" style="width: 99%">
+  <div class="row " style="width: 99%">
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#matrix">Matrix</a></li>
+      <li><a data-toggle="tab" href="#plotX">Plot X</a></li>
+      <li><a data-toggle="tab" href="#plotY">Plot Y</a></li>
+      <li><a data-toggle="tab" href="#importNewData">Importa/Salva</a></li>
+    </ul>
     <div class="col-sm-5">
+      <br>
+      <div id="loadingBar" class="progress progress-striped active hidden">
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width: 0%">
+        </div>
+      </div>
       <fieldset class="input-group-vertical">
         <div class="input-group tomakesmaller" style="width: 50%">
           <input class="form-control" id="nCanali" type="number" value="1000">
@@ -18,22 +29,48 @@
           	<button id="updateChannels" class="btn btn-default btn-sm" type="button">Canali</button>
           </span>
         </div>
+        <br>
+        <label><input type="checkbox" id="invertColor" > Inverti colori</label><br>
+        <label><input type="checkbox" id="invertAxes" > Inverti assi</label>
       </fieldset>
-      <div id="drawButton" type="button" class="btn btn-default">Crea</div>
-      <br>
-      <br>
-      <div id="invertColor" type="button" class="btn btn-default">Inverti colori</div>
-      <div id="newDataButton" type="button" class="btn btn-default">Importa nuovi dati..</div>
-      <div id="newData" class="hidden newDataDiv">
-        <span id="newDataText">Crea nuovo database</span>
-        <input id="file1" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
-        <input id="file2" type="file" class="filestyle" data-buttonText="&nbsp;File 2" data-size="sm">
-        <div id="createDataButton" type="button" class="btn btn-default">Importa</div>
-        <!--<input id="file3" type="file" class="filestyle" data-buttonText="&nbsp;Data&nbsp;" data-size="sm">-->
+      <span>Save as png:</span>
+      <div class="btn-group">
+        <div type="button" class="btn btn-sm btn-default" id="saveMatrix">Matrix</div>
+        <div type="button" class="btn btn-sm btn-default" id="saveX">Plot x</div>
+        <div type="button" class="btn btn-sm btn-default" id="saveY">Plot y</div>
       </div>
+      <br><br>
+      <div id="drawButton" type="button" class="btn btn-success">Crea</div>
     </div>
     <div class="col-sm-7">
-      <div id="dataVis" style="width: 99%"></div>
+      <div class="tab-content" style="width: 99%">
+        <div id="matrix" class="tab-pane fade in active">
+          <div id="dataVis"></div>
+        </div>
+        <div id="plotX" class="tab-pane fade">
+          <div id="xPlotVis"></div>
+        </div>
+        <div id="plotY" class="tab-pane fade">
+          <div id="yPlotVis"></div>
+        </div>
+        <div id="importNewData" class="tab-pane fade">
+          <br>
+          <div>
+            <div id="saveDb" type="button" class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span>&nbsp;Salva database attuale </div>
+          </div>
+          <hr>
+          <div id="newDataText">Crea nuovo database</div>
+          <input id="file1" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
+          <input id="file2" type="file" class="filestyle" data-buttonText="&nbsp;File 2" data-size="sm">
+          <div id="createDataButton" type="button" class="btn btn-default">Importa</div>
+          <br>
+          <hr>
+          <div id="newDataText">Importa database esistente</div>
+          <input id="dbFile" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
+          <div id="importDbButton" type="button" class="btn btn-default">Importa</div>
+          <!--<input id="file3" type="file" class="filestyle" data-buttonText="&nbsp;Data&nbsp;" data-size="sm">-->
+        </div>
+      </div>
     </div>
   </div>
   <script>
