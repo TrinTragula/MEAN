@@ -246,6 +246,9 @@ node-modules
 
 # electron published stuff
 tesi-win*
+tesi-lin*
+coincidence-win*
+coincidence-lin*
 
 # sqlite
 *.sqlite

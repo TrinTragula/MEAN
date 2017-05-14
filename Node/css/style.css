@@ -1,0 +1,42 @@
+body {
+    margin: 15px;
+}
+
+.input-group-vertical {
+    margin-bottom: 10px;
+}
+
+.tomakesmaller .form-control {
+    height: 30px;
+    border-radius: 0;
+}
+
+.newDataDiv {
+    border: solid black 1px;
+    padding: 10px;
+    width: 50%;
+}
+
+.progress.active .progress-bar {
+    -webkit-transition: none !important;
+    transition: none !important;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-group:not(:last-child) .form-control:not(:focus) {
+    border-bottom-color: transparent;
+}
+
+.form-group:first-child .form-control {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.form-group:last-child .form-control {
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    top: -2px;
+}
