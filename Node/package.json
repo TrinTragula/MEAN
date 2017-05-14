@@ -1,14 +1,14 @@
 {
-  "name": "tesi",
-  "version": "1.0.0",
-  "description": "Prova di programma per tesi",
+  "name": "coincidence",
+  "version": "0.0.1",
+  "description": "A tool to plot and view coincidence data.",
   "main": "main.js",
   "scripts": {
     "start": "electron main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Daniele Scarinci",
+  "license": "MIT",
   "dependencies": {
     "electron-prebuilt": "^1.4.13",
     "jquery": "^3.2.1",

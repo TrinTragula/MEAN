@@ -12,7 +12,7 @@ app.on('ready', () => {
     win = new BrowserWindow({
         width: 1200,
         height: 850,
-        icon: './icon.png'
+        icon: './icon.ico'
     });
     //win.maximize()
     win.loadURL(`file://${__dirname}/index.html`);
