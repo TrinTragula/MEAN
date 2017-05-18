@@ -40,3 +40,14 @@ body {
     border-bottom-left-radius: 0px;
     top: -2px;
 }
+
+.box {
+    border: solid black 1px;
+    padding: 9px;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid #ddd;
+    font: menu;
+    font-size: medium;
+}

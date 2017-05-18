@@ -26,12 +26,12 @@
         <div class="input-group tomakesmaller" style="width: 50%">
           <input class="form-control" id="nCanali" type="number" value="1000">
           <span class="input-group-btn">
-          	<button id="updateChannels" class="btn btn-default btn-sm" type="button">Canali</button>
+          	<button id="updateChannels" class="btn btn-default btn-sm" type="button">Channels</button>
           </span>
         </div>
         <br>
-        <label><input type="checkbox" id="invertColor" > Inverti colori</label><br>
-        <label><input type="checkbox" id="invertAxes" > Inverti assi</label>
+        <label><input type="checkbox" id="invertColor" > Invert colors</label><br>
+        <label><input type="checkbox" id="invertAxes" > Invert axes</label>
       </fieldset>
       <span>Save as png:</span>
       <div class="btn-group">
@@ -40,7 +40,7 @@
         <div type="button" class="btn btn-sm btn-default" id="saveY">Plot y</div>
       </div>
       <br><br>
-      <div id="drawButton" type="button" class="btn btn-success">Crea</div>
+      <div id="drawButton" type="button" class="btn btn-success">Create</div>
     </div>
     <div class="col-sm-7">
       <div class="tab-content" style="width: 99%">
@@ -49,6 +49,12 @@
         </div>
         <div id="plotX" class="tab-pane fade">
           <div id="xPlotVis"></div>
+          <div id="pickSelector" type="button" class="btn btn-sm btn-default hidden">Select peaks</div>
+          <div id="selectedPeaksBox" class="hidden box">
+            <div id="selectedPeaksBoxTitle">Selected peaks: </div>
+            <br>
+            <div id="doFit" type="button" class="btn btn-xs btn-default">Do the fit (TBD)</div>
+          </div>
         </div>
         <div id="plotY" class="tab-pane fade">
           <div id="yPlotVis"></div>

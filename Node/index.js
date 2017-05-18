@@ -30,9 +30,11 @@ const myInvertedColorScale = [
 ];
 
 const dataVis = document.getElementById('dataVis');
-const plotVis = document.getElementById('plotVis');
+const xPlotVis = document.getElementById('xPlotVis');
+const yPlotVis = document.getElementById('yPlotVis');
 let firstTime = true;
 let x1, x2, y1, y2, interval, min;
+let isPickingAllowed = false;
 
 // Importa vecchio db
 $("#importDbButton").on("click", function (e) {
@@ -52,7 +54,6 @@ $("#saveDb").on("click", function (e) {
   let content = fs.readFileSync("coincidenze_vere.sqlite");
   main.saveFile(content);
 });
-
 
 // Create data button importing from files
 $("#createDataButton").on("click", function (e) {
@@ -151,6 +152,7 @@ $("#createDataButton").on("click", function (e) {
   }
 })
 
+// Clcik on create
 $("#drawButton").on("click", function (e) {
   // frist load and reset logic
   nCanali = $("#nCanali").val() || 1000;
@@ -251,6 +253,7 @@ $("#drawButton").on("click", function (e) {
       $(".zoomlayer").removeClass("hidden");
     });
     $("#drawButton").html("Reset")
+    $("#pickSelector").removeClass("hidden");
   });
 })
 
@@ -310,6 +313,31 @@ $("#invertAxes").change(function (e) {
   $(".modebar").addClass("hidden");
 });
 
+// Salvataggio immagini
+$("#saveMatrix").on("click", function (e) {
+  $("[data-title='Download plot as a png']")[0].click();
+});
+$("#saveX").on("click", function (e) {
+  $("[data-title='Download plot as a png']")[1].click();
+});
+$("#saveY").on("click", function (e) {
+  $("[data-title='Download plot as a png']")[2].click();
+});
+
+// Selezione picchi
+$("#pickSelector").on("click", function (e) {
+  let self = $(this);
+  if (self.html() == "Select peaks") {
+    isPickingAllowed = true;
+    self.html("Stop selecting peaks");
+    $("#selectedPeaksBox").removeClass("hidden");
+  } else {
+    isPickingAllowed = false;
+    self.html("Select peaks");
+    $("#selectedPeaksBox").addClass("hidden");
+  }
+});
+
 // Update the matrix plot
 function updateMatrix(x1, x2, y1, y2, numeroCanali, primoPath, secondoPath, useParameters = true, overwrite = false) {
   let parameters;
@@ -360,16 +388,7 @@ function updateMatrix(x1, x2, y1, y2, numeroCanali, primoPath, secondoPath, useP
   });
 }
 
-$("#saveMatrix").on("click", function(e){
-    $("[data-title='Download plot as a png']")[0].click();
-});
-$("#saveX").on("click", function(e){
-    $("[data-title='Download plot as a png']")[1].click();
-});
-$("#saveY").on("click", function(e){
-    $("[data-title='Download plot as a png']")[2].click();
-});
-
+// Draw the linear plots
 function drawFitGraph(fitData, id) {
   fitData = Object.keys(fitData).map(key => fitData[key])
   let trace = {
@@ -379,17 +398,24 @@ function drawFitGraph(fitData, id) {
   };
   let layout = {};
   let data = [trace];
-  if (id == "x"){
+  if (id == "x") {
     Plotly.newPlot('xPlotVis', data, layout, {
-      displayModeBar: true
+      displayModeBar: true,
+      margin:{
+       t: 0,
+       b: 0 
+      },
     });
     $(".modebar").addClass("hidden");
-  }
-  else if (id == "y")
+    xPlotVis.on('plotly_click', (eventData) => {
+        newPeakPoint(eventData.points[0].x, eventData.points[0].x);
+      });
+  } else if (id == "y"){
     Plotly.newPlot('yPlotVis', data, layout, {
       displayModeBar: true
     });
     $(".modebar").addClass("hidden");
+  }
 }
 
 // reutrn the real channel
@@ -399,4 +425,12 @@ function toChannel(x, interval, min) {
 // return the graph channel
 function fromChannel(x, interval, min) {
   return Math.floor((x - min) / interval);
+}
+
+let peakPoint = []
+// adds a peak point to the list
+function newPeakPoint(x, y){
+  if (isPickingAllowed){
+    $("#selectedPeaksBoxTitle").append( "<div>X: " + x + " Y: " + y + "</div>" );
+  } else return;
 }
