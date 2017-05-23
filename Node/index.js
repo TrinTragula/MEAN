@@ -35,6 +35,7 @@ const yPlotVis = document.getElementById('yPlotVis');
 let firstTime = true;
 let x1, x2, y1, y2, interval, min;
 let isPickingAllowed = false;
+let wasResetted = false;
 
 // Importa vecchio db
 $("#importDbButton").on("click", function (e) {
@@ -72,6 +73,7 @@ $("#createDataButton").on("click", function (e) {
     }, 120000);
     // Lancio il programma
     child(executablePath, params, function (err, fileData) {
+      wasResetted = true;
       dataFile = fs.readFileSync("result.txt", 'ascii');
       if (err) console.log("ERRORE: " + err)
       console.log("Loaded");
@@ -130,6 +132,7 @@ $("#createDataButton").on("click", function (e) {
       }, 1);
       // Logica di selezione
       dataVis.on('plotly_selected', (eventData) => {
+        wasResetted = false;
         nCanali = $("#nCanali").val() || 1000;
         path1 = $("#path1").val() || path1;
         path2 = $("#path2").val() || path2;
@@ -163,6 +166,7 @@ $("#drawButton").on("click", function (e) {
   console.log(path1, path2);
   let params = [nCanali];
   child(executablePath, params, function (err, fileData) {
+    wasResetted = true;
     dataFile = fs.readFileSync("result.txt", 'ascii');
     if (err) console.log("ERRORE: " + err)
     console.log("Loaded");
@@ -236,6 +240,7 @@ $("#drawButton").on("click", function (e) {
     $(".modebar").addClass("hidden");
     // Logica di selezione
     dataVis.on('plotly_selected', (eventData) => {
+      wasResetted = false;
       nCanali = $("#nCanali").val() || 1000;
       path1 = $("#path1").val() || path1;
       path2 = $("#path2").val() || path2;
@@ -260,7 +265,7 @@ $("#drawButton").on("click", function (e) {
 // Update the current image channel resolution
 $("#updateChannels").on("click", function (e) {
   nCanali = $("#nCanali").val() || 1000;
-  if (x1 && x2 && y1 && y2)
+  if (x1 && x2 && y1 && y2 && !wasResetted)
     updateMatrix(x1, x2, y1, y2, nCanali, path1, path2);
   else
     updateMatrix(x1, x2, y1, y2, nCanali, path1, path2, false);
