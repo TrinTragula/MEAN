@@ -12,26 +12,57 @@
   <div class="row " style="width: 99%">
     <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#matrix">Matrix</a></li>
-      <li><a data-toggle="tab" href="#plotX">Plot X</a></li>
-      <li><a data-toggle="tab" href="#plotY">Plot Y</a></li>
-      <li><a data-toggle="tab" href="#importNewData">Importa/Salva</a></li>
+      <li><a data-toggle="tab" href="#plotX">Projection X</a></li>
+      <li><a data-toggle="tab" href="#plotY">Projection Y</a></li>
+      <li><a data-toggle="tab" href="#importNewData">Import/Save</a></li>
     </ul>
-    <div class="col-sm-5">
+    <div class="col-sm-3">
       <br>
       <div id="loadingBar" class="progress progress-striped active hidden">
         <div class="progress-bar progress-bar-success" role="progressbar" style="width: 0%">
         </div>
       </div>
       <fieldset class="input-group-vertical">
-        <div class="input-group tomakesmaller" style="width: 50%">
-          <input class="form-control" id="nCanali" type="number" value="1000">
-          <span class="input-group-btn">
-          	<button id="updateChannels" class="btn btn-default btn-sm" type="button">Channels</button>
-          </span>
+        <div class="input-group tomakesmaller">
+          <table>
+            <tr>
+              <td>
+                <label>X</label>
+              </td>
+              <td>
+                <input style="width: inherit;" type="range" id="nCanaliXSlider" value="1000" min="100" max="3200" step="100" oninput="channelUpdate('X',value)">
+              </td>
+              <td style="width: 10px;"></td>
+              <td>
+                <input style="width: 45px; border-radius: 1px;" id="nCanaliX" type="text" value="1000" oninput="channelUpdate('XSlider',value)">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Y</label>
+              </td>
+              <td>
+                <input style="width: inherit;" type="range" id="nCanaliYSlider" value="1000" min="100" max="3200" step="100" oninput="channelUpdate('Y',value)">
+              </td>
+              <td style="width: 10px;"></td>
+              <td>
+                <input style="width: 45px; border-radius: 1px;" id="nCanaliY" type="text" value="1000" oninput="channelUpdate('YSlider',value)">
+              </td>
+            </tr>
+            <tr>
+              <td> <label>Binning:<label></td>
+              <td>
+                4&nbsp;<input name="binning" type="radio" value="8000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
+                8&nbsp;<input name="binning" type="radio" value="4000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
+                16&nbsp;<input name="binning" type="radio" value="2000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
+                32&nbsp;<input name="binning" type="radio" value="1000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
+              </td>
+            </tr>
+          </table>
         </div>
         <br>
         <label><input type="checkbox" id="invertColor" > Invert colors</label><br>
-        <label><input type="checkbox" id="invertAxes" > Invert axes</label>
+                <label><input type="checkbox" id="invertAxes" > Invert axes</label>
       </fieldset>
       <span>Save as png:</span>
       <div class="btn-group">
@@ -40,55 +71,67 @@
         <div type="button" class="btn btn-sm btn-default" id="saveY">Plot y</div>
       </div>
       <br><br>
-      <div id="drawButton" type="button" class="btn btn-success">Create</div>
-    </div>
-    <div class="col-sm-7">
-      <div class="tab-content" style="width: 99%">
-        <div id="matrix" class="tab-pane fade in active">
-          <div id="dataVis"></div>
-        </div>
-        <div id="plotX" class="tab-pane fade">
-          <div id="xPlotVis"></div>
-          <div id="pickSelector" type="button" class="btn btn-sm btn-default hidden">Select peaks</div>
-          <div id="selectedPeaksBox" class="hidden box">
-            <div id="selectedPeaksBoxTitle">Selected peaks: </div>
+      <div class="btn-group">
+        <div id="startGatingX" type="button" class="btn btn-default">Gate</div>
+        <div id="updateChannels" type="button" class="btn btn-default" type="button">Update</div>
+        <div id="drawButton" type="button" class="btn btn-success">Create</div>
+      </div>
+      </div>
+      <div class="col-sm-9">
+        <div class="tab-content" style="width: 99%">
+          <div id="matrix" class="tab-pane fade in active">
+            <div id="dataVis"></div>
+            <div id="gatePlotVis"></div>
+          </div>
+          <div id="plotX" class="tab-pane fade">
+            <div id="xPlotVis"></div>
+            <div id="pickSelector" type="button" class="btn btn-sm btn-default hidden">Select peaks</div>
+            <div id="selectedPeaksBox" class="hidden box">
+              <div id="selectedPeaksBoxTitle">Selected peaks: </div>
+              <br>
+              <div id="doFit" type="button" class="btn btn-xs btn-default">Do the fit (TBD)</div>
+            </div>
+          </div>
+          <div id="plotY" class="tab-pane fade">
+            <div id="yPlotVis"></div>
+          </div>
+          <div id="importNewData" class="tab-pane fade">
             <br>
-            <div id="doFit" type="button" class="btn btn-xs btn-default">Do the fit (TBD)</div>
+            <div>
+              <div id="saveDb" type="button" class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span>&nbsp;Save current dataset </div>
+            </div>
+            <hr>
+            <div id="newDataText">Create new dataset</div>
+            <input id="file1" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
+            <input id="file2" type="file" class="filestyle" data-buttonText="&nbsp;File 2" data-size="sm">
+            <div id="createDataButton" type="button" class="btn btn-default">Import</div>
+            <br>
+            <hr>
+            <div id="newDataText">Import existing dataset</div>
+            <input id="dbFile" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
+            <div id="importDbButton" type="button" class="btn btn-default">Import</div>
+            <!--<input id="file3" type="file" class="filestyle" data-buttonText="&nbsp;Data&nbsp;" data-size="sm">-->
           </div>
-        </div>
-        <div id="plotY" class="tab-pane fade">
-          <div id="yPlotVis"></div>
-        </div>
-        <div id="importNewData" class="tab-pane fade">
-          <br>
-          <div>
-            <div id="saveDb" type="button" class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span>&nbsp;Salva database attuale </div>
-          </div>
-          <hr>
-          <div id="newDataText">Crea nuovo database</div>
-          <input id="file1" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
-          <input id="file2" type="file" class="filestyle" data-buttonText="&nbsp;File 2" data-size="sm">
-          <div id="createDataButton" type="button" class="btn btn-default">Importa</div>
-          <br>
-          <hr>
-          <div id="newDataText">Importa database esistente</div>
-          <input id="dbFile" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
-          <div id="importDbButton" type="button" class="btn btn-default">Importa</div>
-          <!--<input id="file3" type="file" class="filestyle" data-buttonText="&nbsp;Data&nbsp;" data-size="sm">-->
         </div>
       </div>
     </div>
-  </div>
-  <script>
-    window.jQuery = window.$ = require('jquery');
-  </script>
-  <script type="text/javascript" src="js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="js/plotly.min.js"></script>
-  <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
-  </script>
-  <script>
-    require('./index.js');
-  </script>
+    <script>
+      window.jQuery = window.$ = require('jquery');
+
+      function channelUpdate(x, value) {
+        $('#nCanali' + x).val(value);
+      }
+    </script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plotly.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
+    </script>
+    <script>
+      require('./helpers.js');
+    </script>
+    <script>
+      require('./index.js');
+    </script>
 </body>
 
 </html>

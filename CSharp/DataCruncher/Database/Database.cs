@@ -41,11 +41,17 @@ namespace DataCruncher.Cruncher
             try
             {
                 command1.ExecuteNonQuery();
+                command1.CommandText = "DROP TABLE gate";
+                command1.ExecuteNonQuery();
             }
             catch { }
             command1.CommandText = "CREATE TABLE matrix (channel INT, channel2 INT, count INT)";
             command1.ExecuteNonQuery();
             command1.CommandText = "CREATE INDEX IDMLookup ON matrix(channel, channel2, count)";
+            command1.ExecuteNonQuery();
+            command1.CommandText = "CREATE TABLE gate (channel INT, count INT)";
+            command1.ExecuteNonQuery();
+            command1.CommandText = "CREATE INDEX IDMGateLookup ON gate(channel, count)";
             command1.ExecuteNonQuery();
 
         }
@@ -91,7 +97,7 @@ namespace DataCruncher.Cruncher
             return count;
         }
 
-        public void binCount(int nCanali, int xMin, int xMax, int yMin, int yMax)
+        public void binCount(int nCanaliX, int nCanaliY, int xMin, int xMax, int yMin, int yMax)
         {
             string sql = String.Format("SELECT * FROM data WHERE channel >= {0} AND channel <= {1} AND channel2 >= {2} AND channel2 <= {3}", xMin, xMax, yMin, yMax);
             SQLiteCommand command = new SQLiteCommand(sql, DbConnection);
@@ -107,10 +113,10 @@ namespace DataCruncher.Cruncher
             var xChanMin = GetXMin(xMin, xMax);
             var yChanMax = GetYMax(yMin, yMax);
             var yChanMin = GetYMin(yMin, yMax);
-            var xInterval = (xChanMax - xChanMin) / (double)nCanali;
-            var yInterval = (yChanMax - yChanMin) / (double)nCanali;
+            var xInterval = (xChanMax - xChanMin) / (double)nCanaliX;
+            var yInterval = (yChanMax - yChanMin) / (double)nCanaliY;
             var i = 0;
-            var result = new int[nCanali + 1, nCanali + 1];
+            var result = new int[nCanaliX + 1, nCanaliY + 1];
             Array.Clear(result, 0, result.Length);
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -132,7 +138,7 @@ namespace DataCruncher.Cruncher
                 {
                     for (var k = 0; k < result.GetLength(1); k++)
                     {
-                        if (result[j, k] != 0 && k != 0)
+                        if (result[j, k] != 0 && k != 0)//result[j, k] != 0 && per togliere tutti gli zeri
                         {
                             writetext.WriteLine("{0} {1} {2}", j, k, result[j, k]);
                             commandCreate.Parameters.AddWithValue("@P0", j);
@@ -212,6 +218,57 @@ namespace DataCruncher.Cruncher
 
                         }
                     }
+                }
+            }
+            trans.Commit();
+            sw.Stop();
+            Console.WriteLine(sw.Elapsed.Minutes + "Min(s) " + sw.Elapsed.Seconds + "Sec(s)");
+        }
+
+        public void GateCount(string axis, int left, int right, int nCanali)
+        {
+            string sql = axis == "x"
+                ? String.Format("SELECT * FROM data WHERE channel >= {0} AND channel <= {1}", left, right)
+                : String.Format("SELECT * FROM data WHERE channel2 >= {2} AND channel2 <= {3}", left, right);
+            SQLiteCommand command = new SQLiteCommand(sql, DbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+
+            string insertText = "INSERT INTO gate (channel, count) values (@P0,@P1)";
+            System.Data.SQLite.SQLiteCommand commandCreate = new System.Data.SQLite.SQLiteCommand(DbConnection);
+            SQLiteTransaction trans = DbConnection.BeginTransaction();
+            commandCreate.Transaction = trans;
+            commandCreate.CommandText = insertText;
+            
+            var max = axis == "x" ? GetYMax(0, Int32.MaxValue) : GetXMax(0, Int32.MaxValue);
+            var min = 0;
+            var interval = (max - min) / (double)nCanali;
+            var i = 0;
+            var result = new int[nCanali + 1];
+            Array.Clear(result, 0, result.Length);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            while (reader.Read())
+            {
+                if (i % 10000 == 0)
+                    Console.WriteLine("Scrivo valore numero:" + i);
+                i++;
+                var channel = axis == "x" ? (int)reader["channel2"] : (int)reader["channel"];
+                channel = getChannel(channel, min, interval);
+                result[channel] += 1;
+            }
+            using (StreamWriter writetext = new StreamWriter("gating.txt"))
+            {
+                writetext.WriteLine("{0} {1}", interval, min);
+                for (var j = 0; j < result.GetLength(0); j++)
+                {
+                    if (result[j] != 0)
+                    {
+                        writetext.WriteLine("{0} {1}", j, result[j]);
+                        commandCreate.Parameters.AddWithValue("@P0", j);
+                        commandCreate.Parameters.AddWithValue("@P1", result[j]);
+                        commandCreate.ExecuteNonQuery();
+                    }
+
                 }
             }
             trans.Commit();
