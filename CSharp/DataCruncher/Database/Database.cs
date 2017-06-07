@@ -229,7 +229,7 @@ namespace DataCruncher.Cruncher
         {
             string sql = axis == "x"
                 ? String.Format("SELECT * FROM data WHERE channel >= {0} AND channel <= {1}", left, right)
-                : String.Format("SELECT * FROM data WHERE channel2 >= {2} AND channel2 <= {3}", left, right);
+                : String.Format("SELECT * FROM data WHERE channel2 >= {0} AND channel2 <= {1}", left, right);
             SQLiteCommand command = new SQLiteCommand(sql, DbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
 

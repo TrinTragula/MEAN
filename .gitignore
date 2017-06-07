@@ -244,4 +244,4 @@ ModelManifest.xml
 # node
 node-modules
 *.sqlite
-*.sqlite
+*.txt
