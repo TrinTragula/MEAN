@@ -107,7 +107,7 @@ var Matrix = class Matrix {
         // Lancio il programma
         child(this.executablePath, params, function (err, fileData) {
             self.wasResetted = true;
-            dataFile = fs.readFileSync("result.txt", 'ascii');
+            let dataFile = fs.readFileSync("result.txt", 'ascii');
             if (err) console.log("ERRORE: " + err)
             console.log("Loaded");
             let dataLines = dataFile.split("\n");
@@ -131,7 +131,7 @@ var Matrix = class Matrix {
                 	coloring: 'heatmap'
                 },*/
                 type: 'heatmap',
-                colorscale: myColorScale
+                colorscale: self.myColorScale
             }];
 
             let layout = self.giveLayout(nCanaliX, nCanaliY);
@@ -145,10 +145,10 @@ var Matrix = class Matrix {
                 width: "0%",
             }, 1);
             // Logica di selezione
-            dataVis.on('plotly_selected', (eventData) => {
+            self.dataVis.on('plotly_selected', (eventData) => {
                 self.selecting(eventdata, path1, path2)
             });
-            dataVis.on('plotly_selecting', (eventData) => {
+            self.dataVis.on('plotly_selecting', (eventData) => {
                 $(".zoomlayer").removeClass("hidden");
             });
             $("#drawButton").html("Reset");
