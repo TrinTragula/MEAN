@@ -252,3 +252,4 @@ coincidence-lin*
 
 # sqlite
 *.sqlite
+*.txt

@@ -243,3 +243,5 @@ ModelManifest.xml
 
 # node
 node-modules
+*.sqlite
+*.txt

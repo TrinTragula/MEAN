@@ -12,6 +12,7 @@
   <div class="row " style="width: 99%">
     <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#matrix">Matrix</a></li>
+      <li class="hidden" id="gateTab"><a data-toggle="tab" href="#gate">Gate</a></li>
       <li><a data-toggle="tab" href="#plotX">Projection X</a></li>
       <li><a data-toggle="tab" href="#plotY">Projection Y</a></li>
       <li><a data-toggle="tab" href="#importNewData">Import/Save</a></li>
@@ -22,6 +23,13 @@
         <div class="progress-bar progress-bar-success" role="progressbar" style="width: 0%">
         </div>
       </div>
+      <div class="btn-group">
+        <div id="startGatingX" type="button" class="btn btn-default">Gate X</div>
+        <div id="startGatingY" type="button" class="btn btn-default">Gate Y</div>
+        <div id="updateChannels" type="button" class="btn btn-default" type="button">Update</div>
+        <div id="drawButton" type="button" class="btn btn-success">Create</div>
+      </div>
+      <br><br>
       <fieldset class="input-group-vertical">
         <div class="input-group tomakesmaller">
           <table>
@@ -52,8 +60,13 @@
             <tr>
               <td> <label>Binning:<label></td>
               <td>
-                4&nbsp;<input name="binning" type="radio" value="8000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
-                8&nbsp;<input name="binning" type="radio" value="4000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
+                &nbsp;4&nbsp;&nbsp;<input name="binning" type="radio" value="8000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
+                &nbsp;8&nbsp;&nbsp;<input name="binning" type="radio" value="4000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
                 16&nbsp;<input name="binning" type="radio" value="2000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
                 32&nbsp;<input name="binning" type="radio" value="1000" onclick="channelUpdate('X',value); channelUpdate('Y',value); channelUpdate('XSlider',value); channelUpdate('YSlider',value)">
               </td>
@@ -70,17 +83,13 @@
         <div type="button" class="btn btn-sm btn-default" id="saveX">Plot x</div>
         <div type="button" class="btn btn-sm btn-default" id="saveY">Plot y</div>
       </div>
-      <br><br>
-      <div class="btn-group">
-        <div id="startGatingX" type="button" class="btn btn-default">Gate</div>
-        <div id="updateChannels" type="button" class="btn btn-default" type="button">Update</div>
-        <div id="drawButton" type="button" class="btn btn-success">Create</div>
-      </div>
       </div>
       <div class="col-sm-9">
         <div class="tab-content" style="width: 99%">
           <div id="matrix" class="tab-pane fade in active">
             <div id="dataVis"></div>
+          </div>
+          <div id="gate" class="tab-pane fade">
             <div id="gatePlotVis"></div>
           </div>
           <div id="plotX" class="tab-pane fade">
