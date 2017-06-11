@@ -238,7 +238,7 @@ namespace DataCruncher.Cruncher
             SQLiteTransaction trans = DbConnection.BeginTransaction();
             commandCreate.Transaction = trans;
             commandCreate.CommandText = insertText;
-            
+
             var max = axis == "x" ? GetYMax(0, Int32.MaxValue) : GetXMax(0, Int32.MaxValue);
             var min = 0;
             var interval = (max - min) / (double)nCanali;
@@ -261,14 +261,10 @@ namespace DataCruncher.Cruncher
                 writetext.WriteLine("{0} {1}", interval, min);
                 for (var j = 0; j < result.GetLength(0); j++)
                 {
-                    if (result[j] != 0)
-                    {
-                        writetext.WriteLine("{0} {1}", j, result[j]);
-                        commandCreate.Parameters.AddWithValue("@P0", j);
-                        commandCreate.Parameters.AddWithValue("@P1", result[j]);
-                        commandCreate.ExecuteNonQuery();
-                    }
-
+                    writetext.WriteLine("{0} {1}", j, result[j]);
+                    commandCreate.Parameters.AddWithValue("@P0", j);
+                    commandCreate.Parameters.AddWithValue("@P1", result[j]);
+                    commandCreate.ExecuteNonQuery();
                 }
             }
             trans.Commit();

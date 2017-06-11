@@ -8,10 +8,12 @@ const formatter = d3.format('.2f');
 
 var Matrix = class Matrix {
 
-    constructor(element, elementX, elementY, executablePath, myColorScale, myInvertedColorScale) {
+    constructor(element, elementX, elementY, elementGate, executablePath, myColorScale, myInvertedColorScale) {
+        // Local variables
         this.dataVis = element;
         this.xPlotVis = elementX;
         this.yPlotVis = elementY;
+        this.gatePlotVis = elementGate;
         this.executablePath = executablePath;
         this.wasResetted = false;
         this.myColorScale = myColorScale;
@@ -27,6 +29,7 @@ var Matrix = class Matrix {
         this.y2;
     }
 
+    // Create the matrix from an already built dataset
     create(nCanaliX, nCanaliY, path1, path2) {
         let self = this;
         let params = ["matrix", nCanaliX, nCanaliY];
@@ -44,10 +47,10 @@ var Matrix = class Matrix {
             let zData = dataLines.map(x => x.split(" ")[2] * 1);
             let xFitData = {};
             let yFitData = {};
-            for (let i = 0; i < nCanaliX; i++) {
+            for (let i = 0; i <= nCanaliX; i++) {
                 xFitData[i] = 0;
             }
-            for (let i = 0; i < nCanaliY; i++) {
+            for (let i = 0; i <= nCanaliY; i++) {
                 yFitData[i] = 0;
             }
             for (let i = 0; i < dataLines.length; i++) {
@@ -59,6 +62,24 @@ var Matrix = class Matrix {
                     yFitData[yValue] += zValue;
                 }
             }
+            let xString = "";
+            for (let key in xFitData) {
+                let value = xFitData[key];
+                xString = xString.concat(`${key} ${value}\r\n`);
+            }
+            let yString = "";
+            for (let key in yFitData) {
+                let value = yFitData[key];
+                yString = yString.concat(`${key} ${value}\r\n`);
+            }
+            fs.writeFile("xResult.txt", xString, function (err) {
+                if (err)
+                    return console.log(err);
+            });
+            fs.writeFile("yResult.txt", yString, function (err) {
+                if (err)
+                    return console.log(err);
+            });
             // Draw the fit for x data
             self.drawFitGraph(xFitData, "x");
             self.drawFitGraph(yFitData, "y");
@@ -96,6 +117,7 @@ var Matrix = class Matrix {
         });
     }
 
+    // create the matrix from 2 txt files, which will build the dataset
     import (nCanaliX, nCanaliY, path1, path2) {
         let self = this;
         let params = ["matrix", nCanaliX * 1, nCanaliY * 1, path1, path2, 0, 999999999, 0, 999999999, true];
@@ -209,6 +231,7 @@ var Matrix = class Matrix {
         } else return;
     }
 
+    // Give the layout to the graphs
     giveLayout(numeroCanaliX, numeroCanaliY) {
         let self = this;
         let xAxisTemplate = {
@@ -268,6 +291,7 @@ var Matrix = class Matrix {
         });
     }
 
+    // Selecting the matrix zoom it with new values (don't lose precision)
     selecting(eventData, path1, path2) {
         let self = this;
         let nCanaliX = $("#nCanaliX").val() || 1000;
@@ -296,6 +320,7 @@ var Matrix = class Matrix {
         self.wasResetted = false;
     }
 
+    // Perform the gate on the selected interval
     doGating(id, nCanali) {
         let self = this;
         let params;
@@ -320,7 +345,7 @@ var Matrix = class Matrix {
                 let value = dataLines[i].split(" ")[0] * 1;
                 let count = dataLines[i].split(" ")[1] * 1;
                 if (!isNaN(count)) {
-                    gateData[i] += count;
+                    gateData[value] += count;
                 }
             }
             gateData = Object.keys(gateData).map(key => gateData[key])
@@ -354,7 +379,7 @@ var Matrix = class Matrix {
                 yaxis: yAxisTemplate
             };
             let data = [trace];
-            Plotly.newPlot('gatePlotVis', data, layout, {
+            Plotly.newPlot(self.gatePlotVis, data, layout, {
                 displayModeBar: true
             });
             $("#gateTab").removeClass("hidden");
@@ -365,15 +390,18 @@ var Matrix = class Matrix {
         });
     }
 
+    // Reset the colorscale of the matrix
     colorscale() {
         this.dataVis.data[0].colorscale = this.myColorScale;
         Plotly.redraw(dataVis);
     }
+    // Invert the colorscale of the matrix
     invertColorscale() {
         this.dataVis.data[0].colorscale = this.myInvertedColorScale;
         Plotly.redraw(dataVis);
     }
 
+    // Invert the axes of the matrix
     invertAxes() {
         let numeroCanaliX = $("#nCanaliX").val() || 1000;
         let numeroCanaliY = $("#nCanaliY").val() || 1000;
@@ -404,6 +432,7 @@ var Matrix = class Matrix {
         Plotly.redraw(dataVis);
     }
 
+    // Function which behaves like python's Range()
     range(start, stop, step) {
         if (typeof stop == 'undefined') {
 
@@ -430,6 +459,56 @@ var Matrix = class Matrix {
     // return the graph channel
     fromChannel(x, interval, min) {
         return Math.floor((x - min) / interval);
+    }
+
+    // remove the background from a plot
+    background(fileName, randomPoints, iterations) {
+        let self = this;
+        let params;
+        params = ["background", fileName, randomPoints, iterations];
+        child(self.executablePath, params, function (err, fileData) {
+            if (err) console.log("ERRORE: " + err);
+            let dataFile = fs.readFileSync(`${fileName}.txt`, 'ascii');
+            console.log("Loaded background removal");
+            let dataLines = dataFile.split("\n");
+            let plotData = {};
+            for (let i = 0; i < dataLines.length; i++) {
+                plotData[i] = 0;
+            }
+            for (let i = 0; i < dataLines.length; i++) {
+                let value = dataLines[i].split(" ")[0] * 1;
+                let count = dataLines[i].split(" ")[1] * 1;
+                if (!isNaN(count)) {
+                    plotData[value] += count;
+                }
+            }
+            plotData = Object.keys(plotData).map(key => plotData[key])
+            // Draw the fit for x data
+            let trace = {
+                x: [...Array(plotData.length).keys()],
+                y: plotData,
+                type: 'bar'
+            };
+            let data = [trace];
+            let vis;
+            //determine the vis
+            switch (fileName) {
+                case "xResult":
+                    vis = self.xPlotVis;
+                    break;
+                case "yResult":
+                    vis = self.yPlotVis;
+                    break;
+                case "gating":
+                    vis = self.gatePlotVis;
+                    break;
+                default:
+                    break;
+            }
+            // Redraw the fit
+            vis.data = data;
+            Plotly.redraw(vis);
+        });
     }
 }
 
