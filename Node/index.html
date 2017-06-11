@@ -83,6 +83,12 @@
         <div type="button" class="btn btn-sm btn-default" id="saveX">Plot x</div>
         <div type="button" class="btn btn-sm btn-default" id="saveY">Plot y</div>
       </div>
+      <br><br>
+      <div id="backgroundRemovalDiv" class="hidden">
+        <label>Sample points: <input name="bgPoints" id="bgPoints" type="number" value="100"/></label>
+        <label>Iterations: <input name="bgIterations" id="bgIterations" type="number" value="10"/></label> 
+        <div type="button" class="btn btn-sm btn-success" id="backgroundRemovalConfirm">Remove background</div>     
+      </div>
       </div>
       <div class="col-sm-9">
         <div class="tab-content" style="width: 99%">
@@ -91,9 +97,11 @@
           </div>
           <div id="gate" class="tab-pane fade">
             <div id="gatePlotVis"></div>
+            <div data-filename="gating" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
           </div>
           <div id="plotX" class="tab-pane fade">
             <div id="xPlotVis"></div>
+            <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
             <div id="pickSelector" type="button" class="btn btn-sm btn-default hidden">Select peaks</div>
             <div id="selectedPeaksBox" class="hidden box">
               <div id="selectedPeaksBoxTitle">Selected peaks: </div>
@@ -103,6 +111,7 @@
           </div>
           <div id="plotY" class="tab-pane fade">
             <div id="yPlotVis"></div>
+            <div data-filename="yResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
           </div>
           <div id="importNewData" class="tab-pane fade">
             <br>

@@ -30,7 +30,8 @@ const myInvertedColorScale = [
 const dataVis = document.getElementById('dataVis');
 const xPlotVis = document.getElementById('xPlotVis');
 const yPlotVis = document.getElementById('yPlotVis');
-let matrix = new Matrix(dataVis, xPlotVis, yPlotVis, executablePath, myColorScale, myInvertedColorScale);
+const gatePlotVis = document.getElementById('gatePlotVis');
+let matrix = new Matrix(dataVis, xPlotVis, yPlotVis, gatePlotVis, executablePath, myColorScale, myInvertedColorScale);
 
 // Create data button importing from files
 $("#createDataButton").on("click", function (e) {
@@ -43,6 +44,7 @@ $("#createDataButton").on("click", function (e) {
     if (!path1 || !path2) return;
     console.log(path1, path2);
     matrix.import(nCanaliX, nCanaliY, path1, path2);
+    $(".backgroundRemoval").removeClass("hidden");
   }
 })
 
@@ -57,6 +59,7 @@ $("#drawButton").on("click", function (e) {
   }
   console.log(path1, path2);
   matrix.create(nCanaliX, nCanaliY, path1, path2);
+  $(".backgroundRemoval").removeClass("hidden");
 })
 
 // Update the current image channel resolution
@@ -90,7 +93,21 @@ $("#invertAxes").change(function (e) {
   $(".modebar").addClass("hidden");
 });
 
+// Remove background
+$(".backgroundRemoval").on("click", function(e) {
+  let self = $(this);
+  $("#backgroundRemovalConfirm").data("filename", self.data("filename"));
+  $("#backgroundRemovalDiv").removeClass("hidden");
+});
 
+$("#backgroundRemovalConfirm").on("click", function(e) {
+  let self = $(this);
+  let fileName = self.data("filename");
+  let randomPoints = $("#bgPoints").val();
+  let iterations = $("#bgIterations").val();
+  matrix.background(fileName, randomPoints, iterations);
+  $("#backgroundRemovalDiv").addClass("hidden");
+});
 
 // Selezione picchi
 $("#pickSelector").on("click", function (e) {
