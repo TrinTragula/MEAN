@@ -510,6 +510,34 @@ var Matrix = class Matrix {
             Plotly.redraw(vis);
         });
     }
+
+    // Automatically get peaks from a plot
+    autoPeaks(fileName, epsilon, treshold) {
+        let self = this;
+        let params;
+        params = ["peaks", fileName, epsilon, treshold];
+        child(self.executablePath, params, function (err, fileData) {
+            if (err) console.log("ERRORE: " + err);
+            let dataFile = fs.readFileSync(`${fileName}_peaks.txt`, 'ascii');
+            console.log("Loaded peaks");
+            let dataLines = dataFile.split("\n");
+            let peaks = [];
+            for (var line of dataLines) {
+                var xValue = line.split(" ")[0];
+                var yValue = line.split(" ")[1];
+                if (xValue && yValue)
+                    peaks.push([xValue, yValue]);
+            }
+            console.log(peaks);
+            $("#foundPeaksBox" + fileName).empty();
+            $("#foundPeaksBox" + fileName).removeClass("hidden");
+            var index = 1;
+            for (var peak of peaks) {
+                $("#foundPeaksBox" + fileName).append(`<b>${index})</b>   <b>x:</b> ${peak[0]} <b>y:</b>${peak[1]} </br>`);
+                index++;
+            }
+        });
+    }
 }
 
 module.exports = Matrix;
