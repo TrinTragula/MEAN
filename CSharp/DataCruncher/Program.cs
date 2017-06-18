@@ -20,11 +20,12 @@ namespace DataCruncher
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
             // Argomenti di input
-            var mode = args.Length < 1 ? "background" : args[0];
+            var mode = args.Length < 1 ? "peaks" : args[0];
             if (mode == "matrix") Matrix(args);
             if (mode == "gate") Gate(args);
             if (mode == "background") RemoveBackground(args);
-           
+            if (mode == "peaks") GetPeaks(args);
+
             Console.WriteLine("Done!");
             #if DEBUG
                 Console.ReadLine();
@@ -88,6 +89,27 @@ namespace DataCruncher
             }).ToArray();
 
             Background.RemoveBackground(fileName, data, randomPoints, iterations);
+
+            return;
+        }
+
+        public static void GetPeaks(string[] args)
+        {
+            var fileName = args.Length < 2 ? "xResult" : args[1];
+            var epsilon = args.Length < 3 ? 50 : Int32.Parse(args[2]);
+            var treshold = args.Length < 4 ? 300 : Int32.Parse(args[3]);
+
+            string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
+            var data = lines.Aggregate(new List<int>(), (p, c) =>
+            {
+                var value = Int32.Parse(c.Split(' ')[1]);
+                p.Add(value);
+                return p;
+            }).ToArray();
+
+
+            var peaksFile = String.Format("{0}_peaks", fileName);
+            Peaks.GetPeaks(peaksFile, data, epsilon, treshold);
 
             return;
         }

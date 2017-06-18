@@ -86,8 +86,15 @@
       <br><br>
       <div id="backgroundRemovalDiv" class="hidden">
         <label>Sample points: <input name="bgPoints" id="bgPoints" type="number" value="100"/></label>
-        <label>Iterations: <input name="bgIterations" id="bgIterations" type="number" value="10"/></label> 
-        <div type="button" class="btn btn-sm btn-success" id="backgroundRemovalConfirm">Remove background</div>     
+        <label>Iterations: <input name="bgIterations" id="bgIterations" type="number" value="10"/></label>
+        <div type="button" class="btn btn-sm btn-warning" id="backgroundRemovalCancel">Cancel</div>
+        <div type="button" class="btn btn-sm btn-success" id="backgroundRemovalConfirm">Remove background</div>
+      </div>
+      <div id="autoPeaksDiv" class="hidden">
+        <label>Window: <input name="bgWindow" id="bgWindow" type="number" value="50"/></label>
+        <label>Treshold: <input name="bgTreshold" id="bgTreshold" type="number" value="300"/></label>
+        <div type="button" class="btn btn-sm btn-warning" id="autoPeaksCancel">Cancel</div>
+        <div type="button" class="btn btn-sm btn-success" id="autoPeaksConfirm">Get peaks</div>
       </div>
       </div>
       <div class="col-sm-9">
@@ -97,12 +104,24 @@
           </div>
           <div id="gate" class="tab-pane fade">
             <div id="gatePlotVis"></div>
-            <div data-filename="gating" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
+            <div class="btn-group">
+              <div data-filename="gating" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
+              <div data-filename="gating" type="button" class="btn btn-sm btn-default hidden autoPeaks">Get Peaks</div>
+            </div>
+            <div id="foundPeaksBoxgating" class="hidden box">
+              <div id="foundPeaksBoxTitle">Found peaks: </div>
+            </div>
           </div>
           <div id="plotX" class="tab-pane fade">
             <div id="xPlotVis"></div>
-            <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
-            <div id="pickSelector" type="button" class="btn btn-sm btn-default hidden">Select peaks</div>
+            <div class="btn-group">
+              <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
+              <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden autoPeaks">Get Peaks</div>
+              <div id="pickSelector" type="button" class="btn btn-sm btn-default hidden">Select peaks</div>
+            </div>
+            <div id="foundPeaksBoxxResult" class="hidden box">
+              <div id="foundPeaksBoxTitle">Found peaks: </div>
+            </div>
             <div id="selectedPeaksBox" class="hidden box">
               <div id="selectedPeaksBoxTitle">Selected peaks: </div>
               <br>
@@ -111,7 +130,13 @@
           </div>
           <div id="plotY" class="tab-pane fade">
             <div id="yPlotVis"></div>
-            <div data-filename="yResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
+            <div class="btn-group">
+              <div data-filename="yResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
+              <div data-filename="yResult" type="button" class="btn btn-sm btn-default hidden autoPeaks">Get Peaks</div>
+            </div>
+            <div id="foundPeaksBoxyResult" class="hidden box">
+              <div id="foundPeaksBoxTitle">Found peaks: </div>
+            </div>
           </div>
           <div id="importNewData" class="tab-pane fade">
             <br>

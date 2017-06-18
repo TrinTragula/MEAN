@@ -45,6 +45,7 @@ $("#createDataButton").on("click", function (e) {
     console.log(path1, path2);
     matrix.import(nCanaliX, nCanaliY, path1, path2);
     $(".backgroundRemoval").removeClass("hidden");
+    $(".autoPeaks").removeClass("hidden");
   }
 })
 
@@ -60,6 +61,7 @@ $("#drawButton").on("click", function (e) {
   console.log(path1, path2);
   matrix.create(nCanaliX, nCanaliY, path1, path2);
   $(".backgroundRemoval").removeClass("hidden");
+  $(".autoPeaks").removeClass("hidden");
 })
 
 // Update the current image channel resolution
@@ -109,6 +111,10 @@ $("#backgroundRemovalConfirm").on("click", function(e) {
   $("#backgroundRemovalDiv").addClass("hidden");
 });
 
+$("#backgroundRemovalCancel").on("click", function(e){
+  $("#backgroundRemovalDiv").addClass("hidden");
+});
+
 // Selezione picchi
 $("#pickSelector").on("click", function (e) {
   let self = $(this);
@@ -124,6 +130,27 @@ $("#pickSelector").on("click", function (e) {
   }
 });
 
+// Find peaks from plot
+$("#autoPeaksCancel").on("click", function(e){
+  $("#autoPeaksDiv").addClass("hidden");
+});
+
+$(".autoPeaks").on("click", function(e) {
+  let self = $(this);
+  $("#autoPeaksConfirm").data("filename", self.data("filename"));
+  $("#autoPeaksDiv").removeClass("hidden");
+});
+
+$("#autoPeaksConfirm").on("click", function(e) {
+  let self = $(this);
+  let fileName = self.data("filename");
+  let epsilon = $("#bgWindow").val();
+  let treshold = $("#bgTreshold").val();
+  matrix.autoPeaks(fileName, epsilon, treshold);
+  $("#autoPeaksDiv").addClass("hidden");
+});
+
+// Gating
 $("#startGatingX").on("click", function (e) {
   matrix.gatingX = true;
   alert("Select the area");
