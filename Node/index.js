@@ -96,13 +96,13 @@ $("#invertAxes").change(function (e) {
 });
 
 // Remove background
-$(".backgroundRemoval").on("click", function(e) {
+$(".backgroundRemoval").on("click", function (e) {
   let self = $(this);
   $("#backgroundRemovalConfirm").data("filename", self.data("filename"));
   $("#backgroundRemovalDiv").removeClass("hidden");
 });
 
-$("#backgroundRemovalConfirm").on("click", function(e) {
+$("#backgroundRemovalConfirm").on("click", function (e) {
   let self = $(this);
   let fileName = self.data("filename");
   let randomPoints = $("#bgPoints").val();
@@ -111,7 +111,7 @@ $("#backgroundRemovalConfirm").on("click", function(e) {
   $("#backgroundRemovalDiv").addClass("hidden");
 });
 
-$("#backgroundRemovalCancel").on("click", function(e){
+$("#backgroundRemovalCancel").on("click", function (e) {
   $("#backgroundRemovalDiv").addClass("hidden");
 });
 
@@ -131,17 +131,17 @@ $("#pickSelector").on("click", function (e) {
 });
 
 // Find peaks from plot
-$("#autoPeaksCancel").on("click", function(e){
+$("#autoPeaksCancel").on("click", function (e) {
   $("#autoPeaksDiv").addClass("hidden");
 });
 
-$(".autoPeaks").on("click", function(e) {
+$(".autoPeaks").on("click", function (e) {
   let self = $(this);
   $("#autoPeaksConfirm").data("filename", self.data("filename"));
   $("#autoPeaksDiv").removeClass("hidden");
 });
 
-$("#autoPeaksConfirm").on("click", function(e) {
+$("#autoPeaksConfirm").on("click", function (e) {
   let self = $(this);
   let fileName = self.data("filename");
   let epsilon = $("#bgWindow").val();
@@ -153,11 +153,12 @@ $("#autoPeaksConfirm").on("click", function(e) {
 // Gating
 $("#startGatingX").on("click", function (e) {
   matrix.gatingX = true;
+  $("#gatingSlider").removeClass("hidden");
   alert("Select the area");
 });
 
 $("#startGatingY").on("click", function (e) {
   matrix.gatingY = true;
+  $("#gatingSlider").removeClass("hidden");
   alert("Select the area");
 });
-

@@ -27,6 +27,7 @@ var Matrix = class Matrix {
         this.x2;
         this.y1;
         this.y2;
+        this.backupVis;
     }
 
     // Create the matrix from an already built dataset
@@ -306,12 +307,14 @@ var Matrix = class Matrix {
         self.y2 = yRange[1];
         console.log(xRange, yRange);
         if (this.gatingX) {
-            self.doGating("x", nCanaliX);
+            let canaliGating = $("#nCanaliGating").val() || 1000;
+            self.doGating("x", canaliGating);
             self.gatingX = false;
             return;
         }
         if (this.gatingY) {
-            self.doGating("y", nCanaliY);
+            let canaliGating = $("#nCanaliGating").val() || 1000;
+            self.doGating("y", canaliGating);
             self.gatingY = false;
             return;
         }
@@ -387,6 +390,7 @@ var Matrix = class Matrix {
             $("#gateTab").addClass("active");
             $("#gate").addClass("in active");
             $(".modebar").addClass("hidden");
+            $("#gatingSlider").addClass("hidden");
         });
     }
 
@@ -490,21 +494,7 @@ var Matrix = class Matrix {
                 type: 'bar'
             };
             let data = [trace];
-            let vis;
-            //determine the vis
-            switch (fileName) {
-                case "xResult":
-                    vis = self.xPlotVis;
-                    break;
-                case "yResult":
-                    vis = self.yPlotVis;
-                    break;
-                case "gating":
-                    vis = self.gatePlotVis;
-                    break;
-                default:
-                    break;
-            }
+            let vis = self.getVis(fileName);
             // Redraw the fit
             vis.data = data;
             Plotly.redraw(vis);
@@ -526,17 +516,78 @@ var Matrix = class Matrix {
                 var xValue = line.split(" ")[0];
                 var yValue = line.split(" ")[1];
                 if (xValue && yValue)
-                    peaks.push([xValue, yValue]);
+                    peaks.push([xValue * 1, yValue.split("\n")[0] * 1]);
             }
             console.log(peaks);
             $("#foundPeaksBox" + fileName).empty();
             $("#foundPeaksBox" + fileName).removeClass("hidden");
-            var index = 1;
+            let index = 1;
             for (var peak of peaks) {
-                $("#foundPeaksBox" + fileName).append(`<b>${index})</b>   <b>x:</b> ${peak[0]} <b>y:</b>${peak[1]} </br>`);
+                let string = `<div class="peakColor" data-filename="${fileName}" data-x="${peak[0]}" data-y="${peak[1]}"><b>${index})</b>   <b>x:</b> ${peak[0]} <b>y:</b>${peak[1]}</div>`
+                if (index % 3 == 0)
+                    string += "</br>"
+                $("#foundPeaksBox" + fileName).append(string);
                 index++;
             }
+            $(".peakColor").mouseover(function () {
+                var selfSelector = $(this);
+                var x = selfSelector.data("x");
+                var y = selfSelector.data("y");
+                var fileName = selfSelector.data("filename");
+                self.highlightPoint(x, y, fileName);
+            });
+            $(".peakColor").mouseout(function () {
+                var selfSelector = $(this);
+                var fileName = selfSelector.data("filename");
+                self.stopHighlight(fileName);
+            });
         });
+    }
+
+    highlightPoint(x, y, fileName) {
+        let vis = this.getVis(fileName);
+        console.log(x, y, fileName);
+        this.backupVis = vis;
+        vis.layout.shapes = [{
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            x0: x - 10,
+            y0: y - 25,
+            x1: x + 10,
+            y1: y + 25,
+            fillcolor: '#aaaaaa',
+            opacity: 1,
+            line: {
+                width: 0
+            }
+        }]
+        Plotly.redraw(vis);
+    }
+
+    stopHighlight(fileName) {
+        let vis = this.getVis(fileName);
+        vis = this.backupVis;
+        Plotly.redraw(vis);
+    }
+
+    getVis(fileName) {
+        let vis;
+        //determine the vis
+        switch (fileName) {
+            case "xResult":
+                vis = self.xPlotVis;
+                break;
+            case "yResult":
+                vis = self.yPlotVis;
+                break;
+            case "gating":
+                vis = self.gatePlotVis;
+                break;
+            default:
+                break;
+        }
+        return vis;
     }
 }
 

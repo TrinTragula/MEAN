@@ -55,3 +55,12 @@ body {
 .input-table {
     padding: 3px;
 }
+
+.peakColor {
+    border: solid black 1px;
+    padding: 3px;
+    cursor: pointer;
+    width: 17%;
+    text-align: center;
+    display: inline-block;
+}
