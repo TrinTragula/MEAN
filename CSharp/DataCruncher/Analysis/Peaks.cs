@@ -12,11 +12,11 @@ namespace DataCruncher.Analysis
         public static void GetPeaks(string fileName, int[] data, int epsilon, int treshold)
         {
             // Get points
-            var maxPoint = LocalMaxima(data.Skip(1).ToArray(), epsilon, treshold).ToArray();
+            var maxPoint = LocalMaxima(data.Skip(2).ToArray(), epsilon, treshold).ToArray();
             // Write them to a file
             using (StreamWriter writetext = new StreamWriter(String.Format("{0}.txt", fileName)))
             {
-                for (var j = 0; j < maxPoint.Length; j++)
+                for (var j = 2; j < maxPoint.Length; j++)
                 {
                     writetext.WriteLine("{0} {1}", maxPoint[j].Item1, maxPoint[j].Item2);
                 }

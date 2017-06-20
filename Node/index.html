@@ -57,6 +57,18 @@
                 <input style="width: 45px; border-radius: 1px;" id="nCanaliY" type="text" value="1000" oninput="channelUpdate('YSlider',value)">
               </td>
             </tr>
+            <tr id="gatingSlider" class="hidden">
+              <td>
+                <label>Gate</label>
+              </td>
+              <td>
+                <input style="width: inherit;" type="range" id="nCanaliGatingSlider" value="1000" min="100" max="3200" step="100" oninput="channelUpdate('Gating',value)">
+              </td>
+              <td style="width: 10px;"></td>
+              <td>
+                <input style="width: 45px; border-radius: 1px;" id="nCanaliGating" type="text" value="1000" oninput="channelUpdate('GatingSlider',value)">
+              </td>
+            </tr>
             <tr>
               <td> <label>Binning:<label></td>
               <td>
