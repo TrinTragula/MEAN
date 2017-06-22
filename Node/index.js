@@ -115,21 +115,6 @@ $("#backgroundRemovalCancel").on("click", function (e) {
   $("#backgroundRemovalDiv").addClass("hidden");
 });
 
-// Selezione picchi
-$("#pickSelector").on("click", function (e) {
-  let self = $(this);
-  if (self.html() == "Select peaks") {
-    matrix.isPickingAllowed = true;
-    self.html("Stop selecting peaks");
-    $("#selectedPeaksBox").removeClass("hidden");
-  } else {
-    matrix.isPickingAllowed = false;
-    self.html("Select peaks");
-    $("#selectedPeaksBoxTitle").children().remove();
-    $("#selectedPeaksBox").addClass("hidden");
-  }
-});
-
 // Find peaks from plot
 $("#autoPeaksCancel").on("click", function (e) {
   $("#autoPeaksDiv").addClass("hidden");
