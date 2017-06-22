@@ -28,6 +28,9 @@ var Matrix = class Matrix {
         this.y1;
         this.y2;
         this.backupVis;
+        this.gatePeaks = [];
+        this.xPeaks = [];
+        this.yPeaks = [];
     }
 
     // Create the matrix from an already built dataset
@@ -216,20 +219,17 @@ var Matrix = class Matrix {
             });
             $(".modebar").addClass("hidden");
             self.xPlotVis.on('plotly_click', (eventData) => {
-                self.newPeakPoint(eventData.points[0].x, eventData.points[0].x);
+                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.xPeaks, "xResult");
             });
         } else if (id == "y") {
             Plotly.newPlot(self.yPlotVis, data, layout, {
                 displayModeBar: true
             });
             $(".modebar").addClass("hidden");
+            self.yPlotVis.on('plotly_click', (eventData) => {
+                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.yPeaks, "yResult");
+            });
         }
-    }
-    // adds a peak point to the list
-    newPeakPoint(x, y) {
-        if (this.isPickingAllowed) {
-            $("#selectedPeaksBoxTitle").append("<div>X: " + x + " Y: " + y + "</div>");
-        } else return;
     }
 
     // Give the layout to the graphs
@@ -391,6 +391,9 @@ var Matrix = class Matrix {
             $("#gate").addClass("in active");
             $(".modebar").addClass("hidden");
             $("#gatingSlider").addClass("hidden");
+            self - gatePlotVis.on('plotly_click', (eventData) => {
+                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.gatePeaks, "gating");
+            });
         });
     }
 
@@ -522,13 +525,73 @@ var Matrix = class Matrix {
             $("#foundPeaksBox" + fileName).empty();
             $("#foundPeaksBox" + fileName).removeClass("hidden");
             let index = 1;
+            let list;
+            switch (fileName) {
+                case "xResult":
+                    list = self.xPeaks;
+                    break;
+                case "yResult":
+                    list = self.yPeaks;
+                    break;
+                case "gating":
+                    list = self.gatePeaks;
+                    break;
+                default:
+                    break;
+            }
+            $("#foundPeaksBox" + fileName).append(`<div type="button" data-filename="${fileName}" class="btn btn-default btn-sm pickSelector">Add more peaks manually</div></br></br>`);
             for (var peak of peaks) {
-                let string = `<div class="peakColor" data-filename="${fileName}" data-x="${peak[0]}" data-y="${peak[1]}"><b>${index})</b>   <b>x:</b> ${peak[0]} <b>y:</b>${peak[1]}</div>`
-                if (index % 3 == 0)
-                    string += "</br>"
+
+                let string =
+                    `<div class="peakColor" data-filename="${fileName}" data-x="${peak[0]}" data-y="${peak[1]}"><b>x:</b> ${peak[0]} <b>y:</b>${peak[1]}</div>`
                 $("#foundPeaksBox" + fileName).append(string);
+                list.push([peak[0], peak[1]]);
                 index++;
             }
+            $(".peakColor").mouseover(function () {
+                var selfSelector = $(this);
+                var x = selfSelector.data("x");
+                var y = selfSelector.data("y");
+                var fileName = selfSelector.data("filename");
+                self.highlightPoint(x, y, fileName);
+                console.log(list);
+            });
+            $(".peakColor").mouseout(function () {
+                var selfSelector = $(this);
+                var fileName = selfSelector.data("filename");
+                self.stopHighlight(fileName);
+            });
+            $(".peakColor").on("click", function (e) {
+                var selfSelector = $(this);
+                var x = selfSelector.data("x");
+                var y = selfSelector.data("y");
+                var index = list.indexOf([x, y]);
+                list.splice(index, 1);
+                selfSelector.remove();
+            });
+            // Selezione picchi
+            $(".pickSelector").on("click", function (e) {
+                let selfSelector = $(this);
+                if (selfSelector.html() == "Add more peaks manually") {
+                    self.isPickingAllowed = true;
+                    selfSelector.html("Stop adding peaks");
+                } else {
+                    self.isPickingAllowed = false;
+                    selfSelector.html("Add more peaks manually");
+                }
+            });
+        });
+    }
+
+    // adds a peak point to the list
+    newPeakPoint(x, y, list, fileName) {
+        let self = this;
+        console.log(self.isPickingAllowed);
+        if (self.isPickingAllowed) {
+            list.push([x, y]);
+            let string =
+                `<div class="peakColor" data-filename="${fileName}" data-x="${x}" data-y="${y}"><b>x:</b> ${x} <b>y:</b>${y}</div>`
+            $("#foundPeaksBox" + fileName).append(string);
             $(".peakColor").mouseover(function () {
                 var selfSelector = $(this);
                 var x = selfSelector.data("x");
@@ -541,28 +604,33 @@ var Matrix = class Matrix {
                 var fileName = selfSelector.data("filename");
                 self.stopHighlight(fileName);
             });
-        });
+            $(".peakColor").on("click", function (e) {
+                var self = $(this);
+                self.remove();
+            })
+        } else return;
     }
 
     highlightPoint(x, y, fileName) {
         let vis = this.getVis(fileName);
         console.log(x, y, fileName);
-        this.backupVis = vis;
+        let backupVis = vis;
         vis.layout.shapes = [{
-            type: 'circle',
+            type: 'square',
             xref: 'x',
             yref: 'y',
-            x0: x - 10,
-            y0: y - 25,
-            x1: x + 10,
-            y1: y + 25,
-            fillcolor: '#aaaaaa',
+            x0: x - 2,
+            y0: 1,
+            x1: x + 2,
+            y1: y,
+            fillcolor: '#ffff00',
             opacity: 1,
             line: {
-                width: 0
+                width: 1
             }
         }]
         Plotly.redraw(vis);
+        this.backupVis = backupVis;
     }
 
     stopHighlight(fileName) {

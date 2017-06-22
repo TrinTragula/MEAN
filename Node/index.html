@@ -17,7 +17,7 @@
       <li><a data-toggle="tab" href="#plotY">Projection Y</a></li>
       <li><a data-toggle="tab" href="#importNewData">Import/Save</a></li>
     </ul>
-    <div class="col-sm-3">
+    <div style="padding-left: 15px; width: 259px; float: left;">
       <br>
       <div id="loadingBar" class="progress progress-striped active hidden">
         <div class="progress-bar progress-bar-success" role="progressbar" style="width: 0%">
@@ -129,15 +129,9 @@
             <div class="btn-group">
               <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
               <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden autoPeaks">Get Peaks</div>
-              <div id="pickSelector" type="button" class="btn btn-sm btn-default hidden">Select peaks</div>
             </div>
             <div id="foundPeaksBoxxResult" class="hidden box">
-              <div id="foundPeaksBoxTitle">Found peaks: </div>
-            </div>
-            <div id="selectedPeaksBox" class="hidden box">
-              <div id="selectedPeaksBoxTitle">Selected peaks: </div>
-              <br>
-              <div id="doFit" type="button" class="btn btn-xs btn-default">Do the fit (TBD)</div>
+              <div id="foundPeaksBoxTitle">Found peaks:</div>
             </div>
           </div>
           <div id="plotY" class="tab-pane fade">

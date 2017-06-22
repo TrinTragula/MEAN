@@ -60,7 +60,6 @@ body {
     border: solid black 1px;
     padding: 3px;
     cursor: pointer;
-    width: 17%;
+    width: 15%;
     text-align: center;
-    display: inline-block;
 }
