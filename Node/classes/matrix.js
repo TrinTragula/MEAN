@@ -313,13 +313,13 @@ var Matrix = class Matrix {
         self.y2 = yRange[1];
         console.log(xRange, yRange);
         if (this.gatingX) {
-            let canaliGating = $("#nCanaliGating").val() || 1000;
+            let canaliGating = Math.min($("#nCanaliGating").val(), $("#nCanaliX").val()) || 1000;
             self.doGating("x", canaliGating);
             self.gatingX = false;
             return;
         }
         if (this.gatingY) {
-            let canaliGating = $("#nCanaliGating").val() || 1000;
+            let canaliGating =  Math.min($("#nCanaliGating").val(), $("#nCanaliY").val()) || 1000;
             self.doGating("y", canaliGating);
             self.gatingY = false;
             return;
