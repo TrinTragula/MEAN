@@ -210,7 +210,10 @@ var Matrix = class Matrix {
         };
         let layout = {
             xaxis: xAxisTemplate,
-            yaxis: yAxisTemplate
+            yaxis: yAxisTemplate,
+            autosize: false,
+            height: self.getDimensions()[0] * 80 / 100,
+            width: self.getDimensions()[1] - 300
         };
         let data = [trace];
         if (id == "x") {
@@ -256,7 +259,10 @@ var Matrix = class Matrix {
         return {
             xaxis: xAxisTemplate,
             yaxis: yAxisTemplate,
-            dragmode: 'select'
+            dragmode: 'select',
+            autosize: false,
+            height: self.getDimensions()[0] * 80 / 100,
+            width: self.getDimensions()[1] - 300
         };
     }
 
@@ -379,7 +385,10 @@ var Matrix = class Matrix {
             };
             let layout = {
                 xaxis: xAxisTemplate,
-                yaxis: yAxisTemplate
+                yaxis: yAxisTemplate,
+                autosize: false,
+                height: self.getDimensions()[0] * 80 / 100,
+                width: self.getDimensions()[1] - 300
             };
             let data = [trace];
             Plotly.newPlot(self.gatePlotVis, data, layout, {
@@ -434,7 +443,10 @@ var Matrix = class Matrix {
         this.dataVis.layout = {
             xaxis: yAxisTemplate,
             yaxis: xAxisTemplate,
-            dragmode: 'select'
+            dragmode: 'select',
+            autosize: false,
+            height: this.getDimensions()[0] * 80 / 100,
+            width: this.getDimensions()[1] - 300
         };
         Plotly.redraw(dataVis);
     }
@@ -636,6 +648,7 @@ var Matrix = class Matrix {
     stopHighlight(fileName) {
         let vis = this.getVis(fileName);
         vis = this.backupVis;
+        vis.layout.shapes = [];
         Plotly.redraw(vis);
     }
 
@@ -656,6 +669,12 @@ var Matrix = class Matrix {
                 break;
         }
         return vis;
+    }
+
+    getDimensions() {
+        let h = $(window).height();
+        let w = $(window).width();
+        return [h, w];
     }
 }
 
