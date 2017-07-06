@@ -16,6 +16,7 @@
       <li><a data-toggle="tab" href="#plotX">Projection X</a></li>
       <li><a data-toggle="tab" href="#plotY">Projection Y</a></li>
       <li><a data-toggle="tab" href="#importNewData">Import/Save</a></li>
+      <li id="nudat"><a href="#" class="nudat">Search Nudat2</a></li>
     </ul>
     <div style="padding-left: 15px; width: 259px; float: left;">
       <br>
@@ -100,7 +101,8 @@
         <label>Sample points: <input name="bgPoints" id="bgPoints" type="number" value="100"/></label>
         <label>Iterations: <input name="bgIterations" id="bgIterations" type="number" value="10"/></label>
         <div type="button" class="btn btn-sm btn-warning" id="backgroundRemovalCancel">Cancel</div>
-        <div type="button" class="btn btn-sm btn-success" id="backgroundRemovalConfirm">Remove background</div>
+        <div type="button" class="btn btn-sm btn-info" id="backgroundPreview">Preview</div>
+        <div type="button" class="btn btn-sm btn-success" id="backgroundRemovalConfirm">Remove</div>
       </div>
       <div id="autoPeaksDiv" class="hidden">
         <label>Window: <input name="bgWindow" id="bgWindow" type="number" value="50"/></label>

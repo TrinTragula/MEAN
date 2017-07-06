@@ -12,6 +12,12 @@ $("#saveDb").on("click", function (e) {
   main.saveFile(content);
 });
 
+// Apro nudat
+$("#nudat").on("click", function (e) {
+  e.preventDefault();
+  main.openNudat();
+});
+
 // Importa vecchio db
 $("#importDbButton").on("click", function (e) {
   let dbPath;

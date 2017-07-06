@@ -36,4 +36,14 @@ const saveFile = function (content) {
     fs.writeFileSync(fileName, content);
 };
 
+const openNudat = function(){
+    var nudatWin = new BrowserWindow({
+        width: 950,
+        height: 875,
+        icon: './icon.ico'
+    });
+    nudatWin.loadURL(`http://www.nndc.bnl.gov/nudat2/`);
+}
+
 exports.saveFile = saveFile;
+exports.openNudat = openNudat;
