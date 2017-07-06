@@ -26,7 +26,8 @@ namespace DataCruncher.Analysis
                 for (var j = points[i - 1]; j < points[i]; j++)
                 {
                     var removedBg = data[j] - Math.Abs(bg(j));
-                    data[j] = removedBg > 0 ? removedBg : 0;
+                    data[j] = removedBg;
+                    //data[j] = removedBg > 0 ? removedBg : 0;
                 }
             }
             using (StreamWriter writetext = new StreamWriter(String.Format("{0}.txt", fileName)))
@@ -34,6 +35,37 @@ namespace DataCruncher.Analysis
                 for (var j = 0; j < data.Length; j++)
                 {
                     writetext.WriteLine("{0} {1}", j, data[j]);
+                }
+            }
+            return;
+        }
+
+        public static void PreviewBackground(string fileName, int[] data, int randomPoints = 100, int iterations = 10)
+        {
+            var rnd = new Random();
+            // I'll take n random points
+            var points = Enumerable.Repeat(0, randomPoints).Select(x => rnd.Next(data.Length)).ToArray();
+            for (int i = 0; i < iterations; i++)
+            {
+                points = Iterate(data, points);
+            }
+            Array.Sort(points);
+            points = points.Distinct().ToArray();
+            var previewData = data.Select(x => 0).ToArray();
+            for (var i = 1; i < (points.Length); i++)
+            {
+                var bg = LinearInterpolation(points[i - 1], points[i], data[points[i - 1]], data[points[i]]);
+                for (var j = points[i - 1]; j < points[i]; j++)
+                {
+                    var lineBg = Math.Abs(bg(j));
+                    previewData[j] = lineBg;
+                }
+            }
+            using (StreamWriter writetext = new StreamWriter(String.Format("{0}_bgpreview.txt", fileName)))
+            {
+                for (var j = 0; j < previewData.Length; j++)
+                {
+                    writetext.WriteLine("{0} {1}", j, previewData[j]);
                 }
             }
             return;

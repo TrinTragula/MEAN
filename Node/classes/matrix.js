@@ -480,6 +480,43 @@ var Matrix = class Matrix {
         return Math.floor((x - min) / interval);
     }
 
+    // preview the background to remove
+
+    previewBackground(fileName, randomPoints, iterations) {
+        let self = this;
+        let params;
+        params = ["previewBackground", fileName, randomPoints, iterations];
+        child(self.executablePath, params, function (err, fileData) {
+            if (err) console.log("ERRORE: " + err);
+            let dataFile = fs.readFileSync(`${fileName}_bgpreview.txt`, 'ascii');
+            console.log("Loaded background removal");
+            let dataLines = dataFile.split("\n");
+            let plotData = {};
+            for (let i = 0; i < dataLines.length; i++) {
+                plotData[i] = 0;
+            }
+            for (let i = 0; i < dataLines.length; i++) {
+                let value = dataLines[i].split(" ")[0] * 1;
+                let count = dataLines[i].split(" ")[1] * 1;
+                if (!isNaN(count)) {
+                    plotData[value] += count;
+                }
+            }
+            plotData = Object.keys(plotData).map(key => plotData[key])
+            // Draw the fit for x data
+            let trace = {
+                x: [...Array(plotData.length).keys()],
+                y: plotData,
+                type: 'bar',
+                name: 'background'
+            };
+            let data = [trace];
+            let vis = self.getVis(fileName);
+            // Redraw the fit
+            vis.data = [vis.data[0], trace];
+            Plotly.redraw(vis);
+        });
+    }
     // remove the background from a plot
     background(fileName, randomPoints, iterations) {
         let self = this;

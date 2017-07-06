@@ -23,6 +23,7 @@ namespace DataCruncher
             var mode = args.Length < 1 ? "peaks" : args[0];
             if (mode == "matrix") Matrix(args);
             if (mode == "gate") Gate(args);
+            if (mode == "previewBackground") PreviewBackground(args);
             if (mode == "background") RemoveBackground(args);
             if (mode == "peaks") GetPeaks(args);
 
@@ -73,6 +74,24 @@ namespace DataCruncher
 
             //Finito
             db.Close();
+        }
+
+        public static void PreviewBackground(string[] args)
+        {
+            var fileName = args.Length < 2 ? "xResult" : args[1];
+            var randomPoints = args.Length < 3 ? 100 : Int32.Parse(args[2]);
+            var iterations = args.Length < 4 ? 10 : Int32.Parse(args[3]);
+            string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
+            var data = lines.Aggregate(new List<int>(), (p, c) =>
+            {
+                var value = Int32.Parse(c.Split(' ')[1]);
+                p.Add(value);
+                return p;
+            }).ToArray();
+
+            Background.PreviewBackground(fileName, data, randomPoints, iterations);
+
+            return;
         }
 
         public static void RemoveBackground(string[] args)

@@ -99,6 +99,7 @@ $("#invertAxes").change(function (e) {
 $(".backgroundRemoval").on("click", function (e) {
   let self = $(this);
   $("#backgroundRemovalConfirm").data("filename", self.data("filename"));
+  $("#backgroundPreview").data("filename", self.data("filename"));
   $("#backgroundRemovalDiv").removeClass("hidden");
 });
 
@@ -109,6 +110,14 @@ $("#backgroundRemovalConfirm").on("click", function (e) {
   let iterations = $("#bgIterations").val();
   matrix.background(fileName, randomPoints, iterations);
   $("#backgroundRemovalDiv").addClass("hidden");
+});
+
+$("#backgroundPreview").on("click", function (e) {
+  let self = $(this);
+  let fileName = self.data("filename");
+  let randomPoints = $("#bgPoints").val();
+  let iterations = $("#bgIterations").val();
+  matrix.previewBackground(fileName, randomPoints, iterations);
 });
 
 $("#backgroundRemovalCancel").on("click", function (e) {
