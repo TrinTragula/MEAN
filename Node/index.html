@@ -110,6 +110,11 @@
         <div type="button" class="btn btn-sm btn-warning" id="autoPeaksCancel">Cancel</div>
         <div type="button" class="btn btn-sm btn-success" id="autoPeaksConfirm">Get peaks</div>
       </div>
+      <div id="plotBinning" class="hidden">
+        <label>Binning: <input name="binningno" id="binningno" type="number" value="2"/></label>
+        <div type="button" class="btn btn-sm btn-warning" id="binningnoCancel">Cancel</div>
+        <div type="button" class="btn btn-sm btn-success" id="binningnoConfirm">Apply</div>
+      </div>
       </div>
       <div class="col-sm-9">
         <div class="tab-content" style="width: 99%">
@@ -121,6 +126,7 @@
             <div class="btn-group">
               <div data-filename="gating" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
               <div data-filename="gating" type="button" class="btn btn-sm btn-default hidden autoPeaks">Get Peaks</div>
+              <div data-filename="gating" type="button" class="btn btn-sm btn-default hidden plotbinning">Binning</div>
             </div>
             <div id="foundPeaksBoxgating" class="hidden box">
               <div id="foundPeaksBoxTitle">Found peaks: </div>
@@ -131,6 +137,7 @@
             <div class="btn-group">
               <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
               <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden autoPeaks">Get Peaks</div>
+              <div data-filename="xResult" type="button" class="btn btn-sm btn-default hidden plotbinning">Binning</div>
             </div>
             <div id="foundPeaksBoxxResult" class="hidden box">
               <div id="foundPeaksBoxTitle">Found peaks:</div>
@@ -141,6 +148,7 @@
             <div class="btn-group">
               <div data-filename="yResult" type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
               <div data-filename="yResult" type="button" class="btn btn-sm btn-default hidden autoPeaks">Get Peaks</div>
+              <div data-filename="yResult" type="button" class="btn btn-sm btn-default hidden plotbinning">Binning</div>
             </div>
             <div id="foundPeaksBoxyResult" class="hidden box">
               <div id="foundPeaksBoxTitle">Found peaks: </div>
@@ -152,13 +160,19 @@
               <div id="saveDb" type="button" class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span>&nbsp;Save current dataset </div>
             </div>
             <hr>
-            <div id="newDataText">Create new dataset</div>
+            <div id="newDataText"><b>Create new dataset</b></div>
             <input id="file1" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
             <input id="file2" type="file" class="filestyle" data-buttonText="&nbsp;File 2" data-size="sm">
+            </br>
+            Coincidence window (ms)
+            </br>
+            <input id="window" type="number" data-buttonText="&nbsp;Coincidence window (ms)" data-size="sm" value="5">
+            </br>
+            </br>
             <div id="createDataButton" type="button" class="btn btn-default">Import</div>
             <br>
             <hr>
-            <div id="newDataText">Import existing dataset</div>
+            <div id="newDataText"><b>Import existing dataset</b></div>
             <input id="dbFile" type="file" class="filestyle" data-buttonText="&nbsp;File 1" data-size="sm">
             <div id="importDbButton" type="button" class="btn btn-default">Import</div>
             <!--<input id="file3" type="file" class="filestyle" data-buttonText="&nbsp;Data&nbsp;" data-size="sm">-->

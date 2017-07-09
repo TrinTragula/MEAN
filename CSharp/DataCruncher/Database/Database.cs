@@ -160,7 +160,7 @@ namespace DataCruncher.Cruncher
             return (int)Math.Floor((channel - min) / interval);
         }
 
-        public void InsertIntoDB(string path, string path1)
+        public void InsertIntoDB(string path, string path1, int window = 5)
         {
             string insertText = "INSERT INTO data (channel,channel2) values (@P0,@P1)";
             System.Data.SQLite.SQLiteCommand command = new System.Data.SQLite.SQLiteCommand(DbConnection);
@@ -188,7 +188,7 @@ namespace DataCruncher.Cruncher
                             var value1 = Int32.Parse(line1.Split(' ')[1]);
 
                             // if there is a coincidence, I save it
-                            if (Math.Abs(timeStamp - timeStamp1) <= 5)
+                            if (Math.Abs(timeStamp - timeStamp1) <= window)
                             {
                                 //Console.WriteLine("Coincidence spotted: {timeStamp} - {value} : {timeStamp1}: {value1}");
                                 if (value != -1 && value1 != -1 && (value != 0 || value1 != 0))
