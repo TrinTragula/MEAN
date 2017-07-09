@@ -11,54 +11,30 @@ namespace DataCruncher.Analysis
     {
         public static void RemoveBackground(string fileName, int[] data, int randomPoints = 100, int iterations = 10)
         {
-            var rnd = new Random();
-            // I'll take n random points
-            var points = Enumerable.Repeat(0, randomPoints).Select(x => rnd.Next(data.Length)).ToArray();
-            for (int i = 0; i < iterations; i++)
-            {
-                points = Iterate(data, points);
-            }
-            Array.Sort(points);
-            points = points.Distinct().ToArray();
-            for (var i = 1; i < (points.Length); i++)
-            {
-                var bg = LinearInterpolation(points[i - 1], points[i], data[points[i - 1]], data[points[i]]);
-                for (var j = points[i - 1]; j < points[i]; j++)
-                {
-                    var removedBg = data[j] - Math.Abs(bg(j));
-                    data[j] = removedBg;
-                    //data[j] = removedBg > 0 ? removedBg : 0;
-                }
-            }
-            using (StreamWriter writetext = new StreamWriter(String.Format("{0}.txt", fileName)))
-            {
-                for (var j = 0; j < data.Length; j++)
-                {
-                    writetext.WriteLine("{0} {1}", j, data[j]);
-                }
-            }
+            if (!File.Exists(String.Format("{0}_bgt.txt", fileName)))
+                PreviewBackground(fileName, data, randomPoints, iterations);
+            File.Delete(String.Format("{0}.txt", fileName));
+            File.Move(String.Format("{0}_bgt.txt", fileName), String.Format("{0}.txt", fileName));
             return;
         }
 
         public static void PreviewBackground(string fileName, int[] data, int randomPoints = 100, int iterations = 10)
         {
-            var rnd = new Random();
-            // I'll take n random points
-            var points = Enumerable.Repeat(0, randomPoints).Select(x => rnd.Next(data.Length)).ToArray();
-            for (int i = 0; i < iterations; i++)
-            {
-                points = Iterate(data, points);
-            }
-            Array.Sort(points);
-            points = points.Distinct().ToArray();
+            var points = GetBackground(data, randomPoints, iterations);
             var previewData = data.Select(x => 0).ToArray();
             for (var i = 1; i < (points.Length); i++)
             {
                 var bg = LinearInterpolation(points[i - 1], points[i], data[points[i - 1]], data[points[i]]);
                 for (var j = points[i - 1]; j < points[i]; j++)
                 {
-                    var lineBg = Math.Abs(bg(j));
+                    //var lineBg = Math.Abs(bg(j));
+                    var lineBg = Math.Max(bg(j), 0);
                     previewData[j] = lineBg;
+
+                    //var removedBg = data[j] - Math.Abs(bg(j));
+                    var removedBg = data[j] - Math.Max(bg(j), 0);
+                    data[j] = removedBg;
+                    //data[j] = removedBg > 0 ? removedBg : 0; Se non si vuol che la linea vada sotto lo 0
                 }
             }
             using (StreamWriter writetext = new StreamWriter(String.Format("{0}_bgpreview.txt", fileName)))
@@ -68,7 +44,27 @@ namespace DataCruncher.Analysis
                     writetext.WriteLine("{0} {1}", j, previewData[j]);
                 }
             }
+            using (StreamWriter writetext = new StreamWriter(String.Format("{0}_bgt.txt", fileName)))
+            {
+                for (var j = 0; j < data.Length; j++)
+                {
+                    writetext.WriteLine("{0} {1}", j, data[j]);
+                }
+            }
             return;
+        }
+
+        private static int[] GetBackground(int[] data, int randomPoints, int iterations)
+        {
+            var rnd = new Random();
+            // I'll take n random points
+            var points = Enumerable.Repeat(0, randomPoints).Select(x => rnd.Next(data.Length)).ToArray();
+            for (int i = 0; i < iterations; i++)
+            {
+                points = Iterate(data, points);
+            }
+            Array.Sort(points);
+            return points.Distinct().ToArray();
         }
 
         private static int[] Iterate(int[] data, int[] points)

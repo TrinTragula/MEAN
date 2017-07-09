@@ -20,12 +20,13 @@ namespace DataCruncher
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
             // Argomenti di input
-            var mode = args.Length < 1 ? "peaks" : args[0];
+            var mode = args.Length < 1 ? "binning" : args[0];
             if (mode == "matrix") Matrix(args);
             if (mode == "gate") Gate(args);
-            if (mode == "previewBackground") PreviewBackground(args);
+            if (mode == "previewBackground") RemoveBackground(args, true);
             if (mode == "background") RemoveBackground(args);
             if (mode == "peaks") GetPeaks(args);
+            if (mode == "binning") BinCount(args);
 
             Console.WriteLine("Done!");
             #if DEBUG
@@ -44,13 +45,14 @@ namespace DataCruncher
             var yMin = args.Length < 8 ? 0 : Int32.Parse(args[7]);
             var yMax = args.Length < 9 ? int.MaxValue : Int32.Parse(args[8]);
             var overwrite = args.Length < 10 ? false : Boolean.Parse(args[9]);
+            var window = args.Length < 11 ? 5 : Int32.Parse(args[10]);
 
 
             //Creo o riutilizzo il database
             Database db = new Database("coincidenze_vere", overwrite);
 
             //Esporto i file se necessario
-            if (overwrite && !String.IsNullOrEmpty(file1) && !String.IsNullOrEmpty(file2)) db.InsertIntoDB(file1, file2);
+            if (overwrite && !String.IsNullOrEmpty(file1) && !String.IsNullOrEmpty(file2)) db.InsertIntoDB(file1, file2, window);
 
             //Salvo il risultato
             db.binCount(nCanaliX, nCanaliY, xMin, xMax, yMin, yMax);
@@ -76,7 +78,7 @@ namespace DataCruncher
             db.Close();
         }
 
-        public static void PreviewBackground(string[] args)
+        public static void RemoveBackground(string[] args, bool preview = false)
         {
             var fileName = args.Length < 2 ? "xResult" : args[1];
             var randomPoints = args.Length < 3 ? 100 : Int32.Parse(args[2]);
@@ -89,25 +91,10 @@ namespace DataCruncher
                 return p;
             }).ToArray();
 
-            Background.PreviewBackground(fileName, data, randomPoints, iterations);
-
-            return;
-        }
-
-        public static void RemoveBackground(string[] args)
-        {
-            var fileName = args.Length < 2 ? "xResult" : args[1];
-            var randomPoints = args.Length < 3 ? 100 : Int32.Parse(args[2]);
-            var iterations = args.Length < 4 ? 10 : Int32.Parse(args[3]);
-            string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
-            var data = lines.Aggregate(new List<int>(), (p, c) =>
-            {
-                var value = Int32.Parse(c.Split(' ')[1]);
-                p.Add(value);
-                return p;
-            }).ToArray();
-
-            Background.RemoveBackground(fileName, data, randomPoints, iterations);
+            if (preview)
+                Background.PreviewBackground(fileName, data, randomPoints, iterations);
+            else
+                Background.RemoveBackground(fileName, data, randomPoints, iterations);
 
             return;
         }
@@ -129,6 +116,24 @@ namespace DataCruncher
 
             var peaksFile = String.Format("{0}_peaks", fileName);
             Peaks.GetPeaks(peaksFile, data, epsilon, treshold);
+
+            return;
+        }
+
+        public static void BinCount(string[] args)
+        {
+            var fileName = args.Length < 2 ? "xResult" : args[1];
+            var binning = args.Length < 3 ? 2 : Int32.Parse(args[2]);
+
+            string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
+            var data = lines.Aggregate(new List<int>(), (p, c) =>
+            {
+                var value = Int32.Parse(c.Split(' ')[1]);
+                p.Add(value);
+                return p;
+            }).ToArray();
+
+            Binning.Count(data, fileName, binning);
 
             return;
         }

@@ -245,3 +245,12 @@ ModelManifest.xml
 node-modules
 *.sqlite
 *.txt
+Node/DataCruncher/System.Data.SQLite.xml
+Node/DataCruncher/EntityFramework.xml
+Node/DataCruncher/EntityFramework.SqlServer.xml
+Node/DataCruncher/DataCruncher.vshost.exe.manifest
+Node/DataCruncher/DataCruncher.vshost.exe.config
+Node/DataCruncher/DataCruncher.vshost.application
+Node/DataCruncher/DataCruncher.exe.manifest
+Node/DataCruncher/DataCruncher.exe.config
+Node/DataCruncher/DataCruncher.application

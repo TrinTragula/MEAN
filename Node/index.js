@@ -41,11 +41,13 @@ $("#createDataButton").on("click", function (e) {
   if (document.getElementById("file1").files && document.getElementById("file2").files) {
     path1 = document.getElementById("file1").files[0] ? document.getElementById("file1").files[0].path : null;
     path2 = document.getElementById("file2").files[0] ? document.getElementById("file2").files[0].path : null;
+    var coincidenceWindow = $("#window").val() || 5;
     if (!path1 || !path2) return;
     console.log(path1, path2);
-    matrix.import(nCanaliX, nCanaliY, path1, path2);
+    matrix.import(nCanaliX, nCanaliY, path1, path2, coincidenceWindow);
     $(".backgroundRemoval").removeClass("hidden");
     $(".autoPeaks").removeClass("hidden");
+    $(".plotbinning").removeClass("hidden");
   }
 })
 
@@ -62,6 +64,7 @@ $("#drawButton").on("click", function (e) {
   matrix.create(nCanaliX, nCanaliY, path1, path2);
   $(".backgroundRemoval").removeClass("hidden");
   $(".autoPeaks").removeClass("hidden");
+  $(".plotbinning").removeClass("hidden");
 })
 
 // Update the current image channel resolution
@@ -155,4 +158,23 @@ $("#startGatingY").on("click", function (e) {
   matrix.gatingY = true;
   $("#gatingSlider").removeClass("hidden");
   alert("Select the area");
+});
+
+// Binning
+$(".plotbinning").on("click", function (e) {
+  let self = $(this);
+  $("#binningnoConfirm").data("filename", self.data("filename"));
+  $("#plotBinning").removeClass("hidden");
+});
+
+$("#binningnoConfirm").on("click", function (e) {
+  let self = $(this);
+  let fileName = self.data("filename");
+  let binningNo = $("#binningno").val() || 2;
+  matrix.plotBinning(fileName, binningNo);
+  $("#plotBinning").addClass("hidden");
+});
+
+$("#binningnoCancel").on("click", function (e) {
+  $("#plotBinning").addClass("hidden");
 });

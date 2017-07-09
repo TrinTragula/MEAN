@@ -122,9 +122,9 @@ var Matrix = class Matrix {
     }
 
     // create the matrix from 2 txt files, which will build the dataset
-    import (nCanaliX, nCanaliY, path1, path2) {
+    import (nCanaliX, nCanaliY, path1, path2, window = 5) {
         let self = this;
-        let params = ["matrix", nCanaliX * 1, nCanaliY * 1, path1, path2, 0, 999999999, 0, 999999999, true];
+        let params = ["matrix", nCanaliX * 1, nCanaliY * 1, path1, path2, 0, 999999999, 0, 999999999, true, window];
         // Loading bar
         $("#loadingBar").removeClass("hidden");
         $(".progress-bar").animate({
@@ -172,7 +172,7 @@ var Matrix = class Matrix {
             }, 1);
             // Logica di selezione
             self.dataVis.on('plotly_selected', (eventData) => {
-                self.selecting(eventdata, path1, path2)
+                self.selecting(eventData, path1, path2)
             });
             self.dataVis.on('plotly_selecting', (eventData) => {
                 $(".zoomlayer").removeClass("hidden");
@@ -189,7 +189,7 @@ var Matrix = class Matrix {
         let trace = {
             x: [...Array(fitData.length).keys()],
             y: fitData,
-            type: 'bar'
+            type: 'scatter'
         };
 
         let xAxisTemplate = {
@@ -319,7 +319,7 @@ var Matrix = class Matrix {
             return;
         }
         if (this.gatingY) {
-            let canaliGating =  Math.min($("#nCanaliGating").val(), $("#nCanaliY").val()) || 1000;
+            let canaliGating = Math.min($("#nCanaliGating").val(), $("#nCanaliY").val()) || 1000;
             self.doGating("y", canaliGating);
             self.gatingY = false;
             return;
@@ -362,7 +362,7 @@ var Matrix = class Matrix {
             let trace = {
                 x: [...Array(gateData.length).keys()],
                 y: gateData,
-                type: 'bar'
+                type: 'scatter'
             };
 
             let xAxisTemplate = {
@@ -400,7 +400,7 @@ var Matrix = class Matrix {
             $("#gate").addClass("in active");
             $(".modebar").addClass("hidden");
             $("#gatingSlider").addClass("hidden");
-            self - gatePlotVis.on('plotly_click', (eventData) => {
+            self.gatePlotVis.on('plotly_click', (eventData) => {
                 self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.gatePeaks, "gating");
             });
         });
@@ -508,7 +508,10 @@ var Matrix = class Matrix {
                 x: [...Array(plotData.length).keys()],
                 y: plotData,
                 type: 'bar',
-                name: 'background'
+                name: 'background',
+                marker: {
+                    color: 'rgb(179, 0, 0)'
+                }
             };
             let data = [trace];
             let vis = self.getVis(fileName);
@@ -543,7 +546,7 @@ var Matrix = class Matrix {
             let trace = {
                 x: [...Array(plotData.length).keys()],
                 y: plotData,
-                type: 'bar'
+                type: 'scatter'
             };
             let data = [trace];
             let vis = self.getVis(fileName);
@@ -658,6 +661,37 @@ var Matrix = class Matrix {
                 self.remove();
             })
         } else return;
+    }
+
+    // binning
+    plotBinning(fileName, binningNo) {
+        let self = this;
+        let params = ["binning", fileName, binningNo];
+        child(self.executablePath, params, function (err, fileData) {
+            if (err) console.log("ERRORE: " + err)
+            let dataFile = fs.readFileSync(`${fileName}.txt`, 'ascii');
+            console.log("Loaded gating");
+            let dataLines = dataFile.split("\n");
+
+            let binData = {};
+            for (let i = 0; i < dataLines.length; i++) {
+                binData[i] = 0;
+            }
+            for (let i = 0; i < dataLines.length; i++) {
+                let value = dataLines[i].split(" ")[0] * 1;
+                let count = dataLines[i].split(" ")[1] * 1;
+                if (!isNaN(count)) {
+                    binData[value] += count;
+                }
+            }
+            if (fileName == "xResult"){
+                self.drawFitGraph(binData, "x")
+            } else if (fileName == "yResult"){
+                self.drawFitGraph(binData, "y")
+            } else if (fileName == "gating"){
+                console.log("TODO")
+            }
+        });
     }
 
     highlightPoint(x, y, fileName) {
