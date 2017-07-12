@@ -357,52 +357,59 @@ var Matrix = class Matrix {
                     gateData[value] += count;
                 }
             }
-            gateData = Object.keys(gateData).map(key => gateData[key])
-            // Draw the fit for x data
-            let trace = {
-                x: [...Array(gateData.length).keys()],
-                y: gateData,
-                type: 'scatter'
-            };
 
-            let xAxisTemplate = {
-                range: [0, nCanali],
-                title: 'Channel',
-                showgrid: true,
-                zeroline: true,
-                showticklabels: true,
-                ticks: '',
-                dtick: Math.round(gateData.length / 16)
-            };
-            let yAxisTemplate = {
-                range: [0, Math.max.apply(null, gateData)],
-                title: 'Counts',
-                showgrid: true,
-                zeroline: true,
-                showticklabels: true,
-                ticks: '',
-                dtick: Math.max.apply(null, gateData) / 16
-            };
-            let layout = {
-                xaxis: xAxisTemplate,
-                yaxis: yAxisTemplate,
-                autosize: false,
-                height: self.getDimensions()[0] * 80 / 100,
-                width: self.getDimensions()[1] - 300
-            };
-            let data = [trace];
-            Plotly.newPlot(self.gatePlotVis, data, layout, {
-                displayModeBar: true
-            });
-            $("#gateTab").removeClass("hidden");
-            $(".active").removeClass("active");
-            $("#gateTab").addClass("active");
-            $("#gate").addClass("in active");
-            $(".modebar").addClass("hidden");
-            $("#gatingSlider").addClass("hidden");
-            self.gatePlotVis.on('plotly_click', (eventData) => {
-                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.gatePeaks, "gating");
-            });
+            self.drawGatePlot(gateData);
+
+        });
+    }
+
+    drawGatePlot(gateData) {
+        let self = this;
+        gateData = Object.keys(gateData).map(key => gateData[key])
+        // Draw the fit for x data
+        let trace = {
+            x: [...Array(gateData.length).keys()],
+            y: gateData,
+            type: 'scatter'
+        };
+
+        let xAxisTemplate = {
+            range: [0, gateData.length],
+            title: 'Channel',
+            showgrid: true,
+            zeroline: true,
+            showticklabels: true,
+            ticks: '',
+            dtick: Math.round(gateData.length / 16)
+        };
+        let yAxisTemplate = {
+            range: [0, Math.max.apply(null, gateData)],
+            title: 'Counts',
+            showgrid: true,
+            zeroline: true,
+            showticklabels: true,
+            ticks: '',
+            dtick: Math.max.apply(null, gateData) / 16
+        };
+        let layout = {
+            xaxis: xAxisTemplate,
+            yaxis: yAxisTemplate,
+            autosize: false,
+            height: self.getDimensions()[0] * 80 / 100,
+            width: self.getDimensions()[1] - 300
+        };
+        let data = [trace];
+        Plotly.newPlot(self.gatePlotVis, data, layout, {
+            displayModeBar: true
+        });
+        $("#gateTab").removeClass("hidden");
+        $(".active").removeClass("active");
+        $("#gateTab").addClass("active");
+        $("#gate").addClass("in active");
+        $(".modebar").addClass("hidden");
+        $("#gatingSlider").addClass("hidden");
+        self.gatePlotVis.on('plotly_click', (eventData) => {
+            self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.gatePeaks, "gating");
         });
     }
 
@@ -513,7 +520,6 @@ var Matrix = class Matrix {
                     color: 'rgb(179, 0, 0)'
                 }
             };
-            let data = [trace];
             let vis = self.getVis(fileName);
             // Redraw the fit
             vis.data = [vis.data[0], trace];
@@ -684,12 +690,12 @@ var Matrix = class Matrix {
                     binData[value] += count;
                 }
             }
-            if (fileName == "xResult"){
+            if (fileName == "xResult") {
                 self.drawFitGraph(binData, "x")
-            } else if (fileName == "yResult"){
+            } else if (fileName == "yResult") {
                 self.drawFitGraph(binData, "y")
-            } else if (fileName == "gating"){
-                console.log("TODO")
+            } else if (fileName == "gating") {
+                self.drawGatePlot(binData)
             }
         });
     }
@@ -698,6 +704,7 @@ var Matrix = class Matrix {
         let vis = this.getVis(fileName);
         console.log(x, y, fileName);
         let backupVis = vis;
+        /*
         vis.layout.shapes = [{
             type: 'square',
             xref: 'x',
@@ -711,7 +718,19 @@ var Matrix = class Matrix {
             line: {
                 width: 1
             }
-        }]
+        }]*/
+
+        var trace = {
+            x: [x],
+            y: [y],
+            mode: 'markers+text',
+            name: 'Peaks',
+            text: [`x:${x} y:${y}`],
+            textposition: 'top',
+            type: 'scatter'
+        };
+
+        vis.data = [vis.data[0], trace];
         Plotly.redraw(vis);
         this.backupVis = backupVis;
     }
