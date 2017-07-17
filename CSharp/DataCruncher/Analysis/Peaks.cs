@@ -19,7 +19,7 @@ namespace DataCruncher.Analysis
             // Write them to a file
             using (StreamWriter writetext = new StreamWriter(String.Format("{0}.txt", fileName)))
             {
-                for (var j = 2; j < maxPoint.Length; j++)
+                for (var j = 0; j < maxPoint.Length; j++)
                 {
                     writetext.WriteLine("{0} {1}", maxPoint[j].Item1, maxPoint[j].Item2);
                 }
