@@ -48,6 +48,7 @@ $("#createDataButton").on("click", function (e) {
     $(".backgroundRemoval").removeClass("hidden");
     $(".autoPeaks").removeClass("hidden");
     $(".plotbinning").removeClass("hidden");
+    $(".calibration").removeClass("hidden");
   }
 })
 
@@ -65,6 +66,7 @@ $("#drawButton").on("click", function (e) {
   $(".backgroundRemoval").removeClass("hidden");
   $(".autoPeaks").removeClass("hidden");
   $(".plotbinning").removeClass("hidden");
+  $(".calibration").removeClass("hidden");
 })
 
 // Update the current image channel resolution

@@ -222,7 +222,7 @@ var Matrix = class Matrix {
             });
             $(".modebar").addClass("hidden");
             self.xPlotVis.on('plotly_click', (eventData) => {
-                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.xPeaks, "xResult");
+                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "xResult");
             });
         } else if (id == "y") {
             Plotly.newPlot(self.yPlotVis, data, layout, {
@@ -230,7 +230,7 @@ var Matrix = class Matrix {
             });
             $(".modebar").addClass("hidden");
             self.yPlotVis.on('plotly_click', (eventData) => {
-                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.yPeaks, "yResult");
+                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "yResult");
             });
         }
     }
@@ -409,7 +409,7 @@ var Matrix = class Matrix {
         $(".modebar").addClass("hidden");
         $("#gatingSlider").addClass("hidden");
         self.gatePlotVis.on('plotly_click', (eventData) => {
-            self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, self.gatePeaks, "gating");
+            self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "gating");
         });
     }
 
@@ -562,6 +562,50 @@ var Matrix = class Matrix {
         });
     }
 
+    // Get peaks list by file name
+    getListByFilename(fileName, reset = false) {
+        var self = this;
+        switch (fileName) {
+            case "xResult":
+                if (reset)
+                    self.xPeaks = [];
+                return self.xPeaks;
+                break;
+            case "yResult":
+                if (reset)
+                    self.yPeaks = [];
+                return self.yPeaks;
+                break;
+            case "gating":
+                if (reset)
+                    self.gatePeaks = [];
+                return self.gatePeaks;
+                break;
+            default:
+                return;
+                break;
+        }
+    }
+
+    // Update  alist of peaks by file name
+    updateListByfileName(fileName, peakList) {
+        let self = this;
+        switch (fileName) {
+            case "xResult":
+                self.xPeaks = peakList;
+                break;
+            case "yResult":
+                self.yPeaks = peakList;
+                break;
+            case "gating":
+                self.gatePeaks = peakList;
+                break;
+            default:
+                return;
+                break;
+        }
+    }
+
     // Automatically get peaks from a plot
     autoPeaks(fileName, epsilon, treshold) {
         let self = this;
@@ -583,20 +627,7 @@ var Matrix = class Matrix {
             $("#foundPeaksBox" + fileName).empty();
             $("#foundPeaksBox" + fileName).removeClass("hidden");
             let index = 1;
-            let list;
-            switch (fileName) {
-                case "xResult":
-                    list = self.xPeaks;
-                    break;
-                case "yResult":
-                    list = self.yPeaks;
-                    break;
-                case "gating":
-                    list = self.gatePeaks;
-                    break;
-                default:
-                    break;
-            }
+            let list = self.getListByFilename(fileName, true);
             $("#foundPeaksBox" + fileName).append(`<div type="button" data-filename="${fileName}" class="btn btn-default btn-sm pickSelector">Add more peaks manually</div></br></br>`);
             for (var peak of peaks) {
 
@@ -612,7 +643,7 @@ var Matrix = class Matrix {
                 var y = selfSelector.data("y");
                 var fileName = selfSelector.data("filename");
                 self.highlightPoint(x, y, fileName);
-                console.log(list);
+                console.log(self.getListByFilename(fileName));
             });
             $(".peakColor").mouseout(function () {
                 var selfSelector = $(this);
@@ -623,8 +654,12 @@ var Matrix = class Matrix {
                 var selfSelector = $(this);
                 var x = selfSelector.data("x");
                 var y = selfSelector.data("y");
-                var index = list.indexOf([x, y]);
-                list.splice(index, 1);
+                var fileName = selfSelector.data("filename");
+                let peakList = self.getListByFilename(fileName);
+                peakList = peakList.filter(function (i) {
+                    return i[0] != x && i[1] != y;
+                });
+                self.updateListByfileName(fileName, peakList);
                 selfSelector.remove();
             });
             // Selezione picchi
@@ -642,8 +677,9 @@ var Matrix = class Matrix {
     }
 
     // adds a peak point to the list
-    newPeakPoint(x, y, list, fileName) {
+    newPeakPoint(x, y, fileName) {
         let self = this;
+        let list = self.getListByFilename(fileName);
         console.log(self.isPickingAllowed);
         if (self.isPickingAllowed) {
             list.push([x, y]);
@@ -656,6 +692,7 @@ var Matrix = class Matrix {
                 var y = selfSelector.data("y");
                 var fileName = selfSelector.data("filename");
                 self.highlightPoint(x, y, fileName);
+                console.log(self.getListByFilename(fileName));
             });
             $(".peakColor").mouseout(function () {
                 var selfSelector = $(this);
@@ -663,9 +700,17 @@ var Matrix = class Matrix {
                 self.stopHighlight(fileName);
             });
             $(".peakColor").on("click", function (e) {
-                var self = $(this);
-                self.remove();
-            })
+                var selfSelector = $(this);
+                var x = selfSelector.data("x");
+                var y = selfSelector.data("y");
+                var fileName = selfSelector.data("filename");
+                let peakList = self.getListByFilename(fileName);
+                peakList = peakList.filter(function (i) {
+                    return i[0] != x && i[1] != y;
+                });
+                self.updateListByfileName(fileName, peakList);
+                selfSelector.remove();
+            });
         } else return;
     }
 
@@ -727,7 +772,10 @@ var Matrix = class Matrix {
             name: 'Peaks',
             text: [`x:${x} y:${y}`],
             textposition: 'top',
-            type: 'scatter'
+            type: 'scatter',
+            textfont: {
+                size: 15
+            }
         };
 
         vis.data = [vis.data[0], trace];
