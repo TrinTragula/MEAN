@@ -814,6 +814,11 @@ var Matrix = class Matrix {
         let w = $(window).width();
         return [h, w];
     }
+
+    prepareCalibrating(fileName){
+        fs.createReadStream(`${fileName}.txt`).pipe(fs.createWriteStream('calibrating.txt'));
+        fs.createReadStream(`${fileName}_peaks.txt`).pipe(fs.createWriteStream('calibrating_peaks.txt'));
+    }
 }
 
 module.exports = Matrix;

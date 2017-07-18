@@ -36,7 +36,7 @@ const saveFile = function (content) {
     fs.writeFileSync(fileName, content);
 };
 
-const openNudat = function(){
+const openNudat = function () {
     var nudatWin = new BrowserWindow({
         width: 950,
         height: 875,
@@ -45,5 +45,15 @@ const openNudat = function(){
     nudatWin.loadURL(`http://www.nndc.bnl.gov/nudat2/`);
 }
 
+const openCalibration = function () {
+    var openCalibrationWin = new BrowserWindow({
+        width: 950,
+        height: 875,
+        icon: './icon.ico'
+    });
+    openCalibrationWin.loadURL(`file://${__dirname}/calibration.html`);
+}
+
 exports.saveFile = saveFile;
 exports.openNudat = openNudat;
+exports.openCalibration = openCalibration;
