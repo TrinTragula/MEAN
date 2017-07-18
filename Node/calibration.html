@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Coincidence - Calibration</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div>Peaks:</div>
+    </br>
+    <table class="calibrationTable">
+        <tr id="peaks"></tr>
+        <tr id="calibrated"></tr>
+    </table>
+
+    <script>
+        window.jQuery = window.$ = require('jquery');
+    </script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plotly.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
+    </script>
+    <script>
+        require('./calibration.js');
+    </script>
+</body>
+
+</html>

@@ -63,3 +63,25 @@ body {
     width: 15%;
     text-align: center;
 }
+
+.btn-fitting {
+    border-radius: 0px !important;
+    display: table-cell !important;
+    color: #000;
+    background-color: #f0ad4e !important;
+    border-color: #000000;
+}
+
+.calibrationTable td:nth-child(even) {
+    background-color: #f2f2f2
+}
+
+.calibrationTable .box {
+    border: solid rgba(167, 157, 157, 0.35) 1px;
+    padding: 9px;
+}
+
+.calibrationTable .boxth {
+    border: solid rgb(0, 0, 0) 1px;
+    padding: 9px;
+}

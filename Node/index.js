@@ -108,6 +108,14 @@ $(".backgroundRemoval").on("click", function (e) {
   $("#backgroundRemovalDiv").removeClass("hidden");
 });
 
+// Calibration / Fitting
+$(".calibration").on("click", function (e) {
+  let self = $(this);
+  let fileName = self.data("filename");
+  matrix.prepareCalibrating(fileName);
+  main.openCalibration();
+});
+
 $("#backgroundRemovalConfirm").on("click", function (e) {
   let self = $(this);
   let fileName = self.data("filename");
