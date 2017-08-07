@@ -20,13 +20,14 @@ namespace DataCruncher
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
             // Argomenti di input
-            var mode = args.Length < 1 ? "peaks" : args[0];
+            var mode = args.Length < 1 ? "fit-peak" : args[0];
             if (mode == "matrix") Matrix(args);
             if (mode == "gate") Gate(args);
             if (mode == "previewBackground") RemoveBackground(args, true);
             if (mode == "background") RemoveBackground(args);
             if (mode == "peaks") GetPeaks(args);
             if (mode == "binning") BinCount(args);
+            if (mode == "fit-peak") FitPeak(args);
 
             Console.WriteLine("Done!");
             #if DEBUG
@@ -136,6 +137,32 @@ namespace DataCruncher
             Binning.Count(data, fileName, binning);
 
             return;
+        }
+       
+        public static void FitPeak(string[] args)
+        {
+            var fileName = args.Length < 2 ? "calibrating" : args[1];
+            var peaksFileName = args.Length < 3 ? "calibrating_peaks" : args[2];
+            var index = args.Length < 4 ? 0 : Int32.Parse(args[3]);
+            var window = args.Length < 5 ? 10 : Int32.Parse(args[4]);
+
+            string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
+            var data = lines.Aggregate(new List<int>(), (p, c) =>
+            {
+                var value = Int32.Parse(c.Split(' ')[1]);
+                p.Add(value);
+                return p;
+            }).ToArray();
+
+            string[] peakLines = File.ReadAllLines(String.Format("{0}.txt", peaksFileName));
+            var peakData = peakLines.Aggregate(new List<int>(), (p, c) =>
+            {
+                var value = Int32.Parse(c.Split(' ')[0]);
+                p.Add(value);
+                return p;
+            }).ToArray();
+
+            GaussianFit.FitGaussian(data, peakData, index, window, fileName);
         }
     }
 }

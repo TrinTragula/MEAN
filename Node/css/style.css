@@ -72,6 +72,10 @@ body {
     border-color: #000000;
 }
 
+.calibrationTable {
+    text-align: center;
+}
+
 .calibrationTable td:nth-child(even) {
     background-color: #f2f2f2
 }
@@ -84,4 +88,10 @@ body {
 .calibrationTable .boxth {
     border: solid rgb(0, 0, 0) 1px;
     padding: 9px;
+}
+
+.peaks-title{
+    text-align: center;
+    border: solid rgb(0, 0, 0) 1px;
+    background: tomato;
 }

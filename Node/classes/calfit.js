@@ -9,7 +9,12 @@ const formatter = d3.format('.2f');
 var Calfit = class Calfit {
 
     constructor() {
-        this.fileName = "calibrating"
+        this.fileName = "calibrating";
+        this.executablePath = "DataCruncher/DataCruncher.exe";
+        this.peaks = [];
+        this.area = [];
+        this.centroid = [];
+        this.sigma = [];
     }
 
     populatePeaks() {
@@ -29,11 +34,16 @@ var Calfit = class Calfit {
         }
         $("#peaks").html(peaksString);
 
-        let fittingString = "<tr>";
-        fittingString += `<td id="ClikToFit-all" class="btn btn-fitting">Fit all</td>`
         for (var index in peaks) {
-            fittingString += `<td id="ClikToFit-${index}" class="btn btn-fitting">Click to fit</td>`;
-        }        
+            this.area[index] = 0;
+            this.centroid[index] = 0;
+            this.sigma[index] = 0;
+        }
+        let fittingString = "<tr>";
+        fittingString += `<td data-peak="all" class="clicktofit btn btn-fitting">Fit all</td>`
+        for (var index in peaks) {
+            fittingString += `<td data-peak="${index}" class="clicktofit btn btn-fitting">Click to fit</td>`;
+        }
         fittingString += "</tr><tr>";
         fittingString += `<td class="box">Area</td>`
         for (var index in peaks) {
@@ -50,8 +60,39 @@ var Calfit = class Calfit {
             fittingString += `<td id="Sigma-${index}" class="box"></td>`;
         }
         fittingString += "</tr>";
-        console.log(fittingString);
+        self.peaks = peaks;
         $("#peaks").after(fittingString);
+    }
+
+    fit(peak) {
+        let self = this;
+        if (peak != "all") {
+            self.doFit(peak);
+        } else {
+            for (var index in self.peaks) {
+                self.doFit(index);
+            }
+        }
+    }
+
+    doFit(peak) {
+        let self = this;
+        let params = ["fit-peak", `${self.fileName}`, `${self.fileName}_peaks`, peak * 1, 5];
+        child(self.executablePath, params, function (err, fileData) {
+            if (err) console.log("ERRORE: " + err);
+            let dataFile = fs.readFileSync(`${self.fileName}_${peak}_fitData.txt`, 'ascii');
+            console.log("Loaded fit data");
+            let dataLines = dataFile.split(":");
+            let area = dataLines[0];
+            let centroid = dataLines[1];
+            let sigma = dataLines[2];
+            $(`#Area-${peak}`).text(area);
+            self.area[peak] = area;
+            $(`#Centroid-${peak}`).text(centroid);
+            self.centroid[peak] = centroid;
+            $(`#Sigma-${peak}`).text(sigma);
+            self.sigma[peak] = sigma;
+        });
     }
 }
 

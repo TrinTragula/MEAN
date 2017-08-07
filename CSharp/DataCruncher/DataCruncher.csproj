@@ -71,6 +71,10 @@
       <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MathNet.Numerics, Version=3.20.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.20.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -96,6 +100,7 @@
   <ItemGroup>
     <Compile Include="Analysis\Background.cs" />
     <Compile Include="Analysis\Binning.cs" />
+    <Compile Include="Analysis\GaussianFit.cs" />
     <Compile Include="Analysis\Peaks.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Program.cs" />
