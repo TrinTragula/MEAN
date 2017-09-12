@@ -45,6 +45,15 @@ const openNudat = function () {
     nudatWin.loadURL(`http://www.nndc.bnl.gov/nudat2/`);
 }
 
+const openToi = function () {
+    var toiWin = new BrowserWindow({
+        width: 500,
+        height: 875,
+        icon: './icon.ico'
+    });
+    toiWin.loadURL(`file://${__dirname}/toi.html`);
+}
+
 const openCalibration = function () {
     var openCalibrationWin = new BrowserWindow({
         width: 950,
@@ -56,4 +65,5 @@ const openCalibration = function () {
 
 exports.saveFile = saveFile;
 exports.openNudat = openNudat;
+exports.openToi = openToi;
 exports.openCalibration = openCalibration;

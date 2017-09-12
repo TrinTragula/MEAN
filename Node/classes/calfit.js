@@ -61,6 +61,16 @@ var Calfit = class Calfit {
         }
         fittingString += "</tr>";
         self.peaks = peaks;
+
+        let calibrationString = "<tr>";
+        calibrationString += `<td class="box">Energy for calibration</td>`
+        for (var index in peaks) {
+            calibrationString += `<td class="box"><input id="calibration-${index}" type="number" style="width: 100%;"/></td>`;
+        }
+        calibrationString += "</tr>";
+        
+        // In inverse order since it's last first
+        $("#peaks").after(calibrationString);
         $("#peaks").after(fittingString);
     }
 
@@ -83,14 +93,14 @@ var Calfit = class Calfit {
             let dataFile = fs.readFileSync(`${self.fileName}_${peak}_fitData.txt`, 'ascii');
             console.log("Loaded fit data");
             let dataLines = dataFile.split(":");
-            let area = dataLines[0];
-            let centroid = dataLines[1];
-            let sigma = dataLines[2];
-            $(`#Area-${peak}`).text(area);
+            let area = dataLines[0] * 1;
+            let centroid = dataLines[1] * 1;
+            let sigma = dataLines[2] * 1;
+            $(`#Area-${peak}`).text(area.toFixed(4));
             self.area[peak] = area;
-            $(`#Centroid-${peak}`).text(centroid);
+            $(`#Centroid-${peak}`).text(centroid.toFixed(4));
             self.centroid[peak] = centroid;
-            $(`#Sigma-${peak}`).text(sigma);
+            $(`#Sigma-${peak}`).text(sigma.toFixed(4));
             self.sigma[peak] = sigma;
         });
     }

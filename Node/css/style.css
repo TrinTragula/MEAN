@@ -83,6 +83,7 @@ body {
 .calibrationTable .box {
     border: solid rgba(167, 157, 157, 0.35) 1px;
     padding: 9px;
+    max-width: 85px;
 }
 
 .calibrationTable .boxth {
@@ -90,7 +91,14 @@ body {
     padding: 9px;
 }
 
-.peaks-title{
+.toiTable .boxth {
+    border: solid rgb(0, 0, 0) 1px;
+    padding: 9px;
+    background: blanchedalmond;
+    text-align: center;
+}
+
+.peaks-title {
     text-align: center;
     border: solid rgb(0, 0, 0) 1px;
     background: tomato;
