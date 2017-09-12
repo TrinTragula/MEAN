@@ -13,7 +13,7 @@ let calfit = new Calfit();
 $(function () {
     calfit.populatePeaks();
 
-    $(".clicktofit").on("click", function(e) {
+    $(".clicktofit").on("click", function (e) {
         e.preventDefault();
         var self = $(this);
         var peak = self.data("peak");

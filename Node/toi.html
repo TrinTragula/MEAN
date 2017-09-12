@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Coincidence - Spectra</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dataTables.min.css">
+</head>
+
+<body>
+    <div class="peaks-title">Gamma energy search (from the <a href="http://nucleardata.nuclear.lu.se/toi/radSearch.asp">TOI database</a>)</div>
+    </br>
+    <div style="text-align: center;">
+        <table>
+            <tr>
+                <td><b>From: &nbsp;</b></td>
+                <td><input id="from" type="number"></td>
+                <td><b>&nbsp; eV</b></td>
+            </tr>
+            <tr>
+                <td><b>To: &nbsp;</b></td>
+                <td><input id="to" type="number"></td>
+                <td><b>&nbsp; eV</b></td>
+            </tr>
+            <tr>
+                <td><div id="searchtoi" class="btn btn-primary" style="margin: 15px;">Search</div></td>
+            </tr>
+        </table>
+        <hr>
+        <table id="toiTable" class="toiTable" style="width: 100%;"></table>
+    </div>
+
+    <script>
+        window.jQuery = window.$ = require('jquery');
+    </script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plotly.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>    
+    </script>
+    <script>
+        require('./toi.js');
+    </script>
+</body>
+
+</html>

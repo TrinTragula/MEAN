@@ -18,6 +18,13 @@ $("#nudat").on("click", function (e) {
   main.openNudat();
 });
 
+// Apro interfaccia toi scraper
+$("#toi").on("click", function (e) {
+  e.preventDefault();
+  main.openToi();
+});
+
+
 // Importa vecchio db
 $("#importDbButton").on("click", function (e) {
   let dbPath;
