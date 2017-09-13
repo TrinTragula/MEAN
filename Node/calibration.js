@@ -20,5 +20,11 @@ $(function () {
         calfit.fit(peak);
     });
 
+    $("#calibrate-btn").on("click", function(e) {
+        e.preventDefault();
+        var self = $(this);
+        calfit.calibrate();
+    });
+
 
 });

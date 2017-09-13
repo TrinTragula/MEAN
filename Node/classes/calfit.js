@@ -33,6 +33,12 @@ var Calfit = class Calfit {
             peaksString += `<th class="boxth">x: ${peak[0]} - y:${peak[1]}</th>`;
         }
         $("#peaks").html(peaksString);
+        
+        let windowsString = "<th class='boxth'>Window</th>"
+        for (var index in peaks) {
+            windowsString += `<th class="boxth"><input style='width:100%;' id="${index}-calibration-window" type="number" value="5"/></th>`;
+        }
+        $("#windows").html(windowsString);
 
         for (var index in peaks) {
             this.area[index] = 0;
@@ -70,8 +76,8 @@ var Calfit = class Calfit {
         calibrationString += "</tr>";
         
         // In inverse order since it's last first
-        $("#peaks").after(calibrationString);
-        $("#peaks").after(fittingString);
+        $("#windows").after(calibrationString);
+        $("#windows").after(fittingString);
     }
 
     fit(peak) {
@@ -87,7 +93,9 @@ var Calfit = class Calfit {
 
     doFit(peak) {
         let self = this;
-        let params = ["fit-peak", `${self.fileName}`, `${self.fileName}_peaks`, peak * 1, 5];
+        let windowValue = $("#" + peak + "-calibration-window").val();
+        let window = isNaN(windowValue) ? 5 : windowValue * 1;
+        let params = ["fit-peak", `${self.fileName}`, `${self.fileName}_peaks`, peak * 1, window];
         child(self.executablePath, params, function (err, fileData) {
             if (err) console.log("ERRORE: " + err);
             let dataFile = fs.readFileSync(`${self.fileName}_${peak}_fitData.txt`, 'ascii');
@@ -103,6 +111,20 @@ var Calfit = class Calfit {
             $(`#Sigma-${peak}`).text(sigma.toFixed(4));
             self.sigma[peak] = sigma;
         });
+    }
+
+    calibrate(){
+        let self = this;
+        for (let index in self.centroid){
+            let energyVal = $(`#calibration-${index}`).val();
+            let centroid = self.centroid[index];
+            if (!isNaN(energyVal) && !isNaN(centroid) && energyVal && energyVal != "" && centroid && centroid != ""){
+                let energy = energyVal * 1;
+                console.log(index);
+                console.log(energy);
+                console.log(self.centroid[index]);
+            }
+        }
     }
 }
 
