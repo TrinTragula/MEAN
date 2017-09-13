@@ -180,7 +180,7 @@ namespace DataCruncher.Cruncher
                     {
                         var line = sr.ReadLine();
                         var line1 = sr1.ReadLine();
-                        while (sr.Peek() >= 0 && sr1.Peek() >= 0)
+                        while (sr.Peek() != -1 && sr1.Peek() != -1)
                         {
                             var timeStamp = Decimal.Parse(line.Split(' ')[0]);
                             var value = Int32.Parse(line.Split(' ')[1]);
