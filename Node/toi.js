@@ -28,12 +28,14 @@ $(function () {
                 var table = $("#toiTable");
                 table.append("<tr><th class='boxth'>Energy</th><th class='boxth'>Intensity</th><th class='boxth'>Element</th><th class='boxth'>Decay</th></tr>")
                 for (var x of data) {
-                    console.log(x);
+                    //console.log(x);
                     table.append("<tr>");
                     appendLineToTable(x, table);
                     table.append("</tr>");
                 }
             });
+
+            Toi.getPossibleElements([438,574]);
         }
     });
 
