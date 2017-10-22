@@ -81,7 +81,7 @@ namespace DataCruncher
 
         public static void RemoveBackground(string[] args, bool preview = false)
         {
-            var fileName = args.Length < 2 ? "xResult" : args[1];
+            var fileName = args.Length < 2 ? "data/xResult" : args[1];
             var randomPoints = args.Length < 3 ? 100 : Int32.Parse(args[2]);
             var iterations = args.Length < 4 ? 10 : Int32.Parse(args[3]);
             string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
@@ -102,7 +102,7 @@ namespace DataCruncher
 
         public static void GetPeaks(string[] args)
         {
-            var fileName = args.Length < 2 ? "xResult" : args[1];
+            var fileName = args.Length < 2 ? "data/xResult" : args[1];
             var epsilon = args.Length < 3 ? 50 : Int32.Parse(args[2]);
             var treshold = args.Length < 4 ? 300 : Int32.Parse(args[3]);
 
@@ -123,7 +123,7 @@ namespace DataCruncher
 
         public static void BinCount(string[] args)
         {
-            var fileName = args.Length < 2 ? "xResult" : args[1];
+            var fileName = args.Length < 2 ? "data/xResult" : args[1];
             var binning = args.Length < 3 ? 2 : Int32.Parse(args[2]);
 
             string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
@@ -141,8 +141,8 @@ namespace DataCruncher
        
         public static void FitPeak(string[] args)
         {
-            var fileName = args.Length < 2 ? "calibrating" : args[1];
-            var peaksFileName = args.Length < 3 ? "calibrating_peaks" : args[2];
+            var fileName = args.Length < 2 ? "data/calibrating" : args[1];
+            var peaksFileName = args.Length < 3 ? "data/calibrating_peaks" : args[2];
             var index = args.Length < 4 ? 0 : Int32.Parse(args[3]);
             var window = args.Length < 5 ? 10 : Int32.Parse(args[4]);
 

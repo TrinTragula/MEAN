@@ -39,7 +39,7 @@ var Matrix = class Matrix {
         let params = ["matrix", nCanaliX, nCanaliY];
         child(this.executablePath, params, function (err, fileData) {
             self.wasResetted = true;
-            let dataFile = fs.readFileSync("result.txt", 'ascii');
+            let dataFile = fs.readFileSync("data/result.txt", 'ascii');
             if (err) console.log("ERRORE: " + err)
             console.log("Loaded");
             let dataLines = dataFile.split("\n");
@@ -76,11 +76,11 @@ var Matrix = class Matrix {
                 let value = yFitData[key];
                 yString = yString.concat(`${key} ${value}\r\n`);
             }
-            fs.writeFile("xResult.txt", xString, function (err) {
+            fs.writeFile("data/xResult.txt", xString, function (err) {
                 if (err)
                     return console.log(err);
             });
-            fs.writeFile("yResult.txt", yString, function (err) {
+            fs.writeFile("data/yResult.txt", yString, function (err) {
                 if (err)
                     return console.log(err);
             });
@@ -133,7 +133,7 @@ var Matrix = class Matrix {
         // Lancio il programma
         child(this.executablePath, params, function (err, fileData) {
             self.wasResetted = true;
-            let dataFile = fs.readFileSync("result.txt", 'ascii');
+            let dataFile = fs.readFileSync("data/result.txt", 'ascii');
             if (err) console.log("ERRORE: " + err)
             console.log("Loaded");
             let dataLines = dataFile.split("\n");
@@ -222,7 +222,7 @@ var Matrix = class Matrix {
             });
             $(".modebar").addClass("hidden");
             self.xPlotVis.on('plotly_click', (eventData) => {
-                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "xResult");
+                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "data/xResult");
             });
         } else if (id == "y") {
             Plotly.newPlot(self.yPlotVis, data, layout, {
@@ -230,7 +230,7 @@ var Matrix = class Matrix {
             });
             $(".modebar").addClass("hidden");
             self.yPlotVis.on('plotly_click', (eventData) => {
-                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "yResult");
+                self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "data/yResult");
             });
         }
     }
@@ -275,7 +275,7 @@ var Matrix = class Matrix {
         else
             parameters = ["matrix", numeroCanaliX, numeroCanaliY];
         child(self.executablePath, parameters, function (err, data) {
-            let dataFile = fs.readFileSync("result.txt", 'ascii');
+            let dataFile = fs.readFileSync("data/result.txt", 'ascii');
             if (err) console.log("ERRORE: " + err)
             console.log("Loaded");
             let dataLines = dataFile.split("\n");
@@ -339,7 +339,7 @@ var Matrix = class Matrix {
             params = ["gate", id, self.y1, self.y2, nCanali];
         child(self.executablePath, params, function (err, fileData) {
             if (err) console.log("ERRORE: " + err)
-            let dataFile = fs.readFileSync("gating.txt", 'ascii');
+            let dataFile = fs.readFileSync("data/gating.txt", 'ascii');
             console.log("Loaded gating");
             let dataLines = dataFile.split("\n");
             let metaData = dataLines.shift().split(" ");
@@ -409,7 +409,7 @@ var Matrix = class Matrix {
         $(".modebar").addClass("hidden");
         $("#gatingSlider").addClass("hidden");
         self.gatePlotVis.on('plotly_click', (eventData) => {
-            self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "gating");
+            self.newPeakPoint(eventData.points[0].x, eventData.points[0].y, "data/gating");
         });
     }
 
@@ -566,17 +566,17 @@ var Matrix = class Matrix {
     getListByFilename(fileName, reset = false) {
         var self = this;
         switch (fileName) {
-            case "xResult":
+            case "data/xResult":
                 if (reset)
                     self.xPeaks = [];
                 return self.xPeaks;
                 break;
-            case "yResult":
+            case "data/yResult":
                 if (reset)
                     self.yPeaks = [];
                 return self.yPeaks;
                 break;
-            case "gating":
+            case "data/gating":
                 if (reset)
                     self.gatePeaks = [];
                 return self.gatePeaks;
@@ -591,13 +591,13 @@ var Matrix = class Matrix {
     updateListByfileName(fileName, peakList) {
         let self = this;
         switch (fileName) {
-            case "xResult":
+            case "data/xResult":
                 self.xPeaks = peakList;
                 break;
-            case "yResult":
+            case "data/yResult":
                 self.yPeaks = peakList;
                 break;
-            case "gating":
+            case "data/gating":
                 self.gatePeaks = peakList;
                 break;
             default:
@@ -624,16 +624,16 @@ var Matrix = class Matrix {
                     peaks.push([xValue * 1, yValue.split("\n")[0] * 1]);
             }
             console.log(peaks);
-            $("#foundPeaksBox" + fileName).empty();
-            $("#foundPeaksBox" + fileName).removeClass("hidden");
+            $("div[id='foundPeaksBox" + fileName + "']").empty();
+            $("div[id='foundPeaksBox" + fileName + "']").removeClass("hidden");
             let index = 1;
             let list = self.getListByFilename(fileName, true);
-            $("#foundPeaksBox" + fileName).append(`<div type="button" data-filename="${fileName}" class="btn btn-default btn-sm pickSelector">Add more peaks manually</div></br></br>`);
+            $("div[id='foundPeaksBox" + fileName + "']").append(`<div type="button" data-filename="${fileName}" class="btn btn-default btn-sm pickSelector">Add more peaks manually</div></br></br>`);
             for (var peak of peaks) {
 
                 let string =
                     `<div class="peakColor" data-filename="${fileName}" data-x="${peak[0]}" data-y="${peak[1]}"><b>x:</b> ${peak[0]} <b>y:</b>${peak[1]}</div>`
-                $("#foundPeaksBox" + fileName).append(string);
+                $("div[id='foundPeaksBox" + fileName + "']").append(string);
                 list.push([peak[0], peak[1]]);
                 index++;
             }
@@ -680,12 +680,13 @@ var Matrix = class Matrix {
     newPeakPoint(x, y, fileName) {
         let self = this;
         let list = self.getListByFilename(fileName);
+        console.log(fileName);
         console.log(self.isPickingAllowed);
         if (self.isPickingAllowed) {
             list.push([x, y]);
             let string =
                 `<div class="peakColor" data-filename="${fileName}" data-x="${x}" data-y="${y}"><b>x:</b> ${x} <b>y:</b>${y}</div>`
-            $("#foundPeaksBox" + fileName).append(string);
+            $("div[id='foundPeaksBox" + fileName + "']").append(string);
             $(".peakColor").mouseover(function () {
                 var selfSelector = $(this);
                 var x = selfSelector.data("x");
@@ -735,11 +736,11 @@ var Matrix = class Matrix {
                     binData[value] += count;
                 }
             }
-            if (fileName == "xResult") {
+            if (fileName == "data/xResult") {
                 self.drawFitGraph(binData, "x")
-            } else if (fileName == "yResult") {
+            } else if (fileName == "data/yResult") {
                 self.drawFitGraph(binData, "y")
-            } else if (fileName == "gating") {
+            } else if (fileName == "data/gating") {
                 self.drawGatePlot(binData)
             }
         });
@@ -794,13 +795,13 @@ var Matrix = class Matrix {
         let vis;
         //determine the vis
         switch (fileName) {
-            case "xResult":
+            case "data/xResult":
                 vis = self.xPlotVis;
                 break;
-            case "yResult":
+            case "data/yResult":
                 vis = self.yPlotVis;
                 break;
-            case "gating":
+            case "data/gating":
                 vis = self.gatePlotVis;
                 break;
             default:
@@ -816,8 +817,8 @@ var Matrix = class Matrix {
     }
 
     prepareCalibrating(fileName){
-        fs.createReadStream(`${fileName}.txt`).pipe(fs.createWriteStream('calibrating.txt'));
-        fs.createReadStream(`${fileName}_peaks.txt`).pipe(fs.createWriteStream('calibrating_peaks.txt'));
+        fs.createReadStream(`${fileName}.txt`).pipe(fs.createWriteStream('data/calibrating.txt'));
+        fs.createReadStream(`${fileName}_peaks.txt`).pipe(fs.createWriteStream('data/calibrating_peaks.txt'));
     }
 }
 
