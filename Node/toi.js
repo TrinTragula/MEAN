@@ -39,5 +39,29 @@ $(function () {
         }
     });
 
+    $("#searchtoicsv").on("click", function (e) {
+        e.preventDefault();
+        var self = $(this);
+        var energycsv = $("#energycsv").val();
+        var error = $("#error").val() || 0;
+        error = error * 1;
+        if (energycsv) {
+            var energies = energycsv.split(",");
+            $("#toiTable").empty();
+            console.log(energies);
+            Toi.getPossibleElementsWithError(energies, error).then(data => {
+                var table = $("#toiTable");
+                console.log(data);
+                table.append("<tr><th class='boxth'>Element</th></tr>")
+                for (var x of data) {
+                    //console.log(x);
+                    table.append("<tr>");
+                    table.append(x);
+                    table.append("</tr>");
+                }
+            });
 
+            Toi.getPossibleElements([438,574]);
+        }
+    });
 });

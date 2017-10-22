@@ -47,7 +47,7 @@ const openNudat = function () {
 
 const openToi = function () {
     var toiWin = new BrowserWindow({
-        width: 500,
+        width: 1033,
         height: 875,
         icon: './icon.ico'
     });
