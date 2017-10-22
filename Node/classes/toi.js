@@ -8,6 +8,7 @@ var cheerio = require('cheerio');
  * @param {number} energy (integer)
  */
 function getGammaAtEnergy(energy) {
+    energy = energy * 1;
     return new Promise(function (resolve, reject) {
         let url = 'http://nucleardata.nuclear.lu.se/toi/Gamma.asp';
         var options = {
@@ -37,13 +38,15 @@ function getGammaAtEnergy(energy) {
  * @param {number} error (integer)
  */
 function getGammaAtEnergyWithError(energy, error) {
+    energy = energy * 1;
+    error = error * 1;
     return new Promise(function (resolve, reject) {
         let url = 'http://nucleardata.nuclear.lu.se/toi/Gamma.asp';
         var options = {
             uri: url,
             qs: {
                 Min: energy - error,
-                Max: energy + error
+                Max: energy + (error == 0 ? 1 : error)
             },
             headers: {
                 'User-Agent': 'Coincidence @2017'
@@ -66,6 +69,8 @@ function getGammaAtEnergyWithError(energy, error) {
  * @param {number} to energy (integer)
  */
 function getGammaAtEnergyRange(startEnergy, endEnergy) {
+    startEnergy = startEnergy * 1;
+    endEnergy = endEnergy * 1;
     return new Promise(function (resolve, reject) {
         let url = 'http://nucleardata.nuclear.lu.se/toi/Gamma.asp';
         var options = {
@@ -90,29 +95,29 @@ function getGammaAtEnergyRange(startEnergy, endEnergy) {
 }
 
 /**
- * Get all the possible elements with the specified energies within an error
+ * Get all the possible elements with the specified energies
  * @param {number[]} energyArray 
- * @param {number} error 
  */
 function getPossibleElements(energyArray) {
-    let data = [];
-    let queries = [];
-    for (var energy of energyArray) {
-        queries.push(getGammaAtEnergy(energy));
-    }
-    Promise.all(queries).then(values => {
-        values = values.map(x => x.map(y => y.Element));
-        for (var element of values[0]) {
-            //console.log(element);
-            var present = true;
-            for (var value of values) {
-                if (value.indexOf(element) == -1) {
-                    present = false;
-                }
-            }
-            if (present) data.push(element);
+    return new Promise(function (resolve, reject) {
+        let data = [];
+        let queries = [];
+        for (var energy of energyArray) {
+            queries.push(getGammaAtEnergy(energy));
         }
-        console.log(data);
+        Promise.all(queries).then(values => {
+            values = values.map(x => x.map(y => y.Element));
+            for (var element of values[0]) {
+                var present = true;
+                for (var value of values) {
+                    if (value.indexOf(element) == -1) {
+                        present = false;
+                    }
+                }
+                if (present) data.push(element);
+            }
+            resolve(data);
+        });
     });
 }
 
@@ -122,24 +127,27 @@ function getPossibleElements(energyArray) {
  * @param {number} error 
  */
 function getPossibleElementsWithError(energyArray, error) {
-    let data = [];
-    let queries = [];
-    for (var energy of energyArray) {
-        queries.push(getGammaAtEnergyWithError(energy, error));
-    }
-    Promise.all(queries).then(values => {
-        values = values.map(x => x.map(y => y.Element));
-        for (var element of values[0]) {
-            //console.log(element);
-            var present = true;
-            for (var value of values) {
-                if (value.indexOf(element) == -1) {
-                    present = false;
-                }
-            }
-            if (present) data.push(element);
+    return new Promise(function (resolve, reject) {
+        let data = [];
+        let queries = [];
+        for (var energy of energyArray) {
+            queries.push(getGammaAtEnergyWithError(energy, error));
         }
-        console.log(data);
+        Promise.all(queries).then(values => {
+            values = values.map(x => x.map(y => y.Element));
+            possibleElements = values[0];
+            values.shift();
+            for (var element of possibleElements) {
+                present = true;
+                for (var value of values) {
+                    if (value.indexOf(element) == -1) {
+                        present = false;
+                    }
+                }
+                if (present) data.push(element);
+            }
+            resolve(data);
+        });
     });
 }
 
@@ -178,5 +186,6 @@ var parseGammaData = function (htmlString, energy) {
 module.exports = {
     getGammaAtEnergy,
     getGammaAtEnergyRange,
-    getPossibleElements
+    getPossibleElements,
+    getPossibleElementsWithError
 };

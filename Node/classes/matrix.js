@@ -816,9 +816,23 @@ var Matrix = class Matrix {
         return [h, w];
     }
 
+    /**
+     * Aggiorna il file dei picchi da cui poi fare la calibrazione
+     */
     prepareCalibrating(fileName){
-        fs.createReadStream(`${fileName}.txt`).pipe(fs.createWriteStream('data/calibrating.txt'));
-        fs.createReadStream(`${fileName}_peaks.txt`).pipe(fs.createWriteStream('data/calibrating_peaks.txt'));
+        let self = this;
+        let list = self.getListByFilename(fileName);
+        let str = "";
+        for (var l of list){
+            str += `${l[0]} ${l[1]}\n`
+        }
+        fs.writeFile(`${fileName}_peaks.txt`, str, function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            fs.createReadStream(`${fileName}.txt`).pipe(fs.createWriteStream('data/calibrating.txt'));
+            fs.createReadStream(`${fileName}_peaks.txt`).pipe(fs.createWriteStream('data/calibrating_peaks.txt'));
+        }); 
     }
 }
 

@@ -11,32 +11,57 @@
 <body>
     <div class="peaks-title">Gamma energy search (from the <a href="http://nucleardata.nuclear.lu.se/toi/radSearch.asp">TOI database</a>)</div>
     </br>
-    <div style="text-align: center;">
-        <table>
-            <tr>
-                <td><b>From: &nbsp;</b></td>
-                <td><input id="from" type="number"></td>
-                <td><b>&nbsp; eV</b></td>
-            </tr>
-            <tr>
-                <td><b>To: &nbsp;</b></td>
-                <td><input id="to" type="number"></td>
-                <td><b>&nbsp; eV</b></td>
-            </tr>
-            <tr>
-                <td><div id="searchtoi" class="btn btn-primary" style="margin: 15px;">Search</div></td>
-            </tr>
-        </table>
-        <hr>
-        <table id="toiTable" class="toiTable" style="width: 100%;"></table>
+    <div class=row>
+        <div class="col-md-6" style="text-align: center;border-right: solid aliceblue;">
+            <h3 style="text-align:left">Search elements in range:</h3>
+            <table>
+                <tr>
+                    <td><b>From: &nbsp;</b></td>
+                    <td><input id="from" type="number"></td>
+                    <td><b>&nbsp; eV</b></td>
+                </tr>
+                <tr>
+                    <td><b>To: &nbsp;</b></td>
+                    <td><input id="to" type="number"></td>
+                    <td><b>&nbsp; eV</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="searchtoi" class="btn btn-primary" style="margin: 15px;">Search</div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6" style="text-align: center;">
+            <h3 style="margin-left: 5px; text-align: left;">Find elements from energies:</h3>
+            <table>
+                <tr>
+                    <td><b>Energy CSV: &nbsp;</b></td>
+                    <td><input id="energycsv"></td>
+                    <td><b>&nbsp; eV</b></td>
+                </tr>
+                <tr>
+                        <td><b>Error: &nbsp;</b></td>
+                        <td><input id="error" type="number"></td>
+                        <td><b>&nbsp; eV</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="searchtoicsv" class="btn btn-primary" style="margin: 15px;">Search</div>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
+    <hr>
+    <table id="toiTable" class="toiTable" style="width: 100%;"></table>
 
     <script>
         window.jQuery = window.$ = require('jquery');
     </script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/plotly.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>    
+    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
     </script>
     <script>
         require('./toi.js');
