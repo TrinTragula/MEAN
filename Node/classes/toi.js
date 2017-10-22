@@ -32,6 +32,35 @@ function getGammaAtEnergy(energy) {
 }
 
 /**
+ * Get gamma decay for elements at the specified energy with an error +-, return a promise
+ * @param {number} energy (integer)
+ * @param {number} error (integer)
+ */
+function getGammaAtEnergyWithError(energy, error) {
+    return new Promise(function (resolve, reject) {
+        let url = 'http://nucleardata.nuclear.lu.se/toi/Gamma.asp';
+        var options = {
+            uri: url,
+            qs: {
+                Min: energy - error,
+                Max: energy + error
+            },
+            headers: {
+                'User-Agent': 'Coincidence @2017'
+            }
+        };
+        rp(options)
+            .then(function (htmlString) {
+                data = parseGammaData(htmlString, energy);
+                resolve(data);
+            })
+            .catch(function (err) {
+                reject("Failed.");
+            });
+    });
+}
+
+/**
  * Get gamma decay for elements at the specified energy range. return a promise
  * @param {number} from energy (integer)
  * @param {number} to energy (integer)
@@ -60,26 +89,58 @@ function getGammaAtEnergyRange(startEnergy, endEnergy) {
     });
 }
 
-function getPossibleElements(energyArray){
+/**
+ * Get all the possible elements with the specified energies within an error
+ * @param {number[]} energyArray 
+ * @param {number} error 
+ */
+function getPossibleElements(energyArray) {
     let data = [];
     let queries = [];
-    for (var energy of energyArray){
+    for (var energy of energyArray) {
         queries.push(getGammaAtEnergy(energy));
     }
-    Promise.all(queries).then(values => { 
-        values = values.map( x => x.map( y => y.Element));
-        for (var element of values[0]){
+    Promise.all(queries).then(values => {
+        values = values.map(x => x.map(y => y.Element));
+        for (var element of values[0]) {
             //console.log(element);
             var present = true;
-            for (var value of values){
-                if (value.indexOf(element) == -1){
+            for (var value of values) {
+                if (value.indexOf(element) == -1) {
                     present = false;
                 }
             }
             if (present) data.push(element);
         }
         console.log(data);
-      });
+    });
+}
+
+/**
+ * Get all the possible elements with the specified energies within an error
+ * @param {number[]} energyArray 
+ * @param {number} error 
+ */
+function getPossibleElementsWithError(energyArray, error) {
+    let data = [];
+    let queries = [];
+    for (var energy of energyArray) {
+        queries.push(getGammaAtEnergyWithError(energy, error));
+    }
+    Promise.all(queries).then(values => {
+        values = values.map(x => x.map(y => y.Element));
+        for (var element of values[0]) {
+            //console.log(element);
+            var present = true;
+            for (var value of values) {
+                if (value.indexOf(element) == -1) {
+                    present = false;
+                }
+            }
+            if (present) data.push(element);
+        }
+        console.log(data);
+    });
 }
 
 var parseGammaData = function (htmlString, energy) {

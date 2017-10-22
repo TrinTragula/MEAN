@@ -131,7 +131,7 @@ namespace DataCruncher.Cruncher
                 channel2 = getChannel(channel2, yChanMin, yInterval);
                 result[channel, channel2] += 1;
             }
-            using (StreamWriter writetext = new StreamWriter("result.txt"))
+            using (StreamWriter writetext = new StreamWriter("data/result.txt"))
             {
                 writetext.WriteLine("{0} {1} {2} {3}", xInterval, xChanMin, yInterval, yChanMin);
                 for (var j = 0; j < result.GetLength(0); j++)
@@ -256,7 +256,7 @@ namespace DataCruncher.Cruncher
                 channel = getChannel(channel, min, interval);
                 result[channel] += 1;
             }
-            using (StreamWriter writetext = new StreamWriter("gating.txt"))
+            using (StreamWriter writetext = new StreamWriter("data/gating.txt"))
             {
                 writetext.WriteLine("{0} {1}", interval, min);
                 for (var j = 0; j < result.GetLength(0); j++)

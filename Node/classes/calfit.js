@@ -9,8 +9,8 @@ const formatter = d3.format('.2f');
 var Calfit = class Calfit {
 
     constructor() {
-        this.fileName = "calibrating";
-        this.executablePath = "DataCruncher/DataCruncher.exe";
+        this.fileName = "data/calibrating";
+        this.executablePath = "python";
         this.peaks = [];
         this.area = [];
         this.centroid = [];
@@ -71,7 +71,7 @@ var Calfit = class Calfit {
         let calibrationString = "<tr>";
         calibrationString += `<td class="box">Energy for calibration</td>`
         for (var index in peaks) {
-            calibrationString += `<td class="box"><input id="calibration-${index}" type="number" style="width: 100%;"/></td>`;
+            calibrationString += `<td class="box"><input id="calibration-${index}" class="calibration-energy" data-index="${index}" type="number" style="width: 100%;"/></td>`;
         }
         calibrationString += "</tr>";
         
@@ -95,7 +95,8 @@ var Calfit = class Calfit {
         let self = this;
         let windowValue = $("#" + peak + "-calibration-window").val();
         let window = isNaN(windowValue) ? 5 : windowValue * 1;
-        let params = ["fit-peak", `${self.fileName}`, `${self.fileName}_peaks`, peak * 1, window];
+        let params = ["py/gauss.py", `${self.fileName}.txt`, `${self.fileName}_peaks.txt`, peak * 1, window];
+        console.log(self.executablePath + " " + params.join(" ") + " called.");
         child(self.executablePath, params, function (err, fileData) {
             if (err) console.log("ERRORE: " + err);
             let dataFile = fs.readFileSync(`${self.fileName}_${peak}_fitData.txt`, 'ascii');
