@@ -35,7 +35,7 @@ $(function () {
                 }
             });
 
-            Toi.getPossibleElements([438,574]);
+            Toi.getPossibleElements([438, 574]);
         }
     });
 
@@ -52,16 +52,14 @@ $(function () {
             Toi.getPossibleElementsWithError(energies, error).then(data => {
                 var table = $("#toiTable");
                 console.log(data);
-                table.append("<tr><th class='boxth'>Element</th></tr>")
+                table.append("<tr><th class='boxth'>Possible elements</th></tr>")
                 for (var x of data) {
                     //console.log(x);
-                    table.append("<tr>");
-                    table.append(x);
-                    table.append("</tr>");
+                    table.append("<tr><td style='text-align: center;border: solid 1px black;padding: 10px;'>" + x + "</td></tr>");
                 }
             });
 
-            Toi.getPossibleElements([438,574]);
+            Toi.getPossibleElements([438, 574]);
         }
     });
 });
