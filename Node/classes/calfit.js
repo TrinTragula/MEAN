@@ -116,14 +116,18 @@ var Calfit = class Calfit {
 
     calibrate(){
         let self = this;
+        let calibrationData = [];
         for (let index in self.centroid){
             let energyVal = $(`#calibration-${index}`).val();
             let centroid = self.centroid[index];
+            let area = self.area[index];
             if (!isNaN(energyVal) && !isNaN(centroid) && energyVal && energyVal != "" && centroid && centroid != ""){
                 let energy = energyVal * 1;
-                console.log(index);
-                console.log(energy);
-                console.log(self.centroid[index]);
+                console.log("Index:" + index);
+                console.log("Value:" + energy);
+                console.log("Area:" + area);
+                console.log("Centroid:" + self.centroid[index]);
+                calibrationData.push(`${energy} ${area} ${centroid}`)
             }
         }
     }

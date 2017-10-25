@@ -21,21 +21,36 @@
                 <tr id="calibrated"></tr>
             </tbody>
         </table>
-        <div>
-            <button id="calibrate-btn">Calibrate!</button>
+        <br>
+        <div id="calibrate-btn" class="btn btn-default" style="padding: 4.5px;">Calibrate using fitted data</div>
+        <div style="width:50%;display:inline-block;margin: -11px;position: relative;right: -15px;">
+            <input id="file-calibration" type="file" class="filestyle" data-buttonText="&nbsp;Calibrate using previous data" data-size="sm">
         </div>
     </div>
-
-    <script>
-        window.jQuery = window.$ = require('jquery');
-    </script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/plotly.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
-    </script>
-    <script>
-        require('./calibration.js');
-    </script>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: center;font-size: xx-large;">
+        <div style="display:inline-block;">Fitting curve: </div>
+        <div style="border:solid black 1px;display:inline-block;">
+            <div id="emme" style="display:inline-block;padding: 5px;color:burlywood;">???</div>
+            <div style="display:inline-block;"> x + </div>
+            <div id="qu" style="display:inline-block;padding: 5px;color:burlywood;">???</div>
+        </div>
+        <div id="apply-data" class="btn btn-default">Apply to data</div>
+    </div>
 </body>
+
+<script>
+    window.jQuery = window.$ = require('jquery');
+</script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/plotly.min.js"></script>
+<script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
+</script>
+<script>
+    require('./calibration.js');
+</script>
 
 </html>
