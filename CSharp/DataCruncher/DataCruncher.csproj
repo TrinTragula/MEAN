@@ -100,6 +100,7 @@
   <ItemGroup>
     <Compile Include="Analysis\Background.cs" />
     <Compile Include="Analysis\Binning.cs" />
+    <Compile Include="Analysis\Calibration.cs" />
     <Compile Include="Analysis\GaussianFit.cs" />
     <Compile Include="Analysis\Peaks.cs" />
     <Compile Include="Database\Database.cs" />

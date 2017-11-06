@@ -64,7 +64,7 @@ function getGammaAtEnergyWithError(energy, error) {
 }
 
 /**
- * Get gamma decay for elements at the specified energy range. return a promise
+ * Get the elements decaying at the specified energy range. return a promise
  * @param {number} from energy (integer)
  * @param {number} to energy (integer)
  */
@@ -122,7 +122,7 @@ function getPossibleElements(energyArray) {
 }
 
 /**
- * Get all the possible elements with the specified energies within an error
+ * Get all the possible elements with the specified energies, within an error
  * @param {number[]} energyArray 
  * @param {number} error 
  */

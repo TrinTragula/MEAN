@@ -20,7 +20,7 @@ namespace DataCruncher
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
             // Argomenti di input
-            var mode = args.Length < 1 ? "fit-peak" : args[0];
+            var mode = args.Length < 1 ? "calibrate" : args[0];
             if (mode == "matrix") Matrix(args);
             if (mode == "gate") Gate(args);
             if (mode == "previewBackground") RemoveBackground(args, true);
@@ -28,11 +28,12 @@ namespace DataCruncher
             if (mode == "peaks") GetPeaks(args);
             if (mode == "binning") BinCount(args);
             if (mode == "fit-peak") FitPeak(args);
+            if (mode == "calibrate") Calibrate(args);
 
             Console.WriteLine("Done!");
-            #if DEBUG
+#if DEBUG
                 Console.ReadLine();
-            #endif
+#endif
         }
 
         static void Matrix(string[] args)
@@ -138,7 +139,7 @@ namespace DataCruncher
 
             return;
         }
-       
+
         public static void FitPeak(string[] args)
         {
             var fileName = args.Length < 2 ? "data/calibrating" : args[1];
@@ -163,6 +164,26 @@ namespace DataCruncher
             }).ToArray();
 
             GaussianFit.FitGaussian(data, peakData, index, window, fileName);
+        }
+
+        public static void Calibrate(string[] args)
+        {
+            var fileName = args.Length < 2 ? "data/calibration_dto" : args[1];
+            string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
+            var data = lines.Aggregate(new List<CalibrationLine>(), (p, c) =>
+            {
+                var split = c.Split(' ');
+                var result = new CalibrationLine
+                {
+                    Energy = Double.Parse(split[0]),
+                    Area = Double.Parse(split[1]),
+                    Centroid = Double.Parse(split[2])
+                };
+                p.Add(result);
+                return p;
+            });
+
+            Calibration.Calibrate(data);
         }
     }
 }

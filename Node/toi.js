@@ -34,8 +34,6 @@ $(function () {
                     table.append("</tr>");
                 }
             });
-
-            Toi.getPossibleElements([438, 574]);
         }
     });
 
@@ -58,8 +56,6 @@ $(function () {
                     table.append("<tr><td style='text-align: center;border: solid 1px black;padding: 10px;'>" + x + "</td></tr>");
                 }
             });
-
-            Toi.getPossibleElements([438, 574]);
         }
     });
 });
