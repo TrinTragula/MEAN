@@ -10,7 +10,8 @@ var Calfit = class Calfit {
 
     constructor() {
         this.fileName = "data/calibrating";
-        this.executablePath = "python";
+        this.pyExecutablePath = "python";
+        this.executablePath = "DataCruncher/DataCruncher.exe";
         this.peaks = [];
         this.area = [];
         this.centroid = [];
@@ -96,8 +97,8 @@ var Calfit = class Calfit {
         let windowValue = $("#" + peak + "-calibration-window").val();
         let window = isNaN(windowValue) ? 5 : windowValue * 1;
         let params = ["py/gauss.py", `${self.fileName}.txt`, `${self.fileName}_peaks.txt`, peak * 1, window];
-        console.log(self.executablePath + " " + params.join(" ") + " called.");
-        child(self.executablePath, params, function (err, fileData) {
+        console.log(self.pyExecutablePath + " " + params.join(" ") + " called.");
+        child(self.pyExecutablePath, params, function (err, fileData) {
             if (err) console.log("ERRORE: " + err);
             let dataFile = fs.readFileSync(`${self.fileName}_${peak}_fitData.txt`, 'ascii');
             console.log("Loaded fit data");
@@ -127,9 +128,29 @@ var Calfit = class Calfit {
                 console.log("Value:" + energy);
                 console.log("Area:" + area);
                 console.log("Centroid:" + self.centroid[index]);
-                calibrationData.push(`${energy} ${area} ${centroid}`)
+                calibrationData.push(`${energy} ${area} ${centroid}`);
             }
         }
+        let dtoFile = "data/calibration_dto";
+        var fileString = calibrationData.reduce( (p, c) => {
+            p += `${c}\r\n`;
+            return p;
+        }, "");
+        fs.writeFile(`${dtoFile}.txt`, fileString, function (err) {
+            if (err)
+                return console.log(err);
+            let params = ["calibrate", dtoFile];
+            child(self.executablePath, params, function (err, fileData) {
+                if (err) console.log("ERRORE: " + err);
+                let dataFile = fs.readFileSync(`data/last.calibration`, 'ascii');
+                console.log("Loaded calibration data");
+                let dataLines = dataFile.split(" ");
+                let q = dataLines[0] * 1;
+                let m = dataLines[1] * 1;
+                $("#qu").text(q.toFixed(4));
+                $("#emme").text(m.toFixed(4));
+            });
+        });
     }
 }
 
