@@ -132,14 +132,15 @@ var Calfit = class Calfit {
             }
         }
         let dtoFile = "data/calibration_dto";
-        var fileString = calibrationData.reduce( (p, c) => {
+        let fileString = calibrationData.reduce( (p, c) => {
             p += `${c}\r\n`;
             return p;
         }, "");
+        let isSecondOrder = $("#isSecondOrder").is(":checked");
         fs.writeFile(`${dtoFile}.txt`, fileString, function (err) {
             if (err)
                 return console.log(err);
-            let params = ["calibrate", dtoFile];
+            let params = ["calibrate", dtoFile, `${isSecondOrder}`];
             child(self.executablePath, params, function (err, fileData) {
                 if (err) console.log("ERRORE: " + err);
                 let dataFile = fs.readFileSync(`data/last.calibration`, 'ascii');
@@ -147,8 +148,10 @@ var Calfit = class Calfit {
                 let dataLines = dataFile.split(" ");
                 let q = dataLines[0] * 1;
                 let m = dataLines[1] * 1;
+                let m2 = dataLines[2] * 1;
                 $("#qu").text(q.toFixed(4));
                 $("#emme").text(m.toFixed(4));
+                $("#emme2").text(m2.toFixed(4));
             });
         });
     }

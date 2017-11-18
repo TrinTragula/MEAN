@@ -16,7 +16,7 @@ app.on('ready', () => {
     });
     //win.maximize()
     win.loadURL(`file://${__dirname}/index.html`);
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 })
 
 app.on('window-all-closed', app.quit);
@@ -52,6 +52,7 @@ const openToi = function () {
         icon: './icon.ico'
     });
     toiWin.loadURL(`file://${__dirname}/toi.html`);
+    //toiWin.webContents.openDevTools();
 }
 
 const openCalibration = function () {
@@ -61,6 +62,7 @@ const openCalibration = function () {
         icon: './icon.ico'
     });
     openCalibrationWin.loadURL(`file://${__dirname}/calibration.html`);
+    //openCalibrationWin.webContents.openDevTools();
 }
 
 exports.saveFile = saveFile;

@@ -116,6 +116,7 @@ $(".calibration").on("click", function (e) {
   main.openCalibration();
 });
 
+// Background
 $("#backgroundRemovalConfirm").on("click", function (e) {
   let self = $(this);
   let fileName = self.data("filename");

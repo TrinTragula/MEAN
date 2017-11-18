@@ -62,6 +62,7 @@ body {
     cursor: pointer;
     width: 15%;
     text-align: center;
+    display: inline-block;
 }
 
 .btn-fitting {
@@ -101,5 +102,17 @@ body {
 .peaks-title {
     text-align: center;
     border: solid rgb(0, 0, 0) 1px;
-    background: tomato;
+    background: #f0ad4e;
+}
+
+.fitThisPeak {
+    border: solid black 1px;
+    padding: 3px;
+    margin: 3px 5px 1px -1px;
+    cursor: pointer;
+    width: 4%;
+    text-align: center;
+    display: inline-block;
+    border-radius: 0px 5px 5px 0px;
+    background: rgb(249, 234, 214);
 }

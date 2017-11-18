@@ -29,12 +29,11 @@ namespace DataCruncher.Analysis
                 {
                     //var lineBg = Math.Abs(bg(j));
                     var lineBg = Math.Max(bg(j), 0);
-                    previewData[j] = lineBg;
+                    previewData[j] = Math.Min(lineBg, data[j]);
 
                     //var removedBg = data[j] - Math.Abs(bg(j));
                     var removedBg = data[j] - Math.Max(bg(j), 0);
-                    data[j] = removedBg;
-                    //data[j] = removedBg > 0 ? removedBg : 0; Se non si vuol che la linea vada sotto lo 0
+                    data[j] = removedBg > 0 ? removedBg : 0; //Se non si vuol che la linea vada sotto lo 0
                 }
             }
             using (StreamWriter writetext = new StreamWriter(String.Format("{0}_bgpreview.txt", fileName)))

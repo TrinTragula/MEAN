@@ -18,8 +18,9 @@ namespace DataCruncher.Analysis
 
     public static class Calibration
     {
-        public static void Calibrate (List<CalibrationLine> points)
+        public static void Calibrate(List<CalibrationLine> points, bool isSecondOrder)
         {
+            double m2 = 0;
             double m = 0;
             double q = 0;
 
@@ -29,12 +30,16 @@ namespace DataCruncher.Analysis
             var totalWeight = areas.Sum();
             var weights = areas.Select(x => x / totalWeight).ToArray();
 
-            var fittedModel = Fit.PolynomialWeighted(centroids, energies, weights, 1);
+            var fittedModel = Fit.PolynomialWeighted(centroids, energies, weights, isSecondOrder ? 2 : 1);
             q = fittedModel[0];
             m = fittedModel[1];
+            if (isSecondOrder)
+            {
+                m2 = fittedModel[2];
+            }
             using (StreamWriter writetext = new StreamWriter(String.Format("data/{0}.calibration", "last")))
             {
-                writetext.WriteLine("{0} {1}", q, m);
+                writetext.WriteLine("{0} {1} {2}", q, m, m2);
             }
         }
     }
