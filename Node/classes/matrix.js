@@ -189,7 +189,7 @@ var Matrix = class Matrix {
         let trace = {
             x: [...Array(fitData.length).keys()],
             y: fitData,
-            type: 'scatter'
+            type: 'bar'
         };
 
         let xAxisTemplate = {
@@ -357,9 +357,7 @@ var Matrix = class Matrix {
                     gateData[value] += count;
                 }
             }
-
             self.drawGatePlot(gateData);
-
         });
     }
 
@@ -370,7 +368,7 @@ var Matrix = class Matrix {
         let trace = {
             x: [...Array(gateData.length).keys()],
             y: gateData,
-            type: 'scatter'
+            type: 'bar'
         };
 
         let xAxisTemplate = {
@@ -552,7 +550,7 @@ var Matrix = class Matrix {
             let trace = {
                 x: [...Array(plotData.length).keys()],
                 y: plotData,
-                type: 'scatter'
+                type: 'bar'
             };
             let data = [trace];
             let vis = self.getVis(fileName);
@@ -632,7 +630,8 @@ var Matrix = class Matrix {
             for (var peak of peaks) {
 
                 let string =
-                    `<div class="peakColor" data-filename="${fileName}" data-x="${peak[0]}" data-y="${peak[1]}"><b>x:</b> ${peak[0]} <b>y:</b>${peak[1]}</div>`
+                    `<div class="peakColor" data-filename="${fileName}" data-x="${peak[0]}" data-y="${peak[1]}"><b>x:</b> ${peak[0]} <b>y:</b>${peak[1]}</div>` +
+                    `<div class="fitThisPeak" data-filename="${fileName}" data-x="${peak[0]}" data-y="${peak[1]}">Fit</div>`;
                 $("div[id='foundPeaksBox" + fileName + "']").append(string);
                 list.push([peak[0], peak[1]]);
                 index++;
@@ -661,7 +660,17 @@ var Matrix = class Matrix {
                 });
                 self.updateListByfileName(fileName, peakList);
                 selfSelector.remove();
+                $(`.fitThisPeak[data-x="${x}"][data-y="${y}"][data-filename="${fileName}"]`).remove();
             });
+            $(".fitThisPeak").on("click", function (e) {
+                let selfSelector = $(this);
+                let fileName = selfSelector.data("filename");
+                let x = selfSelector.data("x");
+                let y = selfSelector.data("y");
+                self.prepareSingleCalibrating(fileName, x, y);
+                main.openCalibration();
+              });
+
             // Selezione picchi
             $(".pickSelector").on("click", function (e) {
                 let selfSelector = $(this);
@@ -685,7 +694,8 @@ var Matrix = class Matrix {
         if (self.isPickingAllowed) {
             list.push([x, y]);
             let string =
-                `<div class="peakColor" data-filename="${fileName}" data-x="${x}" data-y="${y}"><b>x:</b> ${x} <b>y:</b>${y}</div>`
+                `<div class="peakColor" data-filename="${fileName}" data-x="${x}" data-y="${y}"><b>x:</b> ${x} <b>y:</b>${y}</div>` +
+                `<div class="fitThisPeak" data-filename="${fileName}" data-x="${x}" data-y="${y}">Fit</div>`;
             $("div[id='foundPeaksBox" + fileName + "']").append(string);
             $(".peakColor").mouseover(function () {
                 var selfSelector = $(this);
@@ -711,7 +721,16 @@ var Matrix = class Matrix {
                 });
                 self.updateListByfileName(fileName, peakList);
                 selfSelector.remove();
+                $(`.fitThisPeak[data-x="${x}"][data-y="${y}"][data-filename="${fileName}"]`).remove();
             });
+            $(".fitThisPeak").on("click", function (e) {
+                let selfSelector = $(this);
+                let fileName = selfSelector.data("filename");
+                let x = selfSelector.data("x");
+                let y = selfSelector.data("y");
+                self.prepareSingleCalibrating(fileName, x, y);
+                main.openCalibration();
+              });
         } else return;
     }
 
@@ -819,20 +838,36 @@ var Matrix = class Matrix {
     /**
      * Aggiorna il file dei picchi da cui poi fare la calibrazione
      */
-    prepareCalibrating(fileName){
+    prepareCalibrating(fileName) {
         let self = this;
         let list = self.getListByFilename(fileName);
         let str = "";
-        for (var l of list){
+        for (var l of list) {
             str += `${l[0]} ${l[1]}\n`
         }
-        fs.writeFile(`${fileName}_peaks.txt`, str, function(err) {
-            if(err) {
+        fs.writeFile(`${fileName}_peaks.txt`, str, function (err) {
+            if (err) {
                 return console.log(err);
             }
             fs.createReadStream(`${fileName}.txt`).pipe(fs.createWriteStream('data/calibrating.txt'));
             fs.createReadStream(`${fileName}_peaks.txt`).pipe(fs.createWriteStream('data/calibrating_peaks.txt'));
-        }); 
+        });
+    }
+
+    /**
+     * Aggiorna il file dei picchi da cui poi fare la calibrazione per picchi singoli
+     */
+    prepareSingleCalibrating(fileName, x, y) {
+        let self = this;
+        let str = "";
+        str += `${x} ${y}\n`
+        fs.writeFile(`${fileName}_peaks.txt`, str, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+            fs.createReadStream(`${fileName}.txt`).pipe(fs.createWriteStream('data/calibrating.txt'));
+            fs.createReadStream(`${fileName}_peaks.txt`).pipe(fs.createWriteStream('data/calibrating_peaks.txt'));
+        });
     }
 }
 

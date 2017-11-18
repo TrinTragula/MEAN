@@ -169,6 +169,7 @@ namespace DataCruncher
         public static void Calibrate(string[] args)
         {
             var fileName = args.Length < 2 ? "data/calibration_dto" : args[1];
+            var isSecondOrder = args.Length < 3 ? false : Boolean.Parse(args[2]);
             string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
             var data = lines.Aggregate(new List<CalibrationLine>(), (p, c) =>
             {
@@ -183,7 +184,7 @@ namespace DataCruncher
                 return p;
             });
 
-            Calibration.Calibrate(data);
+            Calibration.Calibrate(data, isSecondOrder);
         }
     }
 }
