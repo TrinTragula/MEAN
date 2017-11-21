@@ -39,85 +39,8 @@ var Matrix = class Matrix {
         let params = ["matrix", nCanaliX, nCanaliY];
         child(this.executablePath, params, function (err, fileData) {
             self.wasResetted = true;
-            let dataFile = fs.readFileSync("data/result.txt", 'ascii');
-            if (err) console.log("ERRORE: " + err)
-            console.log("Loaded");
-            let dataLines = dataFile.split("\n");
-            let metaData = dataLines.shift().split(" ");
-            self.interval = metaData[0];
-            self.min = metaData[1];
-            let xData = dataLines.map(x => x.split(" ")[0] * 1);
-            let yData = dataLines.map(x => x.split(" ")[1] * 1);
-            let zData = dataLines.map(x => x.split(" ")[2] * 1);
-            let xFitData = {};
-            let yFitData = {};
-            for (let i = 0; i <= nCanaliX; i++) {
-                xFitData[i] = 0;
-            }
-            for (let i = 0; i <= nCanaliY; i++) {
-                yFitData[i] = 0;
-            }
-            for (let i = 0; i < dataLines.length; i++) {
-                let xValue = dataLines[i].split(" ")[0] * 1;
-                let yValue = dataLines[i].split(" ")[1] * 1;
-                let zValue = dataLines[i].split(" ")[2] * 1;
-                if (!isNaN(zValue)) {
-                    xFitData[xValue] += zValue;
-                    yFitData[yValue] += zValue;
-                }
-            }
-            let xString = "";
-            for (let key in xFitData) {
-                let value = xFitData[key];
-                xString = xString.concat(`${key} ${value}\r\n`);
-            }
-            let yString = "";
-            for (let key in yFitData) {
-                let value = yFitData[key];
-                yString = yString.concat(`${key} ${value}\r\n`);
-            }
-            fs.writeFile("data/xResult.txt", xString, function (err) {
-                if (err)
-                    return console.log(err);
-            });
-            fs.writeFile("data/yResult.txt", yString, function (err) {
-                if (err)
-                    return console.log(err);
-            });
-            // Draw the fit for x data
-            self.drawFitGraph(xFitData, "x");
-            self.drawFitGraph(yFitData, "y");
-            // I'll draw the matrix
-            let data = [{
-                x: xData,
-                y: yData,
-                z: zData,
-
-                /*type: 'histogram2dcontour',
-                line: {
-                	width: 0
-                },
-                contours: {
-                	coloring: 'heatmap'
-                },*/
-                type: 'heatmap',
-                colorscale: self.myColorScale
-            }];
-
-            let layout = self.giveLayout(nCanaliX, nCanaliY);
-            Plotly.newPlot(self.dataVis, data, layout, {
-                displayModeBar: true
-            });
-            $(".modebar").addClass("hidden");
-            // Logica di selezione
-            self.dataVis.on('plotly_selected', (eventData) => {
-                self.selecting(eventData, path1, path2)
-            });
-            self.dataVis.on('plotly_selecting', (eventData) => {
-                $(".zoomlayer").removeClass("hidden");
-            });
-            $("#drawButton").html("Reset")
-            $("#pickSelector").removeClass("hidden");
+            if (err) console.log("ERRORE: " + err);
+            self.redrawAll(nCanaliX, nCanaliY, path1, path2);
         });
     }
 
@@ -185,9 +108,10 @@ var Matrix = class Matrix {
     // Draw the linear plots
     drawFitGraph(fitData, id) {
         let self = this;
+        let keys = Object.keys(fitData);
         fitData = Object.keys(fitData).map(key => fitData[key]);
         let trace = {
-            x: [...Array(fitData.length).keys()],
+            x: keys,
             y: fitData,
             type: 'bar'
         };
@@ -236,11 +160,11 @@ var Matrix = class Matrix {
     }
 
     // Give the layout to the graphs
-    giveLayout(numeroCanaliX, numeroCanaliY) {
+    giveLayout(numeroCanaliX, numeroCanaliY, minX = 0, minY = 0) {
         let self = this;
         let xAxisTemplate = {
             title: 'ADC1',
-            range: [0, numeroCanaliX],
+            range: [minX, numeroCanaliX],
             showgrid: true,
             zeroline: true,
             linecolor: 'black',
@@ -249,7 +173,7 @@ var Matrix = class Matrix {
         };
         let yAxisTemplate = {
             title: 'ADC2',
-            range: [0, numeroCanaliY],
+            range: [minY, numeroCanaliY],
             showgrid: true,
             zeroline: true,
             linecolor: 'black',
@@ -669,7 +593,7 @@ var Matrix = class Matrix {
                 let y = selfSelector.data("y");
                 self.prepareSingleCalibrating(fileName, x, y);
                 main.openCalibration();
-              });
+            });
 
             // Selezione picchi
             $(".pickSelector").on("click", function (e) {
@@ -730,7 +654,7 @@ var Matrix = class Matrix {
                 let y = selfSelector.data("y");
                 self.prepareSingleCalibrating(fileName, x, y);
                 main.openCalibration();
-              });
+            });
         } else return;
     }
 
@@ -868,6 +792,95 @@ var Matrix = class Matrix {
             fs.createReadStream(`${fileName}.txt`).pipe(fs.createWriteStream('data/calibrating.txt'));
             fs.createReadStream(`${fileName}_peaks.txt`).pipe(fs.createWriteStream('data/calibrating_peaks.txt'));
         });
+    }
+
+    /**
+     * Ridisegna tutte i grafici facendo riferimento solo ai file
+     * (Quindi rispetta la calibrazione invece di resettarla, se presente)
+     */
+    redrawAll(nCanaliX, nCanaliY, path1, path2) {
+        let self = this;
+        let dataFile = fs.readFileSync("data/result.txt", 'ascii');
+        console.log("Loaded");
+        let dataLines = dataFile.split("\n");
+        dataLines.splice(-1,1);
+        let metaData = dataLines.shift().split(" ");
+        self.interval = metaData[0];
+        self.min = metaData[1];
+        let xData = dataLines.map(x => x.split(" ")[0] * 1);
+        let yData = dataLines.map(x => x.split(" ")[1] * 1);
+        let zData = dataLines.map(x => x.split(" ")[2] * 1);
+        let xFitData = {};
+        let yFitData = {};
+        // for (let i = 0; i <= nCanaliX; i++) {
+        //     xFitData[i] = 0;
+        // }
+        // for (let i = 0; i <= nCanaliY; i++) {
+        //     yFitData[i] = 0;
+        // }
+        for (let i = 0; i < dataLines.length; i++) {
+            let xValue = dataLines[i].split(" ")[0] * 1;
+            let yValue = dataLines[i].split(" ")[1] * 1;
+            let zValue = dataLines[i].split(" ")[2] * 1;
+            if (!isNaN(zValue)) {
+                if (xFitData[xValue]) xFitData[xValue] += zValue;
+                else xFitData[xValue] = zValue;
+                if (yFitData[yValue]) yFitData[yValue] += zValue;
+                else yFitData[yValue] = zValue;
+            }
+        }
+        let xString = "";
+        for (let key in xFitData) {
+            let value = xFitData[key];
+            xString = xString.concat(`${key} ${value}\r\n`);
+        }
+        let yString = "";
+        for (let key in yFitData) {
+            let value = yFitData[key];
+            yString = yString.concat(`${key} ${value}\r\n`);
+        }
+        fs.writeFile("data/xResult.txt", xString, function (err) {
+            if (err)
+                return console.log(err);
+        });
+        fs.writeFile("data/yResult.txt", yString, function (err) {
+            if (err)
+                return console.log(err);
+        });
+        // Draw the fit for x data
+        self.drawFitGraph(xFitData, "x");
+        self.drawFitGraph(yFitData, "y");
+        // I'll draw the matrix
+        let data = [{
+            x: xData,
+            y: yData,
+            z: zData,
+
+            /*type: 'histogram2dcontour',
+            line: {
+                width: 0
+            },
+            contours: {
+                coloring: 'heatmap'
+            },*/
+            type: 'heatmap',
+            colorscale: self.myColorScale
+        }];
+
+        let layout = self.giveLayout(xData[xData.length - 1], xData[xData.length - 1], xData[0], xData[0]);
+        Plotly.newPlot(self.dataVis, data, layout, {
+            displayModeBar: true
+        });
+        $(".modebar").addClass("hidden");
+        // Logica di selezione
+        self.dataVis.on('plotly_selected', (eventData) => {
+            self.selecting(eventData, path1, path2)
+        });
+        self.dataVis.on('plotly_selecting', (eventData) => {
+            $(".zoomlayer").removeClass("hidden");
+        });
+        $("#drawButton").html("Reset")
+        $("#pickSelector").removeClass("hidden");
     }
 }
 

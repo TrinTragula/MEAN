@@ -20,7 +20,7 @@ namespace DataCruncher
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
             // Argomenti di input
-            var mode = args.Length < 1 ? "calibrate" : args[0];
+            var mode = args.Length < 1 ? "substitute" : args[0];
             if (mode == "matrix") Matrix(args);
             if (mode == "gate") Gate(args);
             if (mode == "previewBackground") RemoveBackground(args, true);
@@ -29,6 +29,7 @@ namespace DataCruncher
             if (mode == "binning") BinCount(args);
             if (mode == "fit-peak") FitPeak(args);
             if (mode == "calibrate") Calibrate(args);
+            if (mode == "substitute") SubstituteCalibration(args);
 
             Console.WriteLine("Done!");
 #if DEBUG
@@ -185,6 +186,19 @@ namespace DataCruncher
             });
 
             Calibration.Calibrate(data, isSecondOrder);
+        }
+
+        // Cambia valori della tabbela Matrix in SQLLite, non testato e probabilmente INUTILE
+        public static void SubstituteCalibration(string[] args)
+        {
+            double q = args.Length < 2 ? 0 : Double.Parse(args[1]);
+            double m = args.Length < 3 ? 0 : Double.Parse(args[2]);
+            double m2 = args.Length < 4 ? 0 : Double.Parse(args[3]);
+
+            Database db = new Database("coincidenze_vere", false);
+
+            //Salvo il risultato
+            db.SubstituteCalibration(q, m, m2);
         }
     }
 }

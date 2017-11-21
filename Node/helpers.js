@@ -9,7 +9,7 @@ const formatter = d3.format('.2f');
 // Salva db attuale
 $("#saveDb").on("click", function (e) {
   let content = fs.readFileSync("coincidenze_vere.sqlite");
-  main.saveFile(content);
+  main.saveDatabase(content);
 });
 
 // Apro nudat

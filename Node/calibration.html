@@ -28,7 +28,7 @@
         </div>
         <div class="form-check">
             <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" value="" id="isSecondOrder"> Use secondo order polynomial
+                <input class="form-check-input" type="checkbox" value="" id="isSecondOrder"> Use second order polynomial
             </label>
         </div>
     </div>
@@ -36,7 +36,7 @@
     <br>
     <hr>
     <br>
-    <div style="text-align: center;font-size: xx-large;">
+    <div style="text-align: center;font-size: x-large;">
         <div style="display:inline-block;">Fitting curve: </div>
         <div style="border:solid black 1px;display:inline-block;">
             <div id="emme2" style="display:inline-block;padding: 5px;color:burlywood;" class="second-order hidden">???</div>
@@ -45,7 +45,10 @@
             <div style="display:inline-block;"> x + </div>
             <div id="qu" style="display:inline-block;padding: 5px;color:burlywood;">???</div>
         </div>
-        <div id="apply-data" class="btn btn-default">Apply to data</div>
+        <div class="btn-group">
+            <div id="apply-data" class="btn btn-default">Apply to data</div>
+            <div id="save-calibration-data" class="btn btn-default">Save to file</div>
+        </div>
     </div>
 </body>
 
@@ -59,11 +62,11 @@
 <script>
     require('./calibration.js');
     $(function () {
-        $("#isSecondOrder").on("change", function() {
-            if ($("#isSecondOrder").is(":checked")){
+        $("#isSecondOrder").on("change", function () {
+            if ($("#isSecondOrder").is(":checked")) {
                 $(".second-order").removeClass("hidden");
             } else {
-                $(".second-order").addClass("hidden");                
+                $(".second-order").addClass("hidden");
             }
         });
     });

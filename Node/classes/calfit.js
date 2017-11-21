@@ -16,6 +16,9 @@ var Calfit = class Calfit {
         this.area = [];
         this.centroid = [];
         this.sigma = [];
+        this.q = 0;
+        this.m = 0;
+        this.m2 = 0;
     }
 
     populatePeaks() {
@@ -34,7 +37,7 @@ var Calfit = class Calfit {
             peaksString += `<th class="boxth">x: ${peak[0]} - y:${peak[1]}</th>`;
         }
         $("#peaks").html(peaksString);
-        
+
         let windowsString = "<th class='boxth'>Window</th>"
         for (var index in peaks) {
             windowsString += `<th class="boxth"><input style='width:100%;' id="${index}-calibration-window" type="number" value="5"/></th>`;
@@ -75,7 +78,7 @@ var Calfit = class Calfit {
             calibrationString += `<td class="box"><input id="calibration-${index}" class="calibration-energy" data-index="${index}" type="number" style="width: 100%;"/></td>`;
         }
         calibrationString += "</tr>";
-        
+
         // In inverse order since it's last first
         $("#windows").after(calibrationString);
         $("#windows").after(fittingString);
@@ -115,24 +118,24 @@ var Calfit = class Calfit {
         });
     }
 
-    calibrate(){
+    calibrate() {
         let self = this;
         let calibrationData = [];
-        for (let index in self.centroid){
+        for (let index in self.centroid) {
             let energyVal = $(`#calibration-${index}`).val();
             let centroid = self.centroid[index];
             let area = self.area[index];
-            if (!isNaN(energyVal) && !isNaN(centroid) && energyVal && energyVal != "" && centroid && centroid != ""){
+            if (!isNaN(energyVal) && !isNaN(centroid) && energyVal && energyVal != "" && centroid && centroid != "") {
                 let energy = energyVal * 1;
-                console.log("Index:" + index);
-                console.log("Value:" + energy);
-                console.log("Area:" + area);
-                console.log("Centroid:" + self.centroid[index]);
+                // console.log("Index:" + index);
+                // console.log("Value:" + energy);
+                // console.log("Area:" + area);
+                // console.log("Centroid:" + self.centroid[index]);
                 calibrationData.push(`${energy} ${area} ${centroid}`);
             }
         }
         let dtoFile = "data/calibration_dto";
-        let fileString = calibrationData.reduce( (p, c) => {
+        let fileString = calibrationData.reduce((p, c) => {
             p += `${c}\r\n`;
             return p;
         }, "");
@@ -149,12 +152,47 @@ var Calfit = class Calfit {
                 let q = dataLines[0] * 1;
                 let m = dataLines[1] * 1;
                 let m2 = dataLines[2] * 1;
+                self.q = q;
+                self.m = m;
+                self.m2 = m2;
                 $("#qu").text(q.toFixed(4));
                 $("#emme").text(m.toFixed(4));
                 $("#emme2").text(m2.toFixed(4));
             });
         });
     }
-}
 
+    calibrateFromFile(filePath) {
+        let self = this;
+        if (filePath) {
+            let dataFile = fs.readFileSync(filePath, 'ascii');
+            console.log("Loaded calibration data");
+            let dataLines = dataFile.split(" ");
+            let q = dataLines[0] * 1;
+            let m = dataLines[1] * 1;
+            let m2 = dataLines[2] * 1;
+            self.q = q;
+            self.m = m;
+            self.m2 = m2;
+            $("#qu").text(q.toFixed(4));
+            $("#emme").text(m.toFixed(4));
+            $("#emme2").text(m2.toFixed(4));
+        }
+    }
+
+    applyCalibrationToData() {
+        let self = this;
+        if (self.q == 0 && self.m == 0 && self.m2 == 0) {
+            alert("Parametri di calibrazione non trovati");
+            return;
+        }
+        main.calibrateAllData(self.q, self.m, self.m2);
+
+        // Cambia i valori della tabella Matrix in SQLLite
+        // let params = ["substitute", self.q, self.m, self.m2];
+        // child(self.executablePath, params, function (err, fileData) {
+        //     console.log("Calibration substitution done!");
+        // });
+    }
+}
 module.exports = Calfit;

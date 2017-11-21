@@ -20,11 +20,27 @@ $(function () {
         calfit.fit(peak);
     });
 
-    $("#calibrate-btn").on("click", function(e) {
+    $("#calibrate-btn").on("click", function (e) {
         e.preventDefault();
         var self = $(this);
         calfit.calibrate();
     });
 
+    $("#file-calibration").on("change", function () {
+        let filePath = $("#file-calibration")[0].files[0].path;
+        if (filePath && filePath != "") {
+            calfit.calibrateFromFile(filePath);
+        }
+    });
 
+    $("#apply-data").on("click", function () {
+        calfit.applyCalibrationToData();
+        window.close();
+    });
+
+    $("#save-calibration-data").on("click", function () {
+        let filePath = $("#file-calibration")[0].files[0] ? $("#file-calibration")[0].files[0].path : "data/last.calibration";
+        let content = fs.readFileSync(filePath);
+        main.saveData(content);
+    });
 });
