@@ -12,6 +12,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "electron-prebuilt": "^1.4.13",
+    "glob": "^7.1.2",
     "jquery": "^3.2.1",
     "request-promise": "^4.2.2",
     "util": "^0.10.3"

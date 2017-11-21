@@ -272,6 +272,13 @@ namespace DataCruncher.Cruncher
             Console.WriteLine(sw.Elapsed.Minutes + "Min(s) " + sw.Elapsed.Seconds + "Sec(s)");
         }
 
+        public void SubstituteCalibration(double q, double m, double m2)
+        {
+            string sqlCalibrateMatrix = String.Format("UPDATE matrix SET channel = {0} + {1} * channel + {1} * channel * channel, channel2 = {0} + {1} * channel2 + {1} * channel2 * channel2;", q, m, m2);
+            SQLiteCommand commandMatrix = new SQLiteCommand(sqlCalibrateMatrix, DbConnection);
+            commandMatrix.ExecuteNonQuery();
+        }
+
         public void Close()
         {
             DbConnection.Close();
