@@ -32,13 +32,13 @@ var Calfit = class Calfit {
             if (xValue && yValue)
                 peaks.push([xValue * 1, yValue.split("\n")[0] * 1]);
         }
-        let peaksString = "<th></th>";
+        let peaksString = peaks.length > 0 ? "<th></th>" : "";
         for (var peak of peaks) {
             peaksString += `<th class="boxth">x: ${peak[0]} - y:${peak[1]}</th>`;
         }
         $("#peaks").html(peaksString);
 
-        let windowsString = "<th class='boxth'>Window</th>"
+        let windowsString = peaks.length > 0 ? "<th class='boxth'>Window</th>" : "";
         for (var index in peaks) {
             windowsString += `<th class="boxth"><input style='width:100%;' id="${index}-calibration-window" type="number" value="5"/></th>`;
         }
@@ -49,35 +49,40 @@ var Calfit = class Calfit {
             this.centroid[index] = 0;
             this.sigma[index] = 0;
         }
-        let fittingString = "<tr>";
-        fittingString += `<td data-peak="all" class="clicktofit btn btn-fitting">Fit all</td>`
-        for (var index in peaks) {
-            fittingString += `<td data-peak="${index}" class="clicktofit btn btn-fitting">Click to fit</td>`;
-        }
-        fittingString += "</tr><tr>";
-        fittingString += `<td class="box">Area</td>`
-        for (var index in peaks) {
-            fittingString += `<td id="Area-${index}" class="box"></td>`;
-        }
-        fittingString += "</tr><tr>";
-        fittingString += `<td class="box">Centroid</td>`
-        for (var index in peaks) {
-            fittingString += `<td id="Centroid-${index}" class="box"></td>`;
-        }
-        fittingString += "</tr><tr>";
-        fittingString += `<td class="box">Sigma</td>`
-        for (var index in peaks) {
-            fittingString += `<td id="Sigma-${index}" class="box"></td>`;
-        }
-        fittingString += "</tr>";
         self.peaks = peaks;
 
-        let calibrationString = "<tr>";
-        calibrationString += `<td class="box">Energy for calibration</td>`
-        for (var index in peaks) {
-            calibrationString += `<td class="box"><input id="calibration-${index}" class="calibration-energy" data-index="${index}" type="number" style="width: 100%;"/></td>`;
+        let fittingString = "";
+        let calibrationString = "";
+        if (peaks.length > 0) {
+            fittingString = "<tr>";
+            fittingString += `<td data-peak="all" class="clicktofit btn btn-fitting">Fit all</td>`
+            for (var index in peaks) {
+                fittingString += `<td data-peak="${index}" class="clicktofit btn btn-fitting">Click to fit</td>`;
+            }
+            fittingString += "</tr><tr>";
+            fittingString += `<td class="box">Area</td>`
+            for (var index in peaks) {
+                fittingString += `<td id="Area-${index}" class="box"></td>`;
+            }
+            fittingString += "</tr><tr>";
+            fittingString += `<td class="box">Centroid</td>`
+            for (var index in peaks) {
+                fittingString += `<td id="Centroid-${index}" class="box"></td>`;
+            }
+            fittingString += "</tr><tr>";
+            fittingString += `<td class="box">Sigma</td>`
+            for (var index in peaks) {
+                fittingString += `<td id="Sigma-${index}" class="box"></td>`;
+            }
+            fittingString += "</tr>";
+
+            calibrationString = "<tr>";
+            calibrationString += `<td class="box">Energy for calibration</td>`
+            for (var index in peaks) {
+                calibrationString += `<td class="box"><input id="calibration-${index}" class="calibration-energy" data-index="${index}" type="number" style="width: 100%;"/></td>`;
+            }
+            calibrationString += "</tr>";
         }
-        calibrationString += "</tr>";
 
         // In inverse order since it's last first
         $("#windows").after(calibrationString);

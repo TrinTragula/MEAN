@@ -75,6 +75,7 @@ body {
 
 .calibrationTable {
     text-align: center;
+    margin: auto;
 }
 
 .calibrationTable td:nth-child(even) {
@@ -102,7 +103,7 @@ body {
 .peaks-title {
     text-align: center;
     border: solid rgb(0, 0, 0) 1px;
-    background: #f0ad4e;
+    background: #ffe0b3;
 }
 
 .fitThisPeak {
