@@ -1,12 +1,10 @@
 const electron = require('electron');
 const {
     app,
-    BrowserWindow,
-    ipcMain
+    BrowserWindow
 } = electron;
 const dialog = electron.dialog;
 const fs = require('fs');
-const glob = require('glob');
 
 var win = null;
 
@@ -81,44 +79,47 @@ const openCalibration = function () {
 }
 
 function calibrateAllData(q, m, m2) {
-    // let filesToChange = [
-    //     "data/gat*",
-    //     "data/xRes*",
-    //     "data/yRes*",
-    //     "singleData/sing*"
-    // ];
+    let filesToChange = [
+        "data/gating.txt",
+        "data/xResult.txt",
+        "data/yResult.txt",
+        "data/single.txt"
+    ];
     let matricesToChange = [
         "data/result.txt"
     ];
     q = q * 1;
     m = m * 1;
     m2 = m2 * 1
-    // let files = [];
-    // for (let f of filesToChange) {
-    //     let found = glob.sync(f);
-    //     found.map(x => files.push(x));
-    // }
-    // for (let f of files) {
-    //     fs.readFile(f, 'ascii', function (err, data) {
-    //         if (err) throw err;
-    //         let newData = "";
-    //         let lines = data.split("\n");
-    //         for (let line of lines) {
-    //             if (!line || line == "" || line == "\n" || line == "\r\n" || line == " ") continue;
-    //             let splitted = line.split(" ");
-    //             let firstHalf = splitted[0];
-    //             let remainder = line.substring(firstHalf.length);
+    if (!fs.existsSync("calibration")) {
+        fs.mkdirSync("calibration");
+    }
+    let files = [];
+    for (let f of filesToChange) {
+        if (fs.existsSync(f)) files.push(f);
+    }
+    for (let f of files) {
+        fs.readFile(f, 'ascii', function (err, data) {
+            if (err) throw err;
+            let newData = "";
+            let lines = data.split("\n");
+            for (let line of lines) {
+                if (!line || line == "" || line == "\n" || line == "\r\n" || line == " ") continue;
+                let splitted = line.split(" ");
+                let firstHalf = splitted[0];
+                let remainder = line.substring(firstHalf.length);
 
-    //             let value = parseInt(firstHalf);
-    //             value = Math.floor(value * value * m2 + value * m + q);
-    //             newData += `${value}${remainder}\n`;
-    //         }
-    //         fs.writeFile(f, newData, 'utf-8', function (err) {
-    //             if (err) throw err;
-    //             console.log("Successfully calibrated");
-    //         });
-    //     });
-    // }
+                let value = parseInt(firstHalf);
+                value = value * value * m2 + value * m + q;
+                newData += `${value}${remainder}\n`;
+            }
+            let newF = f.replace("data", "calibration");
+            fs.writeFile(newF, newData, 'utf-8', function (err) {
+                if (err) throw err;
+                console.log("Successfully calibrated");
+            });
+        });
+    }
 
     for (let matrix of matricesToChange) {
         fs.readFile(matrix, 'ascii', function (err, data) {
@@ -135,14 +136,16 @@ function calibrateAllData(q, m, m2) {
 
                 let valueX = parseInt(first);
                 let valueY = parseInt(second);
-                let X = Math.floor(q + m * valueX + m2 * valueX * valueX);
-                let Y = Math.floor(q + m * valueY + m2 * valueY * valueY);
+                let X = q + m * valueX + m2 * valueX * valueX;
+                let Y = q + m * valueY + m2 * valueY * valueY;
                 newData += `${X} ${Y} ${remainder}\n`;
             }
-            fs.writeFile(matrix, newData, 'utf-8', function (err) {
+            let newMatrix = matrix.replace("data", "calibration");
+            fs.writeFile(newMatrix, newData, 'utf-8', function (err) {
                 if (err) throw err;
                 console.log("Matrix calibrated");
-                win.webContents.send('redraw-all', true);
+                let buttons = ['OK'];
+                dialog.showMessageBox({ type: 'info', buttons: buttons, message: "Calibrated data has been saved in the folder 'calibration'"});
             });
         });
     }

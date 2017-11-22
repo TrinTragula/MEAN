@@ -1,4 +1,3 @@
-const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote
 const main = remote.require('./main.js')
 const fs = require('fs');
@@ -33,19 +32,6 @@ const xPlotVis = document.getElementById('xPlotVis');
 const yPlotVis = document.getElementById('yPlotVis');
 const gatePlotVis = document.getElementById('gatePlotVis');
 let matrix = new Matrix(dataVis, xPlotVis, yPlotVis, gatePlotVis, executablePath, myColorScale, myInvertedColorScale);
-
-// Ascolta per evento di ridisegno completo
-ipcRenderer.on('redraw-all', (event, arg) => {
-  console.log("arrivato!");
-  nCanaliX = $("#nCanaliX").val() || 1000;
-  nCanaliY = $("#nCanaliY").val() || 1000;
-  if (document.getElementById("file1").files && document.getElementById("file2").files) {
-    path1 = document.getElementById("file1").files[0] ? document.getElementById("file1").files[0].path : null;
-    path2 = document.getElementById("file2").files[0] ? document.getElementById("file2").files[0].path : null;
-  }
-  matrix.redrawAll(nCanaliX, nCanaliY, path1, path2);
-});
-
 
 // Create data button importing from files
 $("#createDataButton").on("click", function (e) {
