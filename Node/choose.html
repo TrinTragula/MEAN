@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Choose</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        #single {
+            color: black;
+            background: #e4e5e6;
+            width: 50%;
+            height: 100%;
+            font-size: large;
+            border: 1px solid #868686;
+        }
+
+        #coincidence {
+            color: black;
+            background: #eeffee;
+            width: 50%;
+            height: 100%;
+            font-size: large;
+            border: 1px solid #868686;
+        }
+
+        .center-div {
+            position: absolute;
+            margin: auto;
+            top: 19%;
+            right: 0;
+            /* bottom: 0; */
+            left: 0;
+            width: 97%;
+            height: 75%;
+            border-radius: 3px;
+        }
+
+        .title {
+            text-align: center;
+            font-family: monospace;
+            /* border: 1px solid; */
+            padding: 7px;
+        }
+
+        img {
+            border: 1px solid;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 class="title">Nome v.1.0 -
+        <a id="website" href="#">Daniele Scarinci</a>
+    </h2>
+    <div id="both" class="btn-group center-div">
+        <div id="single" class="btn btn-default">
+            Single spectrum
+            </br>
+            <img src="images/single.png" width="90%" height="90%">
+        </div>
+        <div id="coincidence" class="btn btn-default">
+            Coincidence
+            </br>
+            <img src="images/coincidence.png" width="90%" height="90%">
+        </div>
+    </div>
+    <script>
+        window.jQuery = window.$ = require('jquery');
+    </script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
+    </script>
+    <script>
+        const remote = require('electron').remote
+        const main = remote.require('./main.js');
+        const shell = require('electron').shell
+
+        $("#website").on("click", function() {
+            shell.openExternal('https://danielescarinci.com')
+        })
+        $("#single").on("click", function () {
+            main.single();
+        });
+        $("#coincidence").on("click", function () {
+            main.coincidence();
+        })
+    </script>
+</body>
+
+</html>

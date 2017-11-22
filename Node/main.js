@@ -10,16 +10,44 @@ var win = null;
 
 app.on('ready', () => {
     win = new BrowserWindow({
+        width: 1033,
+        height: 450,
+        icon: './icon.ico'
+    });
+    //win.maximize()
+    win.loadURL(`file://${__dirname}/choose.html`);
+    //win.webContents.openDevTools();
+})
+
+app.on('window-all-closed', app.quit);
+
+// Main coincidence window
+const coincidence = function () {
+    let newWin = new BrowserWindow({
         width: 1200,
         height: 850,
         icon: './icon.ico'
     });
     //win.maximize()
-    win.loadURL(`file://${__dirname}/index.html`);
-    //win.webContents.openDevTools();
-})
+    newWin.loadURL(`file://${__dirname}/index.html`);
+    //newWin.webContents.openDevTools();
+    win.close();
+    win = newWin;
+}
 
-app.on('window-all-closed', app.quit);
+// Main single window
+const single = function () {
+    let newWin = new BrowserWindow({
+        width: 1200,
+        height: 850,
+        icon: './icon.ico'
+    });
+    //win.maximize()
+    newWin.loadURL(`file://${__dirname}/indexSingle.html`);
+    //newWin.webContents.openDevTools();
+    win.close();
+    win = newWin;
+}
 
 // Window to save a database copy
 const saveDatabase = function (content) {
@@ -145,12 +173,18 @@ function calibrateAllData(q, m, m2) {
                 if (err) throw err;
                 console.log("Matrix calibrated");
                 let buttons = ['OK'];
-                dialog.showMessageBox({ type: 'info', buttons: buttons, message: "Calibrated data has been saved in the folder 'calibration'"});
+                dialog.showMessageBox({
+                    type: 'info',
+                    buttons: buttons,
+                    message: "Calibrated data has been saved in the folder 'calibration'"
+                });
             });
         });
     }
 }
 
+exports.coincidence = coincidence;
+exports.single = single;
 exports.saveDatabase = saveDatabase;
 exports.saveData = saveData;
 exports.openNudat = openNudat;
