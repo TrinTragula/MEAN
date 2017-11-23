@@ -111,7 +111,7 @@ function calibrateAllData(q, m, m2) {
         "data/gating.txt",
         "data/xResult.txt",
         "data/yResult.txt",
-        "data/single.txt"
+        "data/spectrum.txt"
     ];
     let matricesToChange = [
         "data/result.txt"

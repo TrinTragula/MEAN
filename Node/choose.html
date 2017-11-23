@@ -13,7 +13,11 @@
             width: 50%;
             height: 100%;
             font-size: large;
-            border: 1px solid #868686;
+            border: 1px solid #5f5f5f;
+        }
+
+        #single:hover {
+            background-color: #b9b9b9;
         }
 
         #coincidence {
@@ -22,7 +26,11 @@
             width: 50%;
             height: 100%;
             font-size: large;
-            border: 1px solid #868686;
+            border: 1px solid #5f5f5f;
+        }
+
+        #coincidence:hover {
+            background-color: #bbcabb;
         }
 
         .center-div {
@@ -42,6 +50,7 @@
             font-family: monospace;
             /* border: 1px solid; */
             padding: 7px;
+            text-shadow: 0px 1px 0px gray;
         }
 
         img {
@@ -77,7 +86,7 @@
         const main = remote.require('./main.js');
         const shell = require('electron').shell
 
-        $("#website").on("click", function() {
+        $("#website").on("click", function () {
             shell.openExternal('https://danielescarinci.com')
         })
         $("#single").on("click", function () {

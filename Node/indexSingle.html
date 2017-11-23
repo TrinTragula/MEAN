@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Single spectrum</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="row " style="width: 99%">
+        <ul class="nav nav-tabs">
+            <li id="spectrum" class="active">
+                <a href="#spectrum">Spectrum</a>
+            </li>
+            <li id="nudat">
+                <a href="#" class="nudat">Search Nudat2</a>
+            </li>
+            <li id="toi">
+                <a href="#" class="toi">Search by Gamma Energy</a>
+            </li>
+        </ul>
+        <div style="padding-left: 15px; width: 259px; float: left;">
+            <br>
+            <div id="newDataText">
+                <b>Data source:</b>
+            </div>
+            <input id="file1" type="file" class="filestyle drawButton hidden" data-buttonText="&nbsp;File" data-size="sm">
+            <fieldset class="input-group-vertical">
+                <br>
+                <label>
+                    <input type="checkbox" id="invertColor"> Invert colors</label>
+                <br>
+                <label>
+                    <input type="checkbox" id="invertAxes"> Invert axes</label>
+            </fieldset>
+            <div class="btn-group">
+                <div type="button" class="btn btn-sm btn-default" id="saveSpectrumData">Save</div>
+                <div type="button" class="btn btn-sm btn-default" id="saveSpectrum">Save as PNG</div>
+            </div>
+            <br>
+            <br>
+            <div id="backgroundRemovalDiv" class="hidden">
+                <label>Sample points:
+                    <input name="bgPoints" id="bgPoints" type="number" value="1024" />
+                </label>
+                <label>Iterations:
+                    <input name="bgIterations" id="bgIterations" type="number" value="10" />
+                </label>
+                <div type="button" class="btn btn-sm btn-warning" id="backgroundRemovalCancel">Cancel</div>
+                <div type="button" class="btn btn-sm btn-info" id="backgroundPreview">Preview</div>
+                <div type="button" class="btn btn-sm btn-success" id="backgroundRemovalConfirm">Remove</div>
+            </div>
+            <div id="autoPeaksDiv" class="hidden">
+                <label>Window:
+                    <input name="bgWindow" id="bgWindow" type="number" value="50" />
+                </label>
+                <label>Treshold:
+                    <input name="bgTreshold" id="bgTreshold" type="number" value="300" />
+                </label>
+                <div type="button" class="btn btn-sm btn-warning" id="autoPeaksCancel">Cancel</div>
+                <div type="button" class="btn btn-sm btn-success" id="autoPeaksConfirm">Get peaks</div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div id="spectrum">
+                <div id="dataVis"></div>
+                <div class="btn-group">
+                    <div type="button" class="btn btn-sm btn-default hidden backgroundRemoval">Remove background</div>
+                    <div type="button" class="btn btn-sm btn-default hidden autoPeaks">Get Peaks</div>
+                    <div type="button" class="btn btn-sm btn-default hidden calibration">Calibration/Fitting</div>
+                </div>
+                <div id="foundPeaksBox" class="hidden box">
+                    <div id="foundPeaksBoxTitle">Found peaks:</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.jQuery = window.$ = require('jquery');
+    </script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plotly.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
+    </script>
+    <script>
+        require('./helpers.js');
+    </script>
+    <script>
+        require('./indexSingle.js');
+        $(function () {
+            $("#file1").removeClass("hidden");
+        });
+    </script>
+</body>
+
+</html>
