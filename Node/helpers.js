@@ -48,3 +48,6 @@ $("#saveX").on("click", function (e) {
 $("#saveY").on("click", function (e) {
   $("[data-title='Download plot as a png']")[2].click();
 });
+$("#saveSpectrum").on("click", function (e) {
+  $("[data-title='Download plot as a png']")[0].click();
+});
