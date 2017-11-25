@@ -29,9 +29,11 @@ function createSpectrum() {
 
 // Clcik on create
 $(".drawButton").on("change", function (e) {
+    spectrum.reset();
     createSpectrum();
 })
 
+// Salva lo spettro attualmente visibile
 $("#saveSpectrumData").on("click", function (e) {
     spectrum.saveData();
 });
@@ -50,44 +52,32 @@ $("#invertColor").change(function (e) {
     inverted = !inverted;
 });
 
-// Invert axis
-$("#invertAxes").change(function (e) {
-    spectrum.invertAxes();
-    $(".modebar").addClass("hidden");
-});
-
 // Remove background
 $(".backgroundRemoval").on("click", function (e) {
-    let self = $(this);
-    $("#backgroundRemovalConfirm").data("filename", self.data("filename"));
-    $("#backgroundPreview").data("filename", self.data("filename"));
     $("#backgroundRemovalDiv").removeClass("hidden");
 });
 
 // Calibration / Fitting
 $(".calibration").on("click", function (e) {
     let self = $(this);
-    let fileName = self.data("filename");
-    spectrum.prepareCalibrating(fileName);
-    spectrum.openCalibration();
+    spectrum.prepareCalibrating();
+    main.openCalibration();
 });
 
 // Background
 $("#backgroundRemovalConfirm").on("click", function (e) {
     let self = $(this);
-    let fileName = self.data("filename");
     let randomPoints = $("#bgPoints").val();
     let iterations = $("#bgIterations").val();
-    spectrum.background(fileName, randomPoints, iterations);
+    spectrum.background(randomPoints, iterations);
     $("#backgroundRemovalDiv").addClass("hidden");
 });
 
 $("#backgroundPreview").on("click", function (e) {
     let self = $(this);
-    let fileName = self.data("filename");
     let randomPoints = $("#bgPoints").val();
     let iterations = $("#bgIterations").val();
-    matrix.previewBackground(fileName, randomPoints, iterations);
+    spectrum.previewBackground(randomPoints, iterations);
 });
 
 $("#backgroundRemovalCancel").on("click", function (e) {
@@ -101,15 +91,13 @@ $("#autoPeaksCancel").on("click", function (e) {
 
 $(".autoPeaks").on("click", function (e) {
     let self = $(this);
-    $("#autoPeaksConfirm").data("filename", self.data("filename"));
     $("#autoPeaksDiv").removeClass("hidden");
 });
 
 $("#autoPeaksConfirm").on("click", function (e) {
     let self = $(this);
-    let fileName = self.data("filename");
     let epsilon = $("#bgWindow").val();
     let treshold = $("#bgTreshold").val();
-    spectrum.autoPeaks(fileName, epsilon, treshold);
+    spectrum.autoPeaks(epsilon, treshold);
     $("#autoPeaksDiv").addClass("hidden");
 });
