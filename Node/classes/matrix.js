@@ -642,7 +642,6 @@ var Matrix = class Matrix {
                 var y = selfSelector.data("y");
                 var fileName = selfSelector.data("filename");
                 self.highlightPoint(x, y, fileName);
-                console.log(self.getListByFilename(fileName));
             });
             $(".peakColor").mouseout(function () {
                 var selfSelector = $(this);
@@ -703,7 +702,6 @@ var Matrix = class Matrix {
                 var y = selfSelector.data("y");
                 var fileName = selfSelector.data("filename");
                 self.highlightPoint(x, y, fileName);
-                console.log(self.getListByFilename(fileName));
             });
             $(".peakColor").mouseout(function () {
                 var selfSelector = $(this);
