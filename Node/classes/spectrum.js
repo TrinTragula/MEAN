@@ -31,7 +31,9 @@ var Spectrum = class Spectrum {
         let dataLines = dataFile.split("\n");
         dataLines = dataLines.filter(x => x && x != "" && x != " ");
 
-        let newStringFile = self.buildFile(dataLines);
+        //let newStringFile = self.buildFile(dataLines);
+        let newStringFile = dataLines.join("\n");
+        
         fs.writeFileSync(`${self.fileName}.txt`, newStringFile);
         dataLines = newStringFile.split("\n");
 
@@ -43,6 +45,7 @@ var Spectrum = class Spectrum {
 
     }
 
+    // Obsoleto, funzionava solo coi canali
     buildFile(dataLines) {
         let xData = dataLines.map(x => x.split(" ")[0] * 1);
         let yData = dataLines.map(x => x.split(" ")[1] * 1);
@@ -88,7 +91,7 @@ var Spectrum = class Spectrum {
             zeroline: true,
             showticklabels: true,
             ticks: '',
-            dtick: Math.round(xData.length / 16)
+            dtick: Math.max.apply(null, xData) / 16
         };
         let yAxisTemplate = {
             title: 'Counts',
@@ -141,29 +144,19 @@ var Spectrum = class Spectrum {
         let self = this;
         let params;
         let fileName = self.fileName;
-        params = ["previewBackground", fileName, randomPoints, iterations];
+        params = ["previewBackgroundSpectrum", fileName, randomPoints, iterations];
         child(self.executablePath, params, function (err, fileData) {
             if (err) console.log("ERRORE: " + err);
             let dataFile = fs.readFileSync(`${fileName}_bgpreview.txt`, 'ascii');
             console.log("Loaded background removal");
             let dataLines = dataFile.split("\n");
             dataLines = dataLines.filter(x => x && x != "" && x != " ");
-            let plotData = {};
-            for (let i = 0; i < dataLines.length; i++) {
-                plotData[i] = 0;
-            }
-            for (let i = 0; i < dataLines.length; i++) {
-                let value = dataLines[i].split(" ")[0] * 1;
-                let count = dataLines[i].split(" ")[1] * 1;
-                if (!isNaN(count)) {
-                    plotData[value] += count;
-                }
-            }
-            plotData = Object.keys(plotData).map(key => plotData[key])
+            let xData = dataLines.map(x => x.split(" ")[0] * 1);
+            let yData = dataLines.map(x => x.split(" ")[1] * 1);
             // Draw the fit for x data
             let trace = {
-                x: [...Array(plotData.length).keys()],
-                y: plotData,
+                x: xData,
+                y: yData,
                 type: 'bar',
                 name: 'background',
                 marker: {
@@ -181,29 +174,19 @@ var Spectrum = class Spectrum {
         let self = this;
         let params;
         let fileName = self.fileName;
-        params = ["background", fileName, randomPoints, iterations];
+        params = ["backgroundSpectrum", fileName, randomPoints, iterations];
         child(self.executablePath, params, function (err, fileData) {
             if (err) console.log("ERRORE: " + err);
             let dataFile = fs.readFileSync(`${fileName}.txt`, 'ascii');
             console.log("Loaded background removal");
             let dataLines = dataFile.split("\n");
             dataLines = dataLines.filter(x => x && x != "" && x != " ");
-            let plotData = {};
-            for (let i = 0; i < dataLines.length; i++) {
-                plotData[i] = 0;
-            }
-            for (let i = 0; i < dataLines.length; i++) {
-                let value = dataLines[i].split(" ")[0] * 1;
-                let count = dataLines[i].split(" ")[1] * 1;
-                if (!isNaN(count)) {
-                    plotData[value] += count;
-                }
-            }
-            plotData = Object.keys(plotData).map(key => plotData[key])
+            let xData = dataLines.map(x => x.split(" ")[0] * 1);
+            let yData = dataLines.map(x => x.split(" ")[1] * 1);
             // Draw the fit for x data
             let trace = {
-                x: [...Array(plotData.length).keys()],
-                y: plotData,
+                x: xData,
+                y: yData,
                 type: 'bar'
             };
             let data = [trace];

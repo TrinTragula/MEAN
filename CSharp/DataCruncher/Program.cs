@@ -20,7 +20,7 @@ namespace DataCruncher
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
             // Argomenti di input
-            var mode = args.Length < 1 ? "substitute" : args[0];
+            var mode = args.Length < 1 ? "previewBackgroundSpectrum" : args[0];
             if (mode == "matrix") Matrix(args);
             if (mode == "gate") Gate(args);
             if (mode == "previewBackground") RemoveBackground(args, true);
@@ -30,10 +30,14 @@ namespace DataCruncher
             if (mode == "fit-peak") FitPeak(args);
             if (mode == "calibrate") Calibrate(args);
             if (mode == "substitute") SubstituteCalibration(args);
+            if (mode == "previewBackgroundSpectrum") RemoveSpectrumBackground(args, true);
+            if (mode == "backgroundSpectrum") RemoveSpectrumBackground(args);
+
+
 
             Console.WriteLine("Done!");
 #if DEBUG
-                Console.ReadLine();
+            Console.ReadLine();
 #endif
         }
 
@@ -98,6 +102,72 @@ namespace DataCruncher
                 Background.PreviewBackground(fileName, data, randomPoints, iterations);
             else
                 Background.RemoveBackground(fileName, data, randomPoints, iterations);
+
+            return;
+        }
+
+        public static void RemoveSpectrumBackground(string[] args, bool preview = false)
+        {
+            var fileName = args.Length < 2 ? "data/spectrum" : args[1];
+            var randomPoints = args.Length < 3 ? 1024 : Int32.Parse(args[2]);
+            var iterations = args.Length < 4 ? 10 : Int32.Parse(args[3]);
+            string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
+            var maxDecimals = 0;
+            var xData = lines.Select(x =>
+               {
+                   var splitted = x.Split(' ');
+                   if (splitted != null && splitted[0] != null)
+                   {
+                       double value = 0;
+                       var parti = splitted[0].Split('.');
+                       if (parti != null && parti.Length == 2)
+                       {
+                           var mantissa = parti[1];
+                           var lunghezza = mantissa.Length;
+                           maxDecimals = Math.Max(lunghezza, maxDecimals);
+                       }
+
+                       if (Double.TryParse(splitted[0], out value))
+                       {
+                           return value;
+                       }
+                   }
+                   return 0;
+               }).ToList();
+
+            var multiplier = (long)Math.Pow(10, maxDecimals);
+
+            List<long> realXData = xData.Select(x =>
+           {
+               long value = (long)(x * multiplier);
+               return value;
+           }).ToList();
+
+            var yDataDict = lines.Aggregate(new Dictionary<long, int>(), (p, c) =>
+            {
+                var x = (long)(Double.Parse(c.Split(' ')[0]) * multiplier);
+                var value = Int32.Parse(c.Split(' ')[1]);
+                p.Add(x, value);
+                return p;
+            });
+
+            var min = realXData.Min();
+            var max = realXData.Max();
+            var bgData = new Dictionary<long, int>();
+            int lastValue = 0;
+            for (long i = min; i <= max; i++)
+            {
+                if (yDataDict.ContainsKey(i))
+                {
+                    lastValue = yDataDict[i];
+                }
+                bgData.Add(i, lastValue);
+            }
+
+            if (preview)
+                BackgroundSpectrum.PreviewBackground(fileName, yDataDict, bgData, min, max, randomPoints, iterations, multiplier: multiplier);
+            else
+                BackgroundSpectrum.RemoveBackground(fileName, yDataDict, bgData, min, max, randomPoints, iterations, multiplier: multiplier);
 
             return;
         }

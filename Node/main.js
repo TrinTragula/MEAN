@@ -152,15 +152,25 @@ function calibrateAllData(q, m, m2) {
                 let split = f.split("/");
                 let value = parseInt(firstHalf);
                 value = value * value * m2 + value * m + q;
-                newData += `${value}${remainder}\n`;
+                value = value.toFixed(2);
+                let newString = `${value}${remainder}\n`;
+                if (newString != "NaN") newData += newString;
             }
             let newF = `${folderPath}/${filesDict[f]}`;
+            newData.replace()
             fs.writeFile(newF, newData, 'utf-8', function (err) {
                 if (err) throw err;
                 console.log("Successfully calibrated");
             });
         });
     }
+
+    let buttons = ['OK'];
+    dialog.showMessageBox({
+        type: 'info',
+        buttons: buttons,
+        message: `Calibrated data has been saved in the folder '${folderPath}'`
+    });
 
     if (isMatrix) {
         for (let matrix of matricesToChange) {
@@ -180,18 +190,13 @@ function calibrateAllData(q, m, m2) {
                     let valueY = parseInt(second);
                     let X = q + m * valueX + m2 * valueX * valueX;
                     let Y = q + m * valueY + m2 * valueY * valueY;
-                    newData += `${X} ${Y} ${remainder}\n`;
+                    let newString = `${X.toFixed(2)} ${Y} ${remainder}\n`;
+                    if (newString != "NaN") newData += newString;
                 }
                 let newMatrix = `${folderPath}/${matrix.txt}`;
                 fs.writeFile(newMatrix, newData, 'utf-8', function (err) {
                     if (err) throw err;
                     console.log("Matrix calibrated");
-                    let buttons = ['OK'];
-                    dialog.showMessageBox({
-                        type: 'info',
-                        buttons: buttons,
-                        message: `Calibrated data has been saved in the folder '${folderPath}'`
-                    });
                 });
             });
         }
