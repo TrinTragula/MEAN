@@ -104,6 +104,7 @@
     <Compile Include="Analysis\Calibration.cs" />
     <Compile Include="Analysis\GaussianFit.cs" />
     <Compile Include="Analysis\Peaks.cs" />
+    <Compile Include="Analysis\PeaksSpectrum.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

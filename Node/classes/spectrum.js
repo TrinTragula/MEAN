@@ -157,11 +157,12 @@ var Spectrum = class Spectrum {
             let trace = {
                 x: xData,
                 y: yData,
-                type: 'bar',
+                type: 'scatter',
                 name: 'background',
                 marker: {
                     color: 'rgb(179, 0, 0)'
-                }
+                },
+                fill: 'tozeroy'
             };
             let vis = self.dataVis;
             // Redraw the fit
@@ -216,7 +217,7 @@ var Spectrum = class Spectrum {
         let self = this;
         let params;
         let fileName = self.fileName;
-        params = ["peaks", fileName, epsilon, treshold];
+        params = ["peaksSpectrum", fileName, epsilon, treshold];
         child(self.executablePath, params, function (err, fileData) {
             if (err) console.log("ERRORE: " + err);
             let dataFile = fs.readFileSync(`${fileName}_peaks.txt`, 'ascii');

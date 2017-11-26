@@ -20,7 +20,7 @@ namespace DataCruncher
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
             // Argomenti di input
-            var mode = args.Length < 1 ? "previewBackgroundSpectrum" : args[0];
+            var mode = args.Length < 1 ? "peaksSpectrum" : args[0];
             if (mode == "matrix") Matrix(args);
             if (mode == "gate") Gate(args);
             if (mode == "previewBackground") RemoveBackground(args, true);
@@ -32,6 +32,7 @@ namespace DataCruncher
             if (mode == "substitute") SubstituteCalibration(args);
             if (mode == "previewBackgroundSpectrum") RemoveSpectrumBackground(args, true);
             if (mode == "backgroundSpectrum") RemoveSpectrumBackground(args);
+            if (mode == "peaksSpectrum") GetPeaksSpectrum(args);
 
 
 
@@ -193,6 +194,70 @@ namespace DataCruncher
             return;
         }
 
+        public static void GetPeaksSpectrum(string[] args)
+        {
+            var fileName = args.Length < 2 ? "data/spectrum" : args[1];
+            var epsilon = args.Length < 3 ? 50 : Int32.Parse(args[2]);
+            var treshold = args.Length < 4 ? 300 : Int32.Parse(args[3]);
+
+            string[] lines = File.ReadAllLines(String.Format("{0}.txt", fileName));
+            var maxDecimals = 0;
+            var xData = lines.Select(x =>
+            {
+                var splitted = x.Split(' ');
+                if (splitted != null && splitted[0] != null)
+                {
+                    double value = 0;
+                    var parti = splitted[0].Split('.');
+                    if (parti != null && parti.Length == 2)
+                    {
+                        var mantissa = parti[1];
+                        var lunghezza = mantissa.Length;
+                        maxDecimals = Math.Max(lunghezza, maxDecimals);
+                    }
+
+                    if (Double.TryParse(splitted[0], out value))
+                    {
+                        return value;
+                    }
+                }
+                return 0;
+            }).ToList();
+
+            var multiplier = Math.Pow(10, maxDecimals);
+
+            int[] realXData = xData.Select(x =>
+            {
+                var value = (int)(x * multiplier);
+                return value;
+            }).ToArray();
+
+            var yDataDict = lines.Aggregate(new Dictionary<int, int>(), (p, c) =>
+            {
+                var x = (int)(Double.Parse(c.Split(' ')[0]) * multiplier);
+                var value = Int32.Parse(c.Split(' ')[1]);
+                p.Add(x, value);
+                return p;
+            });
+
+            var min = realXData.Min();
+            var max = realXData.Max();
+            var peaksData = new List<int>();
+            for (int i = min; i <= max; i++)
+            {
+                if (yDataDict.ContainsKey(i))
+                {
+                    peaksData.Add(yDataDict[i]);
+                }
+                peaksData.Add(0);
+            }
+
+            var peaksFile = String.Format("{0}_peaks", fileName);
+            PeaksSpectrum.GetPeaks(peaksFile, peaksData.ToArray(), epsilon, treshold, (int)multiplier);
+
+            return;
+        }
+
         public static void BinCount(string[] args)
         {
             var fileName = args.Length < 2 ? "data/xResult" : args[1];
@@ -211,6 +276,11 @@ namespace DataCruncher
             return;
         }
 
+
+        /// <summary>
+        /// Obsoleto, per fortuna
+        /// </summary>
+        /// <param name="args"></param>
         public static void FitPeak(string[] args)
         {
             var fileName = args.Length < 2 ? "data/calibrating" : args[1];
