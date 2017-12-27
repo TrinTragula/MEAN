@@ -86,12 +86,18 @@ const openNudat = function () {
     nudatWin.loadURL(`http://www.nndc.bnl.gov/nudat2/`);
 }
 
-const openToi = function () {
+const openToi = function (data, error) {
     var toiWin = new BrowserWindow({
         width: 1033,
         height: 875,
         icon: './icon.ico'
     });
+    if (data && error) {
+        global.toiData = {
+            data: data,
+            error: error
+        };
+    }
     toiWin.loadURL(`file://${__dirname}/toi.html`);
     //toiWin.webContents.openDevTools();
 }
