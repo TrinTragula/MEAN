@@ -26,6 +26,12 @@ $(function () {
         calfit.calibrate();
     });
 
+    $("#discovery-btn").on("click", function (e) {
+        e.preventDefault();
+        var self = $(this);
+        calfit.discovery();
+    });
+
     $("#file-calibration").on("change", function () {
         let filePath = $("#file-calibration")[0].files[0].path;
         if (filePath && filePath != "") {

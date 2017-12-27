@@ -82,6 +82,13 @@ var Calfit = class Calfit {
                 calibrationString += `<td class="box"><input id="calibration-${index}" class="calibration-energy" data-index="${index}" type="number" style="width: 100%;"/></td>`;
             }
             calibrationString += "</tr>";
+
+            calibrationString += "<tr>";
+            calibrationString += `<td class="box">Element discovery</td>`
+            for (var index in peaks) {
+                calibrationString += `<td class="box"><input id="discovery-${index}" class="discovery-energy" data-index="${index}" type="checkbox"/></td>`;
+            }
+            calibrationString += "</tr>";
         }
 
         // In inverse order since it's last first
@@ -198,6 +205,27 @@ var Calfit = class Calfit {
         // child(self.executablePath, params, function (err, fileData) {
         //     console.log("Calibration substitution done!");
         // });
+    }
+
+    discovery() {
+        let self = this;
+        let discoveryData = [];
+        let error = 0;
+        for (let index in self.centroid) {
+            let isChecked = $(`#discovery-${index}`).is(":checked");
+            let centroid = self.centroid[index];
+            let sigma = Math.abs(self.sigma[index]);
+            if (isChecked && !isNaN(centroid) && centroid && centroid != "") {
+                console.log("Index:" + index);
+                console.log("Sigma:" + sigma);
+                console.log("Centroid:" + self.centroid[index]);
+                if (sigma > error) error = sigma;
+                discoveryData.push(Math.round(centroid));
+            }
+        }
+        error = Math.ceil(error);
+        console.log("Error: " + error);
+        main.openToi(discoveryData, error);
     }
 }
 module.exports = Calfit;

@@ -58,4 +58,15 @@ $(function () {
             });
         }
     });
+
+    // se ho passato già dei dati dal main (sto cercando un elemento dalla calibrazione)
+    var toiData = remote.getGlobal('toiData');
+    if (toiData) {
+        console.log(JSON.stringify(toiData));
+        var energyCSV = toiData.data.join(',');
+        $("#energycsv").val(energyCSV);
+        $("#error").val(toiData.error);
+        $("#searchtoicsv").trigger("click");
+        toiData = {};
+    }
 });
