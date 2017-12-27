@@ -53,7 +53,8 @@ $(function () {
                 table.append("<tr><th class='boxth'>Possible elements</th></tr>")
                 for (var x of data) {
                     //console.log(x);
-                    table.append("<tr><td style='text-align: center;border: solid 1px black;padding: 10px;'>" + x + "</td></tr>");
+                    table.append("<tr><td style='text-align: center;border: solid 1px black;padding: 10px;'>" + x +
+                        "<a href='https://www.nndc.bnl.gov/nudat2/getdataset.jsp?nucleus=" + x + "&unc=nds' target='_blank'> (Nudat) </a></td></tr>");
                 }
             });
         }
