@@ -6,6 +6,7 @@
     <title>Choose</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link defer rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         #single {
             color: black;
@@ -56,12 +57,26 @@
         img {
             border: 1px solid;
         }
+
+        .website {
+            cursor: pointer;
+        }
+
+        #github {
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
-    <h2 class="title">Nome v.1.0 -
-        <a id="website" href="#">Daniele Scarinci</a>
+    <h2 class="title">Coincidence v.1.0 -
+        <a class="website" href="#">Daniele Scarinci</a>
+        <div class="website" style="display:inline-block">
+            <i class="fa fa-globe"></i>
+        </div>
+        <div id="github" style="display:inline-block">
+            <i id="github" class="fa fa-github"></i>
+        </div>
     </h2>
     <div id="both" class="btn-group center-div">
         <div id="single" class="btn btn-default">
@@ -86,8 +101,11 @@
         const main = remote.require('./main.js');
         const shell = require('electron').shell
 
-        $("#website").on("click", function () {
+        $(".website").on("click", function () {
             shell.openExternal('https://danielescarinci.com')
+        })
+        $("#github").on("click", function () {
+            shell.openExternal('https://github.com/TrinTragula')
         })
         $("#single").on("click", function () {
             main.single();
