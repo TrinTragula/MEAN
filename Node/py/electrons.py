@@ -68,9 +68,9 @@ noise = np.round(ndec / enmax)
 # Spettri di emissione dei gamma e degli elettroni e frazione di elettroni rispetto ai gamma
 frac = 1
 gammatab = np.loadtxt(
-    "G:\Tesi\Mathematica Saltarelli\Simulazione_silli\80Ge_gam.txt")
+    "D:\PENNETTA\Bianchetto\Tesi\Mathematica Saltarelli\Simulazione_silli\80Ge_gam.txt")
 eletab = np.loadtxt(
-    "G:\Tesi\Mathematica Saltarelli\Simulazione_silli\80Ge_ele.txt")
+    "D:\PENNETTA\Bianchetto\Tesi\Mathematica Saltarelli\Simulazione_silli\80Ge_ele.txt")
 
 gtot = np.sum(gammatab, axis=0)[1] * nev
 etot = np.sum(eletab, axis=0)[1] * nev
@@ -85,7 +85,7 @@ for e in eletab:
 elesim = []
 for e in eletab:
     print "Simulazione degli elettroni. Inizio il calcolo per l'energia " + str(e[0]) + " keV."
-    for h in range(1, int(round(e[1] * ndec))):
+    for h in range(1, int(np.round(e[1] * ndec))):
         rndsray = sray * np.random.random_sample()
         rndsang = 2 * np.pi * np.random.random_sample()
         x0pos = rndsray * np.cos(rndsang)
@@ -102,3 +102,37 @@ for e in eletab:
             elesim.append(res)
 
 print elesim[0]
+
+# Calcolo del backscattering
+eletrasm = []
+bstab = []
+
+for k, e in enumerate(elesim):
+    rndback = np.random.random_sample()
+    nsigma = sigma(e[0]/abs(np.cos(e[3])))
+    nmu = 1000 * np.sqrt(e[1]**2 + e[2]**2)
+    rndpos = nsigma * np.random.randn() + nmu
+    if (rndback >= backtot(e[0], e[3]) and float(rndpos/1000) <= np.sqrt(AREA / np.pi)):
+        eletrasm.append(e[0])
+
+print eletrasm[0]
+elecnt = len(eletrasm)
+bscnt = 0
+
+for e in eletab:
+    tmp1 = [i for i in elesim if i[0] == e[0]]
+    tmp2 = [i for i in eletrasm if i == e[0]]
+    bstab.append([e[0], float( (len(tmp1) - len(tmp2)) / len(tmp1))])
+    bscnt += np.round(len(tmp1) - len(tmp2))
+print bstab[0]
+print bscnt
+
+# Calcolo dello spettro
+bspart = []
+peak = []
+tbs = []
+for i,e in eletab:
+    bspart[i] = []
+    peak[i] = []
+    tbs[i] = 0
+
