@@ -1,6 +1,7 @@
 from __future__ import division
 import numpy as np
 from scipy.special import erf
+import matplotlib.pyplot as plt
 
 ############
 # FUNZIONI #
@@ -131,8 +132,39 @@ print bscnt
 bspart = []
 peak = []
 tbs = []
-for i,e in eletab:
-    bspart[i] = []
-    peak[i] = []
-    tbs[i] = 0
+for i,e in enumerate(eletab):
+    bspart.append([])
+    peak.append([])
+    tbs.append(0)
 
+for i, e in enumerate(eletab):
+    tmp = [t for t in eletrasm if t == e[0]]
+    bsval =  [t[1] for t in bstab if t[0] == e[0]]
+    temptab = [0 for t in range(enmax)]
+    for kt in range(int(np.floor(e[0] - 1))):
+        temptab[kt] = eledistfunc(e[0] - kt, 0.75 * e[0], 1, 0.05 * e[0], 0.5 * e[0])
+    # Normalizzo i pesi
+    temptabSum = sum(temptab)
+    temptab = temptab / temptabSum
+    peakPesi = [ eledistfunc(peso, e[0], 1, ris / 2.355, tail) for peso in range(enmax) ]
+    peakPesiSum = sum(peakPesi)
+    peakPesi = peakPesi / peakPesiSum
+    tempRandomBsPart = []
+    temppeak = []
+    # SICURI ???????????????????
+    for index in range(enmax):
+        tempRandomBsPart.append(np.random.choice(range(len(temptab)), 1, p = temptab)[0])
+        temppeak.append(np.random.choice(range(enmax), 1, p = peakPesi)[0])
+    bspart[i] = np.bincount(tempRandomBsPart, minlength=enmax)
+    peak[i] = np.bincount(temppeak, minlength=enmax)
+print sum(bspart[0])
+print sum(peak[10])
+
+for i,e in enumerate(eletab):
+    tbs[i] = 100 * sum(bspart[i]) / np.round(e[1]) * ndec
+
+elespt = [ sum([bspart[k][i] + peak[k][i] for k in range(len(eletab))]) for i in range(enmax-1)]
+
+plt.plot(elespt[1:])
+plt.ylabel('Electrons')
+plt.show()

@@ -40,7 +40,7 @@ var Calfit = class Calfit {
 
         let windowsString = peaks.length > 0 ? "<th class='boxth'>Window</th>" : "";
         for (var index in peaks) {
-            windowsString += `<th class="boxth"><input style='width:100%;' id="${index}-calibration-window" type="number" value="5"/></th>`;
+            windowsString += `<th class="boxth"><input style='width:100%;' id="${index}-calibration-window" type="number" value="10"/></th>`;
         }
         $("#windows").html(windowsString);
 
