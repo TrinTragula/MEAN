@@ -2,6 +2,7 @@ from __future__ import division
 import numpy as np
 from scipy.special import erf
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
 
 ############
 # FUNZIONI #
@@ -86,7 +87,7 @@ for e in eletab:
 elesim = []
 for e in eletab:
     print "Simulazione degli elettroni. Inizio il calcolo per l'energia " + str(e[0]) + " keV."
-    for h in range(1, int(np.round(e[1] * ndec))):
+    for h in range(1, int(np.round(e[1] * ndec) + 1)):
         rndsray = sray * np.random.random_sample()
         rndsang = 2 * np.pi * np.random.random_sample()
         x0pos = rndsray * np.cos(rndsang)
@@ -141,7 +142,7 @@ for i, e in enumerate(eletab):
     tmp = [t for t in eletrasm if t == e[0]]
     bsval =  [t[1] for t in bstab if t[0] == e[0]]
     temptab = [0 for t in range(enmax)]
-    for kt in range(int(np.floor(e[0] - 1))):
+    for kt in range(int(np.floor(e[0]))):
         temptab[kt] = eledistfunc(e[0] - kt, 0.75 * e[0], 1, 0.05 * e[0], 0.5 * e[0])
     # Normalizzo i pesi
     temptabSum = sum(temptab)
@@ -161,10 +162,123 @@ print sum(bspart[0])
 print sum(peak[10])
 
 for i,e in enumerate(eletab):
-    tbs[i] = 100 * sum(bspart[i]) / np.round(e[1]) * ndec
+    tbs[i] = 100 * sum(bspart[i]) / np.round(e[1] * ndec)
 
-elespt = [ sum([bspart[k][i] + peak[k][i] for k in range(len(eletab))]) for i in range(enmax-1)]
+elespt = [ sum([bspart[k][i] + peak[k][i] for k in range(len(eletab))]) for i in range(enmax)]
 
-plt.plot(elespt[1:])
-plt.ylabel('Electrons')
-plt.show()
+# plt.plot(elespt[1:])
+# plt.ylabel('Electrons')
+# plt.show()
+
+# Simulazione per i gamma
+
+# Importiamo le sezioni d'urto per Compton, Fotoelettrico e PP in in barn/atomi
+gamele = np.loadtxt("D:\PENNETTA\Bianchetto\Tesi\Mathematica Saltarelli\Simulazione_silli\silicon_gamma.txt")
+# rawdata = [gamele[h + 6*k] for k in range(int(np.floor(len(gamele)/6))) for h in range(6)]
+
+# Definiamo le sezioni d' urto : {energy, scattering Compton coerente + incoerente, fotoelettrico, produzione di coppia su sponda nucleare + elettronica, totale}
+gameleElements = len([k[0] for k in gamele])
+dati = np.zeros((gameleElements, 5))
+for i in range(gameleElements):
+    dati[i] = np.array([gamele[i][0], 
+    gamele[i][1] + gamele[i][2], 
+    gamele[i][3], 
+    gamele[i][4] + gamele[i][5], 
+    gamele[i][1] + gamele[i][2] + gamele[i][3] + gamele[i][4] + gamele[i][5]])
+print dati.shape
+x = [k[0] for k in dati]
+y = [k[1] for k in dati]
+cmpint = interp1d(x, y, kind='cubic')
+y = [k[2] for k in dati]
+pheint = interp1d(x, y, kind='cubic')
+y = [k[3] for k in dati]
+ppint = interp1d(x, y, kind='cubic')
+y = [k[4] for k in dati]
+allint = interp1d(x, y, kind='cubic')
+
+# Calcolo dei gamma Compton, fotoelettrici e coppie
+evset = []
+gammatabLen = len([x[0] for x in gammatab])
+cntc = np.zeros(gammatabLen)
+cntph = np.zeros(gammatabLen)
+cntpp = np.zeros(gammatabLen)
+
+
+for k in range(gammatabLen):
+    print "Simulazione dei Gamma. Calcolo per l'energia " + str(gammatab[k][0]) + " keV"
+    # Indicatore del progresso di simulazione
+    mcnt = 0
+    # h parte da zero o da 1?
+    for h in range(np.round(gammatab[k][1] * ndec)):
+        rndsray = np.random.random_sample() * sray
+        rndsang = np.random.random_sample() * 2 * np.pi
+        x0pos = rndsray * np.cos(rndsang)
+        y0pos = rndsray * np.sin(rndsang)
+        phivel = np.random.random_sample() * 2 * np.pi 
+        thetavel = np.arccos(2 * np.random.random_sample() - 1) - (np.pi /2)
+        u1 = np.sin(thetavel) * np.cos(phivel)
+        u2 = np.sin(thetavel) * np.sin(phivel)
+        u3 = np.cos(thetavel)
+        xpos = x0pos + dist * (u1/u3)
+        ypos = y0pos + dist * (u2/u3)
+
+# Da inserire di seguito sempre dentro il for
+
+#    If[xpos^2 + ypos^2 <= dray^2,
+#     Which[Abs[Tan[thetavel]] <= (dray/(dist + spes)),
+#      rspes = 0.1*spes*Sqrt[1 + Tan[thetavel]^2],
+#      Abs[Tan[thetavel]] > (dray/(dist + spes)),
+#      rspes = 0.1*(dray - Sqrt[xpos^2 + ypos^2])*Abs [Cot[thetavel]]];
+#     cmpcs = 1 - Exp[-cost*cmpint[0.001*gammatab[[k, 1]]]*rspes];
+#     phecs = 1 - Exp[-cost*pheint[0.001*gammatab[[k, 1]]]*rspes];
+#     ppcs = 1 - Exp[-cost*ppint[0.001*gammatab[[k, 1]]]*rspes];
+#     totcs = cmpcs + phecs + ppcs;
+#     rnd = RandomReal[{0, 1}],
+#     If[rnd <= totcs,
+#      Which[0 <= rnd <= cmpcs,
+#       cntc[k]++;
+#       thetarnd = 
+#        RandomChoice[
+#          Table[cmpthdist[gammatab[[k, 1]], h], {h, 0, 2*Pi, 0.01}] -> 
+#           Table[h, {h, 0, 2*Pi, 0.01}], 1][[1]];
+#       cpen = 
+#        RandomChoice[
+#          Table[eledistfunc[h, cmpen[gammatab[[k, 1]], thetarnd], 1, 
+#             ris/2.355, 0.1*tail], {h, 1, enmax}] -> 
+#           Table[h, {h, 1, enmax}], 1][[1]];
+#       evset = Join[evset, {cpen}],
+#       cmpcs < rnd <= phecs + cmpcs,
+#       cntph[k]++;
+#       phen = 
+#        RandomChoice[
+#          Table[eledistfunc[h, gammatab[[k, 1]], 1, ris/2.355, 
+#             0.1*tail], {h, 1, enmax}] -> Table[h, {h, 1, enmax}], 1][[
+#         1]];
+#       evset = Join[evset, {phen}],
+#       phecs + cmpcs < rnd <= totcs,
+#       cntpp[k]++;
+#       rnd1 = RandomReal[{0, 1}];
+#       Which[0 <= rnd1 < 0.95,
+#        ppen = 
+#         RandomChoice[
+#           Table[eledistfunc[h, gammatab[[k, 1]] - 2*mec2, 1, 
+#              ris/2.355, 0.1*tail], {h, 1, enmax}] -> 
+#            Table[h, {h, 1, enmax}], 1][[1]];
+#        evset = Join[evset, {ppen}],
+#        0.95 <= rnd1 < 0.999,
+#        ppen = 
+#         RandomChoice[
+#           Table[eledistfunc[h, gammatab[[k, 1]] - mec2, 1, ris/2.355, 
+#              0.1*tail], {h, 1, enmax}] -> Table[h, {h, 1, enmax}], 
+#           1][[1]];
+#        evset = Join[evset, {ppen}],
+#        0.999 <= rnd1 <= 1,
+#        ppen = 
+#         RandomChoice[
+#           Table[eledistfunc[h, gammatab[[k, 1]], 1, ris/2.355, 
+#              0.1*tail], {h, 1, enmax}] -> Table[h, {h, 1, enmax}], 
+#           1][[1]];
+#        evset = Join[evset, {ppen}]
+#        ]]]];
+#    mcnt++
+
