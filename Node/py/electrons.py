@@ -53,7 +53,7 @@ enmax = 2000
 act = 10**4
 time = 3600 * 4
 nev = act * time
-dist = 10
+dist = 10.0
 sray = 1.25
 AREA = 300
 dray = np.sqrt(AREA / np.pi)
@@ -62,7 +62,7 @@ ndec = np.round(nev * solidangle(dist, AREA))
 # Parametri del rivelatore
 dens = 2.329
 PA = 28.0855
-spes = 3
+spes = 3.0
 cost = (dens * NA / PA) * (10**(-24))
 # Noise sull'adc
 noise = np.round(ndec / enmax)
@@ -205,11 +205,14 @@ cntpp = np.zeros(gammatabLen)
 
 
 for k in range(gammatabLen):
-    print "Simulazione dei Gamma. Calcolo per l'energia " + str(gammatab[k][0]) + " keV"
+    print "Simulazione dei Gamma. Calcolo per l'energia " + str(gammatab[k][0]) + " keV."
     # Indicatore del progresso di simulazione
     mcnt = 0
     # h parte da zero o da 1?
-    for h in range(np.round(gammatab[k][1] * ndec)):
+    totalToIterate = int(np.round(gammatab[k][1] * ndec))
+    for h in np.arange(totalToIterate):
+        if (h % 1000 == 0):
+            print "Completato " + str(h * 100 / totalToIterate) + "%"
         rndsray = np.random.random_sample() * sray
         rndsang = np.random.random_sample() * 2 * np.pi
         x0pos = rndsray * np.cos(rndsang)
@@ -221,64 +224,70 @@ for k in range(gammatabLen):
         u3 = np.cos(thetavel)
         xpos = x0pos + dist * (u1/u3)
         ypos = y0pos + dist * (u2/u3)
+        if (xpos ** 2 + ypos ** 2 <= dray **2):
+            if (abs(np.tan(thetavel)) <= (dray/(dist + spes))):
+                rspes = 0.1 * spes * np.sqrt(1 + np.tan(thetavel) ** 2)
+            else:
+                rspes = 0.1 * (dray - np.sqrt(xpos ** 2 + ypos ** 2)) * abs( 1.0 / np.tan(thetavel))
+            cmpcs = 1 - np.exp(-cost * cmpint(0.001*gammatab[k][0]) * rspes)
+            phecs = 1 - np.exp(-cost * pheint(0.001*gammatab[k][0]) * rspes)
+            ppcs = 1 - np.exp(-cost * ppint(0.001*gammatab[k][0]) * rspes)
+            totcs = cmpcs + phecs + ppcs
+            rnd = np.random.random_sample()
+        
+        # Qua sul mathematica c'e' un a virgola, come se ci fosse un else
+        # Ma non ha senso manco per niente, quindi deduco per qualche ragione sia il continuo
+        # dell'if di prima e commento l'else
 
-# Da inserire di seguito sempre dentro il for
+        # else:
 
-#    If[xpos^2 + ypos^2 <= dray^2,
-#     Which[Abs[Tan[thetavel]] <= (dray/(dist + spes)),
-#      rspes = 0.1*spes*Sqrt[1 + Tan[thetavel]^2],
-#      Abs[Tan[thetavel]] > (dray/(dist + spes)),
-#      rspes = 0.1*(dray - Sqrt[xpos^2 + ypos^2])*Abs [Cot[thetavel]]];
-#     cmpcs = 1 - Exp[-cost*cmpint[0.001*gammatab[[k, 1]]]*rspes];
-#     phecs = 1 - Exp[-cost*pheint[0.001*gammatab[[k, 1]]]*rspes];
-#     ppcs = 1 - Exp[-cost*ppint[0.001*gammatab[[k, 1]]]*rspes];
-#     totcs = cmpcs + phecs + ppcs;
-#     rnd = RandomReal[{0, 1}],
-#     If[rnd <= totcs,
-#      Which[0 <= rnd <= cmpcs,
-#       cntc[k]++;
-#       thetarnd = 
-#        RandomChoice[
-#          Table[cmpthdist[gammatab[[k, 1]], h], {h, 0, 2*Pi, 0.01}] -> 
-#           Table[h, {h, 0, 2*Pi, 0.01}], 1][[1]];
-#       cpen = 
-#        RandomChoice[
-#          Table[eledistfunc[h, cmpen[gammatab[[k, 1]], thetarnd], 1, 
-#             ris/2.355, 0.1*tail], {h, 1, enmax}] -> 
-#           Table[h, {h, 1, enmax}], 1][[1]];
-#       evset = Join[evset, {cpen}],
-#       cmpcs < rnd <= phecs + cmpcs,
-#       cntph[k]++;
-#       phen = 
-#        RandomChoice[
-#          Table[eledistfunc[h, gammatab[[k, 1]], 1, ris/2.355, 
-#             0.1*tail], {h, 1, enmax}] -> Table[h, {h, 1, enmax}], 1][[
-#         1]];
-#       evset = Join[evset, {phen}],
-#       phecs + cmpcs < rnd <= totcs,
-#       cntpp[k]++;
-#       rnd1 = RandomReal[{0, 1}];
-#       Which[0 <= rnd1 < 0.95,
-#        ppen = 
-#         RandomChoice[
-#           Table[eledistfunc[h, gammatab[[k, 1]] - 2*mec2, 1, 
-#              ris/2.355, 0.1*tail], {h, 1, enmax}] -> 
-#            Table[h, {h, 1, enmax}], 1][[1]];
-#        evset = Join[evset, {ppen}],
-#        0.95 <= rnd1 < 0.999,
-#        ppen = 
-#         RandomChoice[
-#           Table[eledistfunc[h, gammatab[[k, 1]] - mec2, 1, ris/2.355, 
-#              0.1*tail], {h, 1, enmax}] -> Table[h, {h, 1, enmax}], 
-#           1][[1]];
-#        evset = Join[evset, {ppen}],
-#        0.999 <= rnd1 <= 1,
-#        ppen = 
-#         RandomChoice[
-#           Table[eledistfunc[h, gammatab[[k, 1]], 1, ris/2.355, 
-#              0.1*tail], {h, 1, enmax}] -> Table[h, {h, 1, enmax}], 
-#           1][[1]];
-#        evset = Join[evset, {ppen}]
-#        ]]]];
-#    mcnt++
+            if (rnd <= totcs):
+                if (0 <= rnd <= cmpcs):
+                    cntc[k] += 1
+                    pesitheta = [cmpthdist(gammatab[k][0], z) for z in np.arange(0, 2 * np.pi, 0.01)]
+                    arraytheta = [z for z in np.arange(0, 2 * np.pi, 0.01)]
+                    pesithetaSum = sum(pesitheta)
+                    pesitheta = pesitheta / pesithetaSum
+                    thetarnd = np.random.choice(arraytheta, 1, p=pesitheta)[0]
+                    pesicpen = [ eledistfunc(z, cmpen(gammatab[k][0], thetarnd), 1, ris / 2.355, 0.1 * tail ) for z in np.arange(1, enmax)]
+                    arraycpen = [ z for z in np.arange(1, enmax)]
+                    pesicpenSum = sum(pesicpen)
+                    pesicpen = pesicpen / pesicpenSum
+                    cpen = np.random.choice(arraycpen, 1, p=pesicpen)[0]
+                    evset.append(cpen)
+                elif (cmpcs < rnd <= phecs + cmpcs):
+                    cntph[k] += 1
+                    pesiphen = [ eledistfunc(z, gammatab[k][0], 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
+                    arrayphen = [ z for z in range(1, enmax)]
+                    pesiphenSum = sum(pesiphen)
+                    pesiphen = pesiphen / pesiphenSum
+                    phen = np.random.choice(arrayphen, 1, p=pesiphen)[0]
+                    evset.append(phen)
+                elif (phecs + cmpcs < rnd <= totcs):
+                    cntpp[k] += 1
+                    rnd1 = np.random.random_sample()
+                    if (0 <= rnd1 < 0.95):
+                        pesippen = [ z for z in range(1, enmax)]
+                        arrayppen = [ eledistfunc(z, gammatab[k][0] - 2 * MEC2, 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
+                        pesippenSum = sum(pesippen)
+                        pesippen = pesippen / pesippenSum
+                        ppen = np.random.choice(arrayppen, 1, p=pesippen)[0]
+                        evset.append(ppen)
+                    elif (0.95 <= rnd1 < 0.999):
+                        pesippen = [ z for z in range(1, enmax)]
+                        arrayppen = [ eledistfunc(z, gammatab[k][0] - MEC2, 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
+                        pesippenSum = sum(pesippen)
+                        pesippen = pesippen / pesippenSum
+                        ppen = np.random.choice(arrayppen, 1, p=pesippen)[0]
+                        evset.append(ppen)
+                    elif (0.999 <= rnd1 <= 1):
+                        pesippen = [ z for z in range(1, enmax)]
+                        arrayppen = [ eledistfunc(z, gammatab[k][0], 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
+                        pesippenSum = sum(pesippen)
+                        pesippen = pesippen / pesippenSum
+                        ppen = np.random.choice(arrayppen, 1, p=pesippen)[0]
+                        evset.append(ppen)
+        mcnt += 1
+
+
 
