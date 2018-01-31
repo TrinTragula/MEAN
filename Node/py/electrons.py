@@ -203,11 +203,36 @@ cntc = np.zeros(gammatabLen)
 cntph = np.zeros(gammatabLen)
 cntpp = np.zeros(gammatabLen)
 
+arraytheta = [z for z in np.arange(0, 2 * np.pi, 0.01)]
+arraycpen = [ z for z in np.arange(1, enmax)]
+arrayphen = [ z for z in range(1, enmax)]
+arrayppen = [ z for z in range(1, enmax)]
 
 for k in range(gammatabLen):
     print "Simulazione dei Gamma. Calcolo per l'energia " + str(gammatab[k][0]) + " keV."
     # Indicatore del progresso di simulazione
     mcnt = 0
+
+    pesitheta = [cmpthdist(gammatab[k][0], z) for z in np.arange(0, 2 * np.pi, 0.01)]
+    pesithetaSum = sum(pesitheta)
+    pesitheta = pesitheta / pesithetaSum
+
+    pesiphen = [ eledistfunc(z, gammatab[k][0], 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
+    pesiphenSum = sum(pesiphen)
+    pesiphen = pesiphen / pesiphenSum
+    
+    pesippen1 = [ eledistfunc(z, gammatab[k][0] - 2 * MEC2, 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
+    pesippenSum1 = sum(pesippen1)
+    pesippen1 = pesippen1 / pesippenSum1
+    
+    pesippen2 = [ eledistfunc(z, gammatab[k][0] - MEC2, 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
+    pesippenSum2 = sum(pesippen2)
+    pesippen2 = pesippen2 / pesippenSum2
+    
+    pesippen3 = [ eledistfunc(z, gammatab[k][0], 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
+    pesippenSum3 = sum(pesippen3)
+    pesippen3 = pesippen3 / pesippenSum3
+
     # h parte da zero o da 1?
     totalToIterate = int(np.round(gammatab[k][1] * ndec))
     for h in np.arange(totalToIterate):
@@ -244,48 +269,27 @@ for k in range(gammatabLen):
             if (rnd <= totcs):
                 if (0 <= rnd <= cmpcs):
                     cntc[k] += 1
-                    pesitheta = [cmpthdist(gammatab[k][0], z) for z in np.arange(0, 2 * np.pi, 0.01)]
-                    arraytheta = [z for z in np.arange(0, 2 * np.pi, 0.01)]
-                    pesithetaSum = sum(pesitheta)
-                    pesitheta = pesitheta / pesithetaSum
                     thetarnd = np.random.choice(arraytheta, 1, p=pesitheta)[0]
                     pesicpen = [ eledistfunc(z, cmpen(gammatab[k][0], thetarnd), 1, ris / 2.355, 0.1 * tail ) for z in np.arange(1, enmax)]
-                    arraycpen = [ z for z in np.arange(1, enmax)]
                     pesicpenSum = sum(pesicpen)
                     pesicpen = pesicpen / pesicpenSum
                     cpen = np.random.choice(arraycpen, 1, p=pesicpen)[0]
                     evset.append(cpen)
                 elif (cmpcs < rnd <= phecs + cmpcs):
                     cntph[k] += 1
-                    pesiphen = [ eledistfunc(z, gammatab[k][0], 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
-                    arrayphen = [ z for z in range(1, enmax)]
-                    pesiphenSum = sum(pesiphen)
-                    pesiphen = pesiphen / pesiphenSum
                     phen = np.random.choice(arrayphen, 1, p=pesiphen)[0]
                     evset.append(phen)
                 elif (phecs + cmpcs < rnd <= totcs):
                     cntpp[k] += 1
                     rnd1 = np.random.random_sample()
                     if (0 <= rnd1 < 0.95):
-                        pesippen = [ z for z in range(1, enmax)]
-                        arrayppen = [ eledistfunc(z, gammatab[k][0] - 2 * MEC2, 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
-                        pesippenSum = sum(pesippen)
-                        pesippen = pesippen / pesippenSum
-                        ppen = np.random.choice(arrayppen, 1, p=pesippen)[0]
+                        ppen = np.random.choice(arrayppen, 1, p=pesippen1)[0]
                         evset.append(ppen)
                     elif (0.95 <= rnd1 < 0.999):
-                        pesippen = [ z for z in range(1, enmax)]
-                        arrayppen = [ eledistfunc(z, gammatab[k][0] - MEC2, 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
-                        pesippenSum = sum(pesippen)
-                        pesippen = pesippen / pesippenSum
-                        ppen = np.random.choice(arrayppen, 1, p=pesippen)[0]
+                        ppen = np.random.choice(arrayppen, 1, p=pesippen2)[0]
                         evset.append(ppen)
                     elif (0.999 <= rnd1 <= 1):
-                        pesippen = [ z for z in range(1, enmax)]
-                        arrayppen = [ eledistfunc(z, gammatab[k][0], 1, ris / 2.355, 0.1 * tail ) for z in range(1, enmax)]
-                        pesippenSum = sum(pesippen)
-                        pesippen = pesippen / pesippenSum
-                        ppen = np.random.choice(arrayppen, 1, p=pesippen)[0]
+                        ppen = np.random.choice(arrayppen, 1, p=pesippen3)[0]
                         evset.append(ppen)
         mcnt += 1
 
