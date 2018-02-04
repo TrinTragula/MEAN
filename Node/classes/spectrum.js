@@ -23,7 +23,7 @@ var Spectrum = class Spectrum {
         this.peaks = [];
 
         if (!fs.existsSync("data")){
-            fs.mkdirSync(dir);
+            fs.mkdirSync("data");
         }
     }
 
