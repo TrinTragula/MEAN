@@ -93,9 +93,11 @@ body {
     padding: 9px;
 }
 
+.toiTable {
+    text-align: center;
+}
+
 .toiTable .boxth {
-    border: solid rgb(0, 0, 0) 1px;
-    padding: 9px;
     background: blanchedalmond;
     text-align: center;
 }
