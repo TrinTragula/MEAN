@@ -32,7 +32,7 @@ $("#importDbButton").on("click", function (e) {
     dbPath = document.getElementById("dbFile").files[0] ? document.getElementById("dbFile").files[0].path : null;
   if (dbPath) {
     let contents = fs.readFileSync(dbPath);
-    console.log(contents);
+    //console.log(contents);
     fs.writeFileSync("coincidenze_vere.sqlite", contents);
     alert("Done!");
   }
