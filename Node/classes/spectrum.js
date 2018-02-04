@@ -21,6 +21,10 @@ var Spectrum = class Spectrum {
         this.y2;
         this.backupVis;
         this.peaks = [];
+
+        if (!fs.existsSync("data")){
+            fs.mkdirSync(dir);
+        }
     }
 
     // Create the spectrum
