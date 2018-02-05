@@ -212,7 +212,7 @@ for k in range(gammatabLen):
     print "Simulazione dei Gamma. Calcolo per l'energia " + str(gammatab[k][0]) + " keV."
     # Indicatore del progresso di simulazione
     mcnt = 0
-
+    print "Inizializzazione.."
     pesitheta = [cmpthdist(gammatab[k][0], z) for z in np.arange(0, 2 * np.pi, 0.01)]
     pesithetaSum = sum(pesitheta)
     pesitheta = pesitheta / pesithetaSum
@@ -233,22 +233,34 @@ for k in range(gammatabLen):
     pesippenSum3 = sum(pesippen3)
     pesippen3 = pesippen3 / pesippenSum3
 
-    # h parte da zero o da 1?
+    print "Elaborazione.."
     totalToIterate = int(np.round(gammatab[k][1] * ndec))
+    rndsrayArray = np.random.random_sample(totalToIterate) * sray
+    rndsangArray = np.random.random_sample(totalToIterate) * 2 * np.pi
+    x0posArray = rndsrayArray * np.cos(rndsangArray)
+    y0posArray = rndsrayArray * np.sin(rndsangArray)
+    phivelArray = np.random.random_sample(totalToIterate) * 2 * np.pi
+    thetavelArray = np.arccos(2 * np.random.random_sample(totalToIterate) - 1) - (np.pi /2)
+    u1Array = np.sin(thetavelArray) * np.cos(phivelArray)
+    u2Array = np.sin(thetavelArray) * np.sin(phivelArray)
+    u3Array = np.cos(thetavelArray)
+    xposArray = x0posArray + dist * (u1Array/u3Array)
+    yposArray = y0posArray + dist * (u2Array/u3Array)
+    # h parte da zero o da 1?
     for h in np.arange(totalToIterate):
-        if (h % 1000 == 0):
+        if (h % 100000 == 0):
             print "Completato " + str(h * 100 / totalToIterate) + "%"
-        rndsray = np.random.random_sample() * sray
-        rndsang = np.random.random_sample() * 2 * np.pi
-        x0pos = rndsray * np.cos(rndsang)
-        y0pos = rndsray * np.sin(rndsang)
-        phivel = np.random.random_sample() * 2 * np.pi 
-        thetavel = np.arccos(2 * np.random.random_sample() - 1) - (np.pi /2)
-        u1 = np.sin(thetavel) * np.cos(phivel)
-        u2 = np.sin(thetavel) * np.sin(phivel)
-        u3 = np.cos(thetavel)
-        xpos = x0pos + dist * (u1/u3)
-        ypos = y0pos + dist * (u2/u3)
+        rndsray = rndsrayArray[h]
+        rndsang = rndsangArray[h]
+        x0pos = x0posArray[h]
+        y0pos = y0posArray[h]
+        phivel = phivelArray[h]
+        thetavel = thetavelArray[h]
+        u1 = u1Array[h]
+        u2 = u2Array[h]
+        u3 = u3Array[h]
+        xpos = xposArray[h]
+        ypos = yposArray[h]
         if (xpos ** 2 + ypos ** 2 <= dray **2):
             if (abs(np.tan(thetavel)) <= (dray/(dist + spes))):
                 rspes = 0.1 * spes * np.sqrt(1 + np.tan(thetavel) ** 2)

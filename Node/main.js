@@ -199,7 +199,7 @@ function calibrateAllData(q, m, m2) {
                     let newString = `${X.toFixed(2)} ${Y} ${remainder}\n`;
                     if (newString != "NaN") newData += newString;
                 }
-                let newMatrix = `${folderPath}/${matrix.txt}`;
+                let newMatrix = `${folderPath}/matrix.txt`;
                 fs.writeFile(newMatrix, newData, 'utf-8', function (err) {
                     if (err) throw err;
                     console.log("Matrix calibrated");
