@@ -119,3 +119,14 @@ body {
     border-radius: 0px 5px 5px 0px;
     background: rgb(249, 234, 214);
 }
+
+.pickMenu {
+    padding-left: 15px; 
+    width: 270px; 
+    float: left; 
+    border-right: 1px #ddd solid;
+}
+
+.modebar {
+    display: none !important;
+}
