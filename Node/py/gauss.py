@@ -8,8 +8,12 @@ peaks = loadtxt(sys.argv[2])
 peak = int(sys.argv[3])
 window = int(sys.argv[4])
 
-p = int(peaks[peak][0])
-point = float(peaks[peak][0])
+try:
+	p = int(peaks[peak][0])
+	point = float(peaks[peak][0])
+except:
+	p = int(peaks[peak])
+	point = float(peaks[peak])
 data = list(map(lambda x: x[1], fileData))
 left = p - window / 2
 right = p + window / 2
