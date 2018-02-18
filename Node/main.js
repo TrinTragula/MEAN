@@ -97,6 +97,8 @@ const openToi = function (data, error) {
             data: data,
             error: error
         };
+    } else {
+        global.toiData = null;
     }
     toiWin.loadURL(`file://${__dirname}/toi.html`);
     //toiWin.webContents.openDevTools();
