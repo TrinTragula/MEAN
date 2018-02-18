@@ -1,7 +1,7 @@
 {
-  "name": "coincidence",
-  "version": "0.0.1",
-  "description": "A tool to plot and view coincidence data.",
+  "name": "mean",
+  "version": "0.9.0",
+  "description": "Mean is an Electron App for Nuclear Physics",
   "main": "main.js",
   "scripts": {
     "start": "electron main.js",
