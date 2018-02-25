@@ -13,7 +13,8 @@ working together without the user noticing.
 ## Requirements:
 - Windows is required for this version, since some components are based off C# code, 
 but portability could be easily achieved rewriting the Data Cruncher module.
-- numpy and scipy (download them **[here](https://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy)** and install them with pip. 
+- Python 2.7 installed with the executable present in the system PATH
+- Numpy and Scipy (download them **[here](https://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy)** and install them with pip. 
 The file you need depends on your architecture, e.g. if you have an x64 python 
 installation you need *numpy-1.13.3+mkl-cp27-cp27m-win_amd64.whl* and *scipy-1.0.0rc2-cp27-cp27m-win_amd64.whl*)
 
