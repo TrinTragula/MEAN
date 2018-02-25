@@ -31,6 +31,9 @@ var Matrix = class Matrix {
         this.gatePeaks = [];
         this.xPeaks = [];
         this.yPeaks = [];
+        this.Ruga = "here";
+        this.Fuffa = "bau";
+        this.Emme = "miao";
     }
 
     // Create the matrix from an already built dataset
