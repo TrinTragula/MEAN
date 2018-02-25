@@ -1,6 +1,6 @@
 {
   "name": "mean",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Mean is an Electron App for Nuclear Physics",
   "main": "main.js",
   "scripts": {
