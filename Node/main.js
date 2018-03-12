@@ -11,7 +11,7 @@ var win = null;
 app.on('ready', () => {
     win = new BrowserWindow({
         width: 1033,
-        height: 450,
+        height: 550,
         icon: './icon.ico'
     });
     //win.maximize()
