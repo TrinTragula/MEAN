@@ -1,8 +1,7 @@
 <p align="center">
   <img alt="Logo" src="https://github.com/TrinTragula/MEAN/raw/master/mean.png" width="333">
+  <h1 align="center">An Electron App for Nuclear Physics</h1>
 </p>
-
-# MEAN -  An Electron App for Nuclear Physics
 
 **MEAN** is a desktop application aimed at scientists and technicians coming from different backgrounds, 
 with the aim of building a modern, user friendly software capable of helping them analyze the nuclear data available from experiments 
