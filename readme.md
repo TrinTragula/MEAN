@@ -1,6 +1,8 @@
 # MEAN -  An Electron App for Nuclear Physics
 
-![Sample screen](/sample_screen.png)
+<p align="center">
+  <img alt="Logo" src="https://github.com/TrinTragula/MEAN/raw/master/mean.png" width="333">
+</p>
 
 **MEAN** is a desktop application aimed at scientists and technicians coming from different backgrounds, 
 with the aim of building a modern, user friendly software capable of helping them analyze the nuclear data available from experiments 
@@ -9,6 +11,8 @@ It makes use of data mining techniques in order to help identify nuclides using 
 on-line and uses state of the art technologies to calibrate, fit and manipulate the data. 
 It will be able to work with both simple spectra and coincidence matrices and it is divided into different modules 
 working together without the user noticing. 
+
+![Sample screen](/sample_screen.png)
 
 ## Requirements:
 - Windows is required for this version, since some components are based off C# code, 
