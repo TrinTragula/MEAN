@@ -196,7 +196,7 @@ namespace DataCruncher
 
         public static void GetPeaksSpectrum(string[] args)
         {
-            var fileName = args.Length < 2 ? "data/spectrum" : args[1];
+            var fileName = args.Length < 2 ? "D:\\Download\\60Co" : args[1];
             var epsilon = args.Length < 3 ? 50 : Int32.Parse(args[2]);
             var treshold = args.Length < 4 ? 300 : Int32.Parse(args[3]);
 
@@ -249,7 +249,10 @@ namespace DataCruncher
                 {
                     peaksData.Add(yDataDict[i]);
                 }
-                peaksData.Add(0);
+                else
+                {
+                    peaksData.Add(0);
+                }
             }
 
             var peaksFile = String.Format("{0}_peaks", fileName);
